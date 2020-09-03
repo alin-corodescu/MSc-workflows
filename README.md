@@ -1,26 +1,27 @@
 # Workflows
 
 ## Goals
-* Performance analysis at a granular level of container based workflow orchestration system for heterogenous hardware. Understand the implications of the DSL usage in the functionality and performance of workflows
-* Overcoming the identified issues by designing an extensible workflow orchestration system that allows for optimizations. Identify the required concepts that need to be accessible outside of individual layers. Create a framework of interfaces designed to standardize the communication across layers and with the control plane.
-* Framework focus should be on extensibility, modularity, providing a plug-and-play feel to the system. More accent on the interface definition rather than the implementation. Need to be easy to use to lower the entry bar to the world of big data workflows.
-* Create a simulation environment for heterogenous hardware and different conditions to be able to identify potential issues before the deployment.
+* Performance analysis at a granular level of **container** based workflow orchestration system for **heterogenous** hardware. Understand the **implications** of the DSL usage in the functionality and performance of workflows
+* Overcoming the identified issues by designing an **extensible** workflow orchestration system that allows for **optimizations**. Identify the **required concepts** that need to be accessible outside of individual layers. Create a **framework of interfaces** designed to standardize the communication across layers and with the control plane.
+* Framework focus should be on extensibility, modularity, providing a **plug-and-play** feel to the system. More accent on the interface definition rather than the implementation. Need to be easy to use to lower the entry bar to the world of big data workflows.
+* Create a simulation environment for **heterogenous** hardware and different conditions to be able to identify potential issues before the deployment.
 
 ## Concepts handled by the WF orchestrator (control plane)
-1. Optimizations through the inferrence of step characteristics + available hardware + DSL concepts passed down
-   1.  Data locality = routing layer: communication between the Hardware -> DSL and WF orchestrator
-   2.  Step definition hints for the WF orchestrator to better optimize the runtime aspects (when to scale, how to scale)
+1. **Optimizations** through the inferrence of step characteristics + available hardware + DSL concepts passed down
+   1.  **Data locality** = routing layer: communication between the Hardware -> DSL and WF orchestrator
+   2.  **Step definition hints** for the WF orchestrator to better optimize the runtime aspects (when to scale, how to scale)
    Or better describe the characteristics of the step to be surfaced all the way to the DSL in a user friendly way
    and/or provide hints
+
        For example: a step is an aggregator => it will reduce the amount of data trasmitted, might make sense to put it closer to the data source?
-2. scalability and elasticity
+2. **scalability and elasticity**
       step instances (dynamic, or manual + hints)
       control plane instances (message queue)
-3. Fault tolerance and recovery
-4. Monitoring:
-      a. Simulation and profiling
-      b. Live running monitoring and insights
-5. Enforcment of workflow constraints (defined in the DSL, if any)
+3. **Fault tolerance and recovery**
+4. **Monitoring:**
+    1. Simulation and profiling
+    2. Live running monitoring and insights
+5. **Enforcment** of workflow **constraints** (defined in the DSL, if any)
 
 ## Other ideas
 * Data splitting:
