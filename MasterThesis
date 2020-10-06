@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2020-10-06T18:43:50.466Z" agent="5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36" etag="qoPRPeFJy1Ewsm0b6Id1" version="13.6.6" type="github">
+<mxfile host="app.diagrams.net" modified="2020-10-06T19:40:14.556Z" agent="5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36" etag="ekGqkzDbWXaZ82fflaVb" version="13.6.6" type="github">
   <diagram id="2UF5kgZAd7vTmXP-0L0y" name="Page-1">
     <mxGraphModel dx="2885" dy="648" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -36,6 +36,19 @@
         <mxCell id="AjS_GNph3_LDlNal3fPK-40" value="4. Compile DSL into workflow definition" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="AjS_GNph3_LDlNal3fPK-39">
           <mxGeometry x="-0.2308" y="2" relative="1" as="geometry">
             <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="AjS_GNph3_LDlNal3fPK-59" style="edgeStyle=elbowEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=1;exitDx=0;exitDy=0;dashed=1;entryX=0.463;entryY=0.114;entryDx=0;entryDy=0;entryPerimeter=0;dashPattern=1 4;endArrow=classicThin;endFill=0;elbow=vertical;" edge="1" parent="1" source="Tw7g2J5WSt9GONpXPM8z-7" target="AjS_GNph3_LDlNal3fPK-55">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="-1051.6666666666667" y="650" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="-1130" y="560" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="AjS_GNph3_LDlNal3fPK-60" value="[Ability to view/modify existing workflows]" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="AjS_GNph3_LDlNal3fPK-59">
+          <mxGeometry x="0.118" y="1" relative="1" as="geometry">
+            <mxPoint x="42.45" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="Tw7g2J5WSt9GONpXPM8z-7" value="DSL" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
@@ -195,7 +208,7 @@
           <mxGeometry x="-1280" y="560" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="AjS_GNph3_LDlNal3fPK-43" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.patternFillRect;fillStyle=diagGrid;step=5;fillStrokeWidth=0.2;fillStrokeColor=#82B366;gradientColor=#ffffff;fillColor=none;strokeColor=#82B366;" vertex="1" parent="1">
-          <mxGeometry x="-1325" y="720" width="865" height="360" as="geometry" />
+          <mxGeometry x="-1310" y="720" width="865" height="360" as="geometry" />
         </mxCell>
         <mxCell id="AjS_GNph3_LDlNal3fPK-46" value="" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/mscae/Kubernetes.svg;" vertex="1" parent="1">
           <mxGeometry x="-520" y="770" width="50" height="48" as="geometry" />
@@ -208,6 +221,21 @@
         </mxCell>
         <mxCell id="AjS_GNph3_LDlNal3fPK-51" value="Data Ops" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
           <mxGeometry x="-400" y="730" width="30" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="AjS_GNph3_LDlNal3fPK-55" value="WF registry" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-1110" y="759" width="150" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="AjS_GNph3_LDlNal3fPK-56" value="WF instance runner" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-1295" y="920" width="150" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="AjS_GNph3_LDlNal3fPK-57" value="WF Submit Service" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-1295" y="830" width="150" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="AjS_GNph3_LDlNal3fPK-61" value="Container Negotiation Service" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-1120" y="920" width="150" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="AjS_GNph3_LDlNal3fPK-62" value="Container allocation&lt;br&gt;service (keeps track of who uses what)" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-935" y="920" width="150" height="70" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
