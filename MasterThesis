@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2020-10-06T18:33:30.539Z" agent="5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36" etag="rvG6hN9I_h1y69jU5hCl" version="13.6.6" type="github">
+<mxfile host="app.diagrams.net" modified="2020-10-06T18:43:50.466Z" agent="5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36" etag="qoPRPeFJy1Ewsm0b6Id1" version="13.6.6" type="github">
   <diagram id="2UF5kgZAd7vTmXP-0L0y" name="Page-1">
-    <mxGraphModel dx="3122" dy="777" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="2885" dy="648" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -183,14 +183,31 @@
         <mxCell id="AjS_GNph3_LDlNal3fPK-33" value="Domain Expert" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
           <mxGeometry x="-1235" y="350" width="30" height="60" as="geometry" />
         </mxCell>
+        <mxCell id="AjS_GNph3_LDlNal3fPK-52" style="edgeStyle=none;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.488;entryY=0.122;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;" edge="1" parent="1" source="AjS_GNph3_LDlNal3fPK-38" target="AjS_GNph3_LDlNal3fPK-49">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="AjS_GNph3_LDlNal3fPK-53" value="5. Submit workflow to the cluster" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="AjS_GNph3_LDlNal3fPK-52">
+          <mxGeometry x="-0.2849" y="-3" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
         <mxCell id="AjS_GNph3_LDlNal3fPK-38" value="Workflow &lt;br&gt;definition" style="shape=trapezoid;perimeter=trapezoidPerimeter;whiteSpace=wrap;html=1;fixedSize=1;" vertex="1" parent="1">
           <mxGeometry x="-1280" y="560" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="AjS_GNph3_LDlNal3fPK-43" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.patternFillRect;fillStyle=diagGrid;step=5;fillStrokeWidth=0.2;fillStrokeColor=#dddddd;" vertex="1" parent="1">
+        <mxCell id="AjS_GNph3_LDlNal3fPK-43" value="" style="verticalLabelPosition=bottom;verticalAlign=top;html=1;shape=mxgraph.basic.patternFillRect;fillStyle=diagGrid;step=5;fillStrokeWidth=0.2;fillStrokeColor=#82B366;gradientColor=#ffffff;fillColor=none;strokeColor=#82B366;" vertex="1" parent="1">
           <mxGeometry x="-1325" y="720" width="865" height="360" as="geometry" />
         </mxCell>
         <mxCell id="AjS_GNph3_LDlNal3fPK-46" value="" style="aspect=fixed;html=1;points=[];align=center;image;fontSize=12;image=img/lib/mscae/Kubernetes.svg;" vertex="1" parent="1">
-          <mxGeometry x="-520" y="730" width="50" height="48" as="geometry" />
+          <mxGeometry x="-520" y="770" width="50" height="48" as="geometry" />
+        </mxCell>
+        <mxCell id="AjS_GNph3_LDlNal3fPK-47" value="Kubernetes Cluster" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="-515" y="740" width="40" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="AjS_GNph3_LDlNal3fPK-49" value="Workflow FrontEnd&lt;br&gt;Service" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="-1295" y="750" width="150" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="AjS_GNph3_LDlNal3fPK-51" value="Data Ops" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="-400" y="730" width="30" height="60" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
