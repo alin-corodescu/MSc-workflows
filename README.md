@@ -7,7 +7,7 @@
 
 
 ## Implementation ideas:
-1. Leverage as many functionalities offered by the container orchestration echosystem
+1. Leverage as many functionalities offered by the container orchestration ecosystem such as [dapr](https://github.com/dapr/dapr) and other projects.
 2. Build Big Data Workflows as a service (from the perspective of the Domain expert)
 3. Allow for introspection into the excecution of workflows to better understand the implications of running containerized steps and the challenges of the underlying hardware topology (cloud/ edge). 
 
