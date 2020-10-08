@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2020-10-08T19:58:19.846Z" agent="5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36" etag="6GgGKYWFuyxVJH2eKWEh" version="13.7.8" type="github">
+<mxfile host="app.diagrams.net" modified="2020-10-08T19:59:21.122Z" agent="5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36" etag="PwMobgLGMgsaTN0qPd8h" version="13.7.8" type="github">
   <diagram id="2UF5kgZAd7vTmXP-0L0y" name="Page-1">
     <mxGraphModel dx="2885" dy="648" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
@@ -295,6 +295,14 @@
         </mxCell>
         <mxCell id="6qxt3dVwo3C2YlHkoH_E-17" value="Step X" style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;" vertex="1" parent="1">
           <mxGeometry x="-840" y="960" width="70" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="6qxt3dVwo3C2YlHkoH_E-24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.625;exitY=0.2;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.55;entryY=0.95;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="6qxt3dVwo3C2YlHkoH_E-18" target="AjS_GNph3_LDlNal3fPK-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="6qxt3dVwo3C2YlHkoH_E-25" value="11. Optional. Pull the step docker f&lt;br&gt;if needed to spin up containers &lt;br&gt;for the first time" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="6qxt3dVwo3C2YlHkoH_E-24">
+          <mxGeometry x="-0.527" relative="1" as="geometry">
+            <mxPoint x="51" as="offset" />
+          </mxGeometry>
         </mxCell>
         <mxCell id="6qxt3dVwo3C2YlHkoH_E-18" value="Step X pool" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="-1000" y="900" width="150" height="70" as="geometry" />
