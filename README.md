@@ -1,49 +1,45 @@
-# Workflows
+# Big data workflows as a service on running in software containers
 
-## Goals
-* Performance analysis at a granular level of **container** based workflow orchestration system for **heterogenous** hardware. Understand the **implications** of the DSL usage in the functionality and performance of workflows
-* Overcoming the identified issues by designing an **extensible** workflow orchestration system that allows for **optimizations**. Identify the **required concepts** that need to be accessible outside of individual layers. Create a **framework of interfaces** designed to standardize the communication across layers and with the control plane.
-* Framework focus should be on extensibility, modularity, providing a **plug-and-play** feel to the system. More accent on the interface definition rather than the implementation. Need to be easy to use to lower the entry bar to the world of big data workflows.
-* Create a simulation environment for **heterogenous** hardware and different conditions to be able to identify potential issues before the deployment.
-
-## Concepts handled by the WF orchestrator (control plane)
-1. **Optimizations** through the inferrence of step characteristics + available hardware + DSL concepts passed down
-   1.  **Data locality** = routing layer: communication between the Hardware -> DSL and WF orchestrator
-   2.  **Step definition hints** for the WF orchestrator to better optimize the runtime aspects (when to scale, how to scale)
-   Or better describe the characteristics of the step to be surfaced all the way to the DSL in a user friendly way
-   and/or provide hints
-
-       For example: a step is an aggregator => it will reduce the amount of data trasmitted, might make sense to put it closer to the data source?
-2. **scalability and elasticity**
-      step instances (dynamic, or manual + hints)
-      control plane instances (message queue)
-3. **Fault tolerance and recovery**
-4. **Monitoring:**
-    1. Simulation and profiling
-    2. Live running monitoring and insights
-5. **Enforcment** of workflow **constraints** (defined in the DSL, if any)
-
-## Other ideas
-* Data splitting:
-  * Interfaces which allow for simple map reduce steps (or instructions on how to scale input and re-combine output correctly) 
-      * Information allowing these kind of steps to be 
-      Interface to surface this kind of information to the DSL (if desirable).
-
-  * Not really belonging to the DSL, maybe it can be hidden away or  surfaced != it's own step (in general applicable for some standard operators)
-
-* DSL <-> hardware:
-    * Pool of available resources (for example, the cloud is nearly infinite, edge computing is cheap but unreliable, etc), interface that allows modelling this interaction
-    Hardware layout, draw a line between different boundaries (edge, zones, wihtin machine, etc).
-
-* Streaming results instead of batching them in between steps
-* PassThrough (not writing intermediate results to the disk) - Network calls between containers on the same machine, are those streamed through memory only - think I read about something similar for Linux)
-* Change communication mediums between different steps (such as step 1 and step 2 need to have encrypted channels in between them, web service might be better fitted for some steps) etc
+## Targets:
+1. Build a minimal working solution, leveraging the implementation Yared created.
+2. Capturing Edge/ Cloud topologies at design time and leveraging that information at runtime.
+3. Study the implications of using containers in the Big Data world. Consider both opportunities and challenges.
 
 
+## Implementation ideas:
+1. Leverage as many functionalities offered by the container orchestration echosystem
+2. Build Big Data Workflows as a service (from the perspective of the Domain expert)
+3. Allow for introspection into the excecution of workflows to better understand the implications of running containerized steps and the challenges of the underlying hardware topology (cloud/ edge). 
 
-## Todo
-1. Experiment with the existing solution to get a feel of what can be done
-1. Read papers on the Simulation
-1. Gather diverse data sets, simulate/ run under different conditions
-1. Decide on scope = as much as we can
+## Small scope solution architecture
+
+![Architecture Diagram](./MasterThesis.png)
+
+A few points in the diagram do not need to be implemented from the start (for example the step repository interaction with the DSL).
+
+After the minimal solution, various components of the architecture will be added / modified to better address the targeted challenges.
+
+## Ideas for the future (no well-defined order):
+These are ideas that could be worth exploring. Most of them will likely have design-time implications (how do you surface certain aspects through the DSL); others will have run-time implication only, but how do you surface the necessary interfaces in the step templates to allow the data engineers to make use of the functionalities provided by the proposed framework?
+
+
+* Micoservices to expose the state the the steps/ workflows/ clusters. Definetly useful for debugging/ development but also to gain insights and evaluate the solution at later stages of the project.
+
+* The logic handling where steps are executed / provisioned need to take into account parameters, available resources and data locality.
+
+* Elasticity: inject logic into the step pool to automatically scale up when the queue of tasks to be processed gets too large. Also entails the existence of a "garbage collector" to free up unused containers.
+  
+* Data splitting. How is it possible to automatically split data (not need special steps) - to better parallelize the workflow without intervention. Probably something in the step template. 
+  
+* Redis cache to serve as the intermediary between steps to avoid disk I/O. Tapping into the best practices of microservices. We are in the big data world, disk I/O is an important factor for throughput/ latencies. Or in-memory file system implementation on Kubernetes? That'd be awesome.
+
+* Edge and cloud not being in the same Kubernetes cluster. Cross-cluster orchestration. Might require pulling up some of the serives.
+    
+* For step 10-11-12: We can go for a pre-allocation approach where each workflow instance reserves cluster resources at the start. This might be wasteful though, as we block resources which are not actively used.
+    
+* The master node (or smaller versions of coordinators) should also live in close proximity (or in the same boundary (edge/cloud)) as the workers
+
+* The step container notify the master of events (e.g. WorkFinished) through a PubSub system (or a system where events can be broadcasted to multiple interested parties)
+
+
 
