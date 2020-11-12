@@ -1,0 +1,11 @@
+###
+GET http://localhost:5000/api/v1/data
+###
+POST http://localhost:5000/api/v1/data
+Content-Type: application/json
+
+{
+    "testKey": "testValue"
+}
+###
+GET http://localhost:5000/api/v1/data/a2bbe838-2523-11eb-b97b-cbddc438994d
