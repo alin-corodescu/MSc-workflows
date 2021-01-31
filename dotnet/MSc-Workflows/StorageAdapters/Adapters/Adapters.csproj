@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <RootNamespace>Definitions</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Models\Models.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Transports" />
+    </ItemGroup>
+
+</Project>

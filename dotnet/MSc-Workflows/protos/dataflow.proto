@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+import "google/protobuf/any.proto";
+
+option csharp_namespace = "Workflows.Models.DataEvents";
+
+// The event describing new data being available in the system
+message MetadataEvent {
+  // Implementation specific metadata used to locate the data
+  google.protobuf.Any metadata = 1;
+  
+  // Data localization information. Used to perform locality-aware scheduling.
+  DataLocalization dataLocalization = 2;
+  
+  //TODO need something to identify the data source
+}
+
+// Captures information about where data is localized.
+message DataLocalization {
+  // The identifier of the region where data is stored
+  string region = 1;
+  
+  // The identifier of the host storing the data
+  string hostIdentifier = 2;
+}
+
+
+message LocalFileSystemMetadata {
+  bytes fileNameGuidBytes = 1;
+}
