@@ -24,7 +24,37 @@ message DataLocalization {
   string hostIdentifier = 2;
 }
 
-
+// Metadata used by the local file system adapter
 message LocalFileSystemMetadata {
   bytes fileNameGuidBytes = 1;
+}
+
+// Request for pushing data
+message PushDataRequest {
+  // The file path of the file to be pushed to the storage
+  string sourceFilePath = 1;
+  
+  // Hint for where the storage should store the data.
+  DataLocalization targetHint = 2;
+}
+
+message PushDataReply {
+  // The metadata necessary to locate the stored data in the storage
+  MetadataEvent generatedMetadata = 1;
+}
+
+message PullDataRequest {
+  // The metadata used to lookup the item in store
+  MetadataEvent metadata = 1;
+  
+  string targetPath = 2;
+}
+
+message PullDataReply {
+  bool isSuccess = 1;
+}
+service StorageAdapter {
+  rpc PushData (PushDataRequest) returns (PushDataReply);
+  
+  rpc PullData (PullDataRequest) returns (PullDataReply);
 }

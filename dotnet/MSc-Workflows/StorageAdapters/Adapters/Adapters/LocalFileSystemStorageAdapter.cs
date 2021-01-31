@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
+using Microsoft.Extensions.Configuration;
 using Workflows.Models.DataEvents;
 using Workflows.StorageAdapters.Definitions;
 
@@ -15,9 +16,9 @@ namespace Definitions.Adapters
     {
         private readonly string _permanentStorageBasePath;
 
-        public LocalFileSystemStorageAdapter(string permanentStorageBasePath)
+        public LocalFileSystemStorageAdapter(ILocalStorageAdapterConfig configuration)
         {
-            _permanentStorageBasePath = permanentStorageBasePath;
+            _permanentStorageBasePath = configuration.PermanentStoragePath;
         }
 
         /// <summary>
@@ -68,5 +69,10 @@ namespace Definitions.Adapters
                 File.Copy(permanentStoragePath, destinationPath);
             });
         }
+    }
+
+    public interface ILocalStorageAdapterConfig
+    {
+        string PermanentStoragePath { get; }
     }
 }

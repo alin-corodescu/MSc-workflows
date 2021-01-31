@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 using Definitions.Adapters;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Memory;
+using Moq;
 using NUnit.Framework;
 using Workflows.Models.DataEvents;
 
@@ -31,7 +34,12 @@ namespace UnitTests
         public async Task PushData_WorksAsExpected()
         {
             var inputPath = $"{inputDir}/testFile";
-            var localFileSystemStorageAdapter = new LocalFileSystemStorageAdapter(permDir);
+
+            var config = new Mock<ILocalStorageAdapterConfig>();
+            config.Setup(x => x.PermanentStoragePath).Returns(permDir);
+            
+            
+            var localFileSystemStorageAdapter = new LocalFileSystemStorageAdapter(config.Object);
             
             await File.WriteAllTextAsync(inputPath, "myContents");
 
@@ -51,8 +59,10 @@ namespace UnitTests
         {
             var fileNameGuid = Guid.NewGuid();
             var existingPermFile = $"{permDir}/{fileNameGuid}";
-            
-            var localFileSystemStorageAdapter = new LocalFileSystemStorageAdapter(permDir);
+
+            var config = new Mock<ILocalStorageAdapterConfig>();
+            config.Setup(x => x.PermanentStoragePath).Returns(permDir);
+            var localFileSystemStorageAdapter = new LocalFileSystemStorageAdapter(config.Object);
             
             await File.WriteAllTextAsync(existingPermFile, "myContents");
 

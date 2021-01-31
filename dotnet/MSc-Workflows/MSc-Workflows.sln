@@ -1,7 +1,5 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models", "Models\Models.csproj", "{B1139D4C-4A42-4898-8104-F95FDA72C580}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "StorageAdapters", "StorageAdapters", "{D2EE9992-78F4-4A49-9431-15A86C3D12F6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Adapters", "StorageAdapters\Adapters\Adapters.csproj", "{0D00A755-758E-4C11-95AD-EB7FD5AF6778}"
@@ -20,10 +18,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B1139D4C-4A42-4898-8104-F95FDA72C580}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B1139D4C-4A42-4898-8104-F95FDA72C580}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B1139D4C-4A42-4898-8104-F95FDA72C580}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B1139D4C-4A42-4898-8104-F95FDA72C580}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0D00A755-758E-4C11-95AD-EB7FD5AF6778}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0D00A755-758E-4C11-95AD-EB7FD5AF6778}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D00A755-758E-4C11-95AD-EB7FD5AF6778}.Release|Any CPU.ActiveCfg = Release|Any CPU

@@ -6,11 +6,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Models\Models.csproj" />
+      <PackageReference Include="Grpc.AspNetCore" Version="2.34.0" />
     </ItemGroup>
-
+    
     <ItemGroup>
-      <Folder Include="Transports" />
+        <Protobuf Include="../../protos/dataflow.proto"/>
     </ItemGroup>
 
 </Project>
