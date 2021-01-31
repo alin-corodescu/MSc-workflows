@@ -5,15 +5,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Protobuf Include="Protos\greet.proto" GrpcServices="Server" AdditionalImportDirs="../../Models/Protos" />
-    </ItemGroup>
-
-    <ItemGroup>
         <PackageReference Include="Grpc.AspNetCore" Version="2.34.0" />
     </ItemGroup>
-
+    
     <ItemGroup>
-      <ProjectReference Include="..\..\Models\Models.csproj" />
+        <Protobuf Include="../../protos/*.proto"/>
     </ItemGroup>
     
 </Project>
