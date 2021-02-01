@@ -53,8 +53,12 @@ message PullDataRequest {
 message PullDataReply {
   bool isSuccess = 1;
 }
+
+// Interface for storage adapters
 service StorageAdapter {
   rpc PushData (PushDataRequest) returns (PushDataReply);
   
   rpc PullData (PullDataRequest) returns (PullDataReply);
 }
+
+service 

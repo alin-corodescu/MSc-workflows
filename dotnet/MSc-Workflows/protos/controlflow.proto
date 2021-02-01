@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+import "dataflow.proto";
+
+option csharp_namespace = "Workflows.Models";
+
+// The side car needs to communicate with :
+// 1. The compute steps
+
+// side car is a server for: communication from the orchestrator notification 
+// 
+
+// Orchestrator -> Sidecar
+message StepTriggerRequest {
+  // The metadata associated with data that needs to processed by the step
+  MetadataEvent metadata = 1;
+}
+
+message StepTriggerReply {
+  bool isSuccess = 1;
+}
+
+// Service running as part of the sidecar
+service SidecarService {
+  
+  // Method used to accept requests from the orchestrator
+  rpc TriggerStep (StepTriggerRequest) returns (StepTriggerReply);
+}
+
+
+// Contains the information needed to locate a file to be processed.
+message ComputeStepRequest {
+  
+}
+
+// Contains information about a chunk of data that needs 
+// to be published to the target data store
+message ComputeStepReply {
+  
+}
+
+// Interface definitions for services running as part of the compute step.
+service ComputeStepService {
+  
+  // Invoked by the sidecar when computation needs to happen
+  rpc TriggerCompute (ComputeStepRequest) returns (stream ComputeStepReply);
+  
+}
+
+// 
+message DataEventRequest {
+  
+}
+
+message DataEventReply {
+  
+}
+
+service OrchestratorService {
+  // Used to notify data is available.
+  rpc NotifyDataAvailable (stream DataEventRequest) returns (stream DataEventReply);
+}
