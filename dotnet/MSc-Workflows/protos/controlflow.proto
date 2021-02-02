@@ -30,13 +30,13 @@ service SidecarService {
 
 // Contains the information needed to locate a file to be processed.
 message ComputeStepRequest {
-  
+  string localPath = 1;
 }
 
 // Contains information about a chunk of data that needs 
 // to be published to the target data store
 message ComputeStepReply {
-  
+  string outputFilePath = 1;
 }
 
 // Interface definitions for services running as part of the compute step.
@@ -47,13 +47,14 @@ service ComputeStepService {
   
 }
 
-// 
+// Request used to notify the orchestrator service that data is available.
 message DataEventRequest {
-  
+  MetadataEvent metadata = 1;
 }
 
+// Reply for notifications of data being available.
 message DataEventReply {
-  
+  bool isSuccess = 1;
 }
 
 service OrchestratorService {
