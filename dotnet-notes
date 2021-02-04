@@ -51,13 +51,3 @@ This can be done at multiple levels. The fact that the logic is injected in the 
 
 One fundamental challenge is the inter-container communication - how do you ensure the overhead is kept to a minimum?
 
-Started work on the dotnet implementation:
-Go is cool, but at this point it might be more efficient to go with something I'm using everyday to save time.
-
-I'm using Protobuf as the IDL for the basic interaction between components.
-
-I'm also using the protobuf service definitions to compile server/ client implementations based on GRPC (as the transport protocol)
-
-I'll use ASP.NET framework to actually set up the web services
-
-The logic implementation (in C#) depends on the types defined in Protobuf, but it's completely separated from the other parts (so I could re-use with whatever I have lower down the stack - REST, GRPC, Message Queue)

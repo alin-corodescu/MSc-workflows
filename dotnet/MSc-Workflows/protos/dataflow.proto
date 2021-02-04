@@ -60,5 +60,3 @@ service StorageAdapter {
   
   rpc PullData (PullDataRequest) returns (PullDataReply);
 }
-
-service 

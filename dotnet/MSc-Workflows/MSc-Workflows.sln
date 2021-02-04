@@ -14,7 +14,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "tests\UnitTest
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ComputeSteps", "ComputeSteps", "{67A9A331-31FC-416D-BFBB-60BE4303228D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DummyComputeStep", "ComputeSteps\DummyComputeStep\DummyComputeStep.csproj", "{AE6FCD42-10AA-46D1-A559-BC16556CC5EE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compute", "ComputeSteps\Compute\Compute.csproj", "{AE6FCD42-10AA-46D1-A559-BC16556CC5EE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -22,7 +22,6 @@ message StepTriggerReply {
 
 // Service running as part of the sidecar
 service SidecarService {
-  
   // Method used to accept requests from the orchestrator
   rpc TriggerStep (StepTriggerRequest) returns (StepTriggerReply);
 }
@@ -42,7 +41,8 @@ message ComputeStepReply {
 // Interface definitions for services running as part of the compute step.
 service ComputeStepService {
   
-  // Invoked by the sidecar when computation needs to happen
+  // Invoked by the sidecar when computation needs to happen.
+  // Returns a stream because 1 input chunk may result in multiple replies
   rpc TriggerCompute (ComputeStepRequest) returns (stream ComputeStepReply);
   
 }
@@ -58,6 +58,7 @@ message DataEventReply {
 }
 
 service OrchestratorService {
-  // Used to notify data is available.
+  // Used to notify data is available. Sidecar <-> Orchestrator communications. 
+  // That's why they are both streams, because the connections should be long lived.
   rpc NotifyDataAvailable (stream DataEventRequest) returns (stream DataEventReply);
 }
