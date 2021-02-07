@@ -51,3 +51,8 @@ This can be done at multiple levels. The fact that the logic is injected in the 
 
 One fundamental challenge is the inter-container communication - how do you ensure the overhead is kept to a minimum?
 
+
+The assumption that employing a microservice oriented architecture will have performance impact. The thesis aims to explictly call out potential improvements.
+
+
+Compute step: add one line to a particular file.

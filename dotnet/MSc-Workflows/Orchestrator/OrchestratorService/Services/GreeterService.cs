@@ -1,10 +1,11 @@
-
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
-using Workflows.Models.DataEvents;
 
-namespace TestGrpcService
+namespace OrchestratorService
 {
     public class GreeterService : Greeter.GreeterBase
     {
@@ -21,14 +22,6 @@ namespace TestGrpcService
             {
                 Message = "Hello " + request.Name
             });
-        }
-    }
-
-    public class Testss : TestService.TestServiceBase
-    {
-        public override Task<HelloReply> SayTest(MetadataEvent request, ServerCallContext context)
-        {
-            return base.SayTest(request, context);
         }
     }
 }
