@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using TestGrpcService.Definitions;
 using Workflows.Models;
@@ -14,15 +15,17 @@ namespace TestGrpcService
         private readonly IDataSinkAdapter _dataSink;
         private readonly IOrchestratorServiceClient _orchestrator;
         private readonly ILogger<Sidecar> _logger;
+        private string _inputPath;
 
         public Sidecar(IDataSourceAdapter dataSource, IComputeStep computeStep, IDataSinkAdapter dataSink,
-            IOrchestratorServiceClient orchestrator, ILogger<Sidecar> logger)
+            IOrchestratorServiceClient orchestrator, ILogger<Sidecar> logger, IConfiguration configuration)
         {
             _dataSource = dataSource;
             _computeStep = computeStep;
             _dataSink = dataSink;
             _orchestrator = orchestrator;
             _logger = logger;
+            this._inputPath = configuration["Sidecar:InputPath"];
         }
         public Task<StepTriggerReply> TriggerStep(StepTriggerRequest request)
         {
@@ -30,7 +33,7 @@ namespace TestGrpcService
             {
                 var metadata = request.Metadata;
                 var reqId = request.RequestId;
-                var targetPath = $"/tmp/sandbox/inputs/{Guid.NewGuid()}";
+                var targetPath = $"{_inputPath}/{Guid.NewGuid()}";
                 // 1. Ask the data source to download the data.
                 _logger.LogInformation($"Downloading data from the data source. TargetPath = {targetPath}");
                 var pullDataRequest = new PullDataRequest
