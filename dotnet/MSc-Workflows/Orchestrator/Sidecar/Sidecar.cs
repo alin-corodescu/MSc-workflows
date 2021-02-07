@@ -29,6 +29,7 @@ namespace TestGrpcService
             Task.Run(async () =>
             {
                 var metadata = request.Metadata;
+                var reqId = request.RequestId;
                 var targetPath = $"/tmp/sandbox/inputs/{Guid.NewGuid()}";
                 // 1. Ask the data source to download the data.
                 _logger.LogInformation($"Downloading data from the data source. TargetPath = {targetPath}");
@@ -58,7 +59,8 @@ namespace TestGrpcService
                     _logger.LogInformation("Publishing metadata to the orchestrator service");
                     await _orchestrator.PublishData(new DataEventRequest
                     {
-                        Metadata = reply.GeneratedMetadata
+                        Metadata = reply.GeneratedMetadata,
+                        RequestId = reqId
                     });
                 }
             });

@@ -14,6 +14,7 @@ option csharp_namespace = "Workflows.Models";
 message StepTriggerRequest {
   // The metadata associated with data that needs to processed by the step
   MetadataEvent metadata = 1;
+  string requestId = 2;
 }
 
 message StepTriggerReply {
@@ -50,6 +51,7 @@ service ComputeStepService {
 // Request used to notify the orchestrator service that data is available.
 message DataEventRequest {
   MetadataEvent metadata = 1;
+  string requestId = 2;
 }
 
 // Reply for notifications of data being available.
