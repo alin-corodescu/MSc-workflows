@@ -14,8 +14,8 @@ namespace OrchestratorService.Definitions
         public OrchestratorImplementation(ILogger<OrchestratorImplementation> logger)
         {
             _logger = logger;
-            var firstStepChannel = GrpcChannel.ForAddress("http://localhost:5000");
-            var secondStepChannel = GrpcChannel.ForAddress("http://localhost:5010");
+            var firstStepChannel = GrpcChannel.ForAddress("http://localhost:5003");
+            var secondStepChannel = GrpcChannel.ForAddress("http://localhost:5005");
 
             this.firstStepClient = new SidecarService.SidecarServiceClient(firstStepChannel);
             this.secondStepClient = new SidecarService.SidecarServiceClient(secondStepChannel);

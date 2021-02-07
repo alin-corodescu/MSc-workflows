@@ -18,13 +18,15 @@ namespace TestGrpcService.Clients
             _logger = logger;
             var computeAddr = configuration["Sidecar:ComputeAddr"];
             logger.LogInformation($"Connecting to {computeAddr}");
-            using var channel = GrpcChannel.ForAddress(computeAddr);
+            var channel = GrpcChannel.ForAddress(computeAddr);
             this._client = new ComputeStepService.ComputeStepServiceClient(channel);
         }
 
         public IAsyncEnumerable<ComputeStepReply> TriggerCompute(ComputeStepRequest request)
         {
-            return this._client.TriggerCompute(request).ResponseStream.ReadAllAsync();
+            _logger.LogInformation("Triggering GRPC call for compute");
+            var call = this._client.TriggerCompute(request);
+            return call.ResponseStream.ReadAllAsync();
         }
     }
 }

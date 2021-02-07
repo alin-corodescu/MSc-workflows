@@ -23,10 +23,11 @@ namespace DummyComputeStep.ExampleSteps
 
             var transformed = input + $"\n Dummy step {stepId} was here";
 
-            await File.WriteAllTextAsync(this.outputPath, transformed);
+            var outputFilePath = $"{this.outputPath}/Step{stepId}";
+            await File.WriteAllTextAsync(outputFilePath, transformed);
             var reply = new ComputeStepReply
             {
-                OutputFilePath = outputPath
+                OutputFilePath = outputFilePath
             };
 
             yield return reply;

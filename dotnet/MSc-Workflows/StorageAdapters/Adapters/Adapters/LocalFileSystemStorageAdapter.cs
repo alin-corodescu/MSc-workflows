@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Workflows.Models.DataEvents;
 using Workflows.StorageAdapters.Definitions;
 
@@ -14,10 +15,12 @@ namespace Definitions.Adapters
     /// </summary>
     public class LocalFileSystemStorageAdapter : IStorageAdapter 
     {
+        private readonly ILogger<LocalFileSystemStorageAdapter> _logger;
         private readonly string _permanentStorageBasePath;
 
-        public LocalFileSystemStorageAdapter(IConfiguration configuration)
+        public LocalFileSystemStorageAdapter(IConfiguration configuration, ILogger<LocalFileSystemStorageAdapter> logger)
         {
+            _logger = logger;
             _permanentStorageBasePath = configuration["StorageAdapter:PermStoragePath"];
         }
 
@@ -30,17 +33,19 @@ namespace Definitions.Adapters
         {
             return await Task.Run(() =>
             {
+                this._logger.LogInformation($"Pushing data to storage from: {filePath}");
                 var destinationFileNameGuid = Guid.NewGuid();
                 // Copy the file from filePath to some permanent storage
                 File.Copy(filePath, $"{_permanentStorageBasePath}/{destinationFileNameGuid}");
-
-                var test = new LocalFileSystemMetadata
+                
+                this._logger.LogInformation($"The data in permanent storage is {_permanentStorageBasePath}/{destinationFileNameGuid}");
+                var localFileSystemMetadata = new LocalFileSystemMetadata
                 {
                     FileNameGuidBytes =
                         ByteString.CopyFrom(destinationFileNameGuid.ToByteArray())
                 };
 
-                var metadata = Any.Pack(test);
+                var metadata = Any.Pack(localFileSystemMetadata);
                 var @event = new MetadataEvent
                 {
                     Metadata = metadata

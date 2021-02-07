@@ -34,7 +34,7 @@ namespace TestGrpcService
 
             services.AddSingleton<ISidecar, Sidecar>();
             
-            Console.WriteLine($"Config: {Configuration["Test"]}");
+            Console.WriteLine($"Config: {Configuration["Sidecar:InputPath"]}");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

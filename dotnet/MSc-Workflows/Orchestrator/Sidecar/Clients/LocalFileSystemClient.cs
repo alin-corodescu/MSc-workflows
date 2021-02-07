@@ -11,7 +11,7 @@ namespace TestGrpcService.Clients
 
         public LocalFileSystemClient()
         {
-            var channel = GrpcChannel.ForAddress("localhost:5001");
+            var channel = GrpcChannel.ForAddress("http://localhost:5001");
             this._client = new StorageAdapter.StorageAdapterClient(channel);
         }
         public async Task<PushDataReply> PushData(PushDataRequest metadata)

@@ -1,0 +1,30 @@
+Reply to Titi's email:
+
+
+R1. Workflow orchestration with data locality aware scheduling
+R2. Data flow solution to expose data locality details about the data
+R3. Horizontally scalable solution
+R4. Solution adapted to working on heterogenous, low resources, geo-distributed hardware
+R5. Thorough analysis of the performance and scalability implications of major design / implementation choices
+R6. Ability to orchestrate across different techs (compute steps and data flow solutions)
+R7. Batch and stream processing semantics
+R8. Provide an example workflow to showcase the functionalities.
+
+
+Validation/Measurements (in the context of the proposed solution)
+
+M1. Data locality effect
+M2. Comparison of serialization solutions: JSON vs Protobuf
+M3. Comparison of transport choices (GRPC vs REST)
+M4. Shared containers across chunks vs one container per data item to be processed
+M6. Containerized microservices vs monoliths - this might take some time to implement with little benefit, 
+M7. scalability test - probably not feasible
+
+
+Of course, not all might get included in the final version of the thesis but I do believe that a significant chunk of the the thesis content will come from analyzing R1, R2 and R5. 
+
+Value in calling out what are the gaps in the current evaluation when it comes to requirements that harder to evaluate like: R3 and R4. Of course, small local experiments can be performed for those. R6 is also quite challenging to get completeness on so it will just brush upon it. 
+
+ required to support the experiments. I have a pretty clear focus on the runtime performance of the framework, and a significant chunk of my contributions would be R3. the evaluation of major design / implementation decisions - while these are not clear at this moment, I'm sure I'll be able to run a few localized experiments to get some numbers on aspects such as shared containers, different serialization solution, optimizing the data flow proposed solution etc.
+
+

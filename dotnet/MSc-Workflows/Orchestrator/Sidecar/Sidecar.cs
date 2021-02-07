@@ -27,51 +27,49 @@ namespace TestGrpcService
             _logger = logger;
             this._inputPath = configuration["Sidecar:InputPath"];
         }
-        public Task<StepTriggerReply> TriggerStep(StepTriggerRequest request)
+        public async Task<StepTriggerReply> TriggerStep(StepTriggerRequest request)
         {
-            Task.Run(async () =>
+            var metadata = request.Metadata;
+            var reqId = request.RequestId;
+            var targetPath = $"{_inputPath}/{Guid.NewGuid()}";
+            // 1. Ask the data source to download the data.
+            _logger.LogInformation($"Downloading data from the data source. TargetPath = {targetPath}");
+            var pullDataRequest = new PullDataRequest
             {
-                var metadata = request.Metadata;
-                var reqId = request.RequestId;
-                var targetPath = $"{_inputPath}/{Guid.NewGuid()}";
-                // 1. Ask the data source to download the data.
-                _logger.LogInformation($"Downloading data from the data source. TargetPath = {targetPath}");
-                var pullDataRequest = new PullDataRequest
-                {
-                    Metadata = metadata,
-                    TargetPath = targetPath
-                };
-                await _dataSource.DownloadData(pullDataRequest);
-                
-                _logger.LogInformation("Passing the data to the compute step");
+                Metadata = metadata,
+                TargetPath = targetPath
+            };
+            await _dataSource.DownloadData(pullDataRequest);
+            
+            _logger.LogInformation("Passing the data to the compute step");
 
-                var responses = _computeStep.TriggerCompute(new ComputeStepRequest
+            var computeStepRequest = new ComputeStepRequest
+            {
+                LocalPath = targetPath
+            };
+
+            _logger.LogInformation("Triggered the compute step, awaiting responses");
+            await foreach (var response in _computeStep.TriggerCompute(computeStepRequest))
+            {
+                _logger.LogInformation("Publishing data to the data sink");
+                // TODO these calls do not need to be awaited actually. We could parallelize the work across multiple files.
+                var reply = await _dataSink.PushData(new PushDataRequest
                 {
-                    LocalPath = targetPath
+                    SourceFilePath = response.OutputFilePath
                 });
 
-                await foreach (var response in responses)
+                _logger.LogInformation("Publishing metadata to the orchestrator service");
+                await _orchestrator.PublishData(new DataEventRequest
                 {
-                    _logger.LogInformation("Publishing data to the data sink");
-                    // TODO these calls do not need to be awaited actually. We could parallelize the work across multiple files.
-                    var reply = await _dataSink.PushData(new PushDataRequest
-                    {
-                        SourceFilePath = response.OutputFilePath
-                    });
+                    Metadata = reply.GeneratedMetadata,
+                    RequestId = reqId
+                });
+            }
 
-                    _logger.LogInformation("Publishing metadata to the orchestrator service");
-                    await _orchestrator.PublishData(new DataEventRequest
-                    {
-                        Metadata = reply.GeneratedMetadata,
-                        RequestId = reqId
-                    });
-                }
-            });
-
-            return Task.FromResult(new StepTriggerReply
+            return new StepTriggerReply
             {
                 IsSuccess = true
-            });
+            };
         }
     }
 }
