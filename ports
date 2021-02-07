@@ -1,0 +1,4 @@
+Port 5000 --- compute step 1
+Port 5001 --- storage adapter
+Port 5002 --- orchestration service
+Port 5010 --- compute step 2

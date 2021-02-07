@@ -16,9 +16,9 @@ namespace Definitions.Adapters
     {
         private readonly string _permanentStorageBasePath;
 
-        public LocalFileSystemStorageAdapter(ILocalStorageAdapterConfig configuration)
+        public LocalFileSystemStorageAdapter(IConfiguration configuration)
         {
-            _permanentStorageBasePath = configuration.PermanentStoragePath;
+            _permanentStorageBasePath = configuration["StorageAdapter:PermStoragePath"];
         }
 
         /// <summary>

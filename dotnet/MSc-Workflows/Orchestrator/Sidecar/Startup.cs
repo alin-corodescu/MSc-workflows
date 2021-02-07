@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using TestGrpcService.Clients;
+using TestGrpcService.Definitions;
+using TestGrpcService.Transports;
 
 namespace TestGrpcService
 {
@@ -23,6 +26,13 @@ namespace TestGrpcService
         {
             services.AddGrpc();
             services.AddGrpcReflection();
+
+            services.AddSingleton<IComputeStep, ComputeStepGrpcClient>();
+            services.AddSingleton<IDataSourceAdapter, LocalFileSystemClient>();
+            services.AddSingleton<IDataSinkAdapter, LocalFileSystemClient>();
+            services.AddSingleton<IOrchestratorServiceClient, OrchestratorServiceClient>();
+
+            services.AddSingleton<ISidecar, Sidecar>();
             
             Console.WriteLine($"Config: {Configuration["Test"]}");
         }
@@ -41,6 +51,7 @@ namespace TestGrpcService
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGrpcReflectionService();
+                endpoints.MapGrpcService<GrpcSidecarTransport>();
                 endpoints.MapGet("/",
                     async context =>
                     {

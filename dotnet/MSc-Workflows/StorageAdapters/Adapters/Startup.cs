@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using DummyComputeStep.Definitions;
-using DummyComputeStep.ExampleSteps;
-using DummyComputeStep.Service;
+using Definitions.Adapters;
+using Definitions.Transports;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Workflows.StorageAdapters.Definitions;
 
-namespace DummyComputeStep
+namespace StorageAdapters
 {
     public class Startup
     {
@@ -22,6 +18,7 @@ namespace DummyComputeStep
         }
 
         public IConfiguration Configuration { get; }
+
         
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
@@ -29,7 +26,8 @@ namespace DummyComputeStep
         {
             services.AddGrpc();
             services.AddGrpcReflection();
-            services.AddSingleton<IComputeStepImpl, DummyStep>();
+            services.AddSingleton<IStorageAdapter, LocalFileSystemStorageAdapter>();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -41,11 +39,12 @@ namespace DummyComputeStep
             }
 
             app.UseRouting();
-
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGrpcReflectionService();
-                endpoints.MapGrpcService<GrpcComputeStep>();
+                endpoints.MapGrpcService<GrpcStorageAdapter>();
+                
                 endpoints.MapGet("/",
                     async context =>
                     {
