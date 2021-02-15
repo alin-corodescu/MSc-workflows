@@ -77,9 +77,4 @@ namespace Definitions.Adapters
             });
         }
     }
-
-    public interface ILocalStorageAdapterConfig
-    {
-        string PermanentStoragePath { get; }
-    }
 }

@@ -14,4 +14,8 @@
         <Protobuf Include="../../protos/*.proto" />
     </ItemGroup>
     
+    <ItemGroup>
+      <ProjectReference Include="..\..\Common\Commons\Commons.csproj" />
+    </ItemGroup>
+    
 </Project>

@@ -24,7 +24,7 @@ namespace OrchestratorService.Definitions
     {
         public async Task<V1Pod> SelectBestPod(IEnumerable<V1Pod> possibleTargets, DataLocalization dataLocalization)
         {
-            return possibleTargets.First();
+            return await Task.FromResult(possibleTargets.First());
         }
     }
 }

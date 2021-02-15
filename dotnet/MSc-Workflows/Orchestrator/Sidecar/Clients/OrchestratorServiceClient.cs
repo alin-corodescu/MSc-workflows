@@ -1,6 +1,9 @@
 using System.Threading.Tasks;
+using Commons;
 using Grpc.Core;
 using Grpc.Net.Client;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using TestGrpcService.Definitions;
 using Workflows.Models;
 
@@ -8,12 +11,21 @@ namespace TestGrpcService.Clients
 {
     public class OrchestratorServiceClient : IOrchestratorServiceClient
     {
+        private readonly IConfiguration _configuration;
+        private readonly IGrpcChannelPool _channelPool;
         private OrchestratorService.OrchestratorServiceClient _client;
         private AsyncDuplexStreamingCall<DataEventRequest, DataEventReply> _stream;
 
-        public OrchestratorServiceClient()
+        public OrchestratorServiceClient(ILogger<OrchestratorServiceClient> logger, IConfiguration configuration, IGrpcChannelPool channelPool)
         {
-            var channel = GrpcChannel.ForAddress("http://localhost:5002");
+            _configuration = configuration;
+            _channelPool = channelPool;
+
+            // These are the values that kubernetes is supposed to populate
+            var orchestratorServiceAddr = configuration["ORCHESTRATOR_SERVICE_HOST"];
+            var port = configuration["ORCHESTRATOR_SERVICE_PORT"];
+            
+            var channel = GrpcChannel.ForAddress($"http://{orchestratorServiceAddr}:{port}");
             _client = new OrchestratorService.OrchestratorServiceClient(channel);
             this._stream = _client.NotifyDataAvailable();
         }
