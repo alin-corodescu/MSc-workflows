@@ -31,6 +31,8 @@ namespace Definitions.Adapters
         /// <returns><see cref="MetadataEvent"/> containing information about where in the "permanent" storage the file was stored</returns>
         public async Task<MetadataEvent> PushDataToStorage(string filePath)
         {
+            // TODO seems hard linking works because the inodes of the underlying filesystem are shared.
+            
             return await Task.Run(() =>
             {
                 this._logger.LogInformation($"Pushing data to storage from: {filePath}");

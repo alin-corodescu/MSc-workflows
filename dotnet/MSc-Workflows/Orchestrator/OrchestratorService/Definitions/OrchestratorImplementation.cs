@@ -8,17 +8,13 @@ namespace OrchestratorService.Definitions
     public class OrchestratorImplementation : IOrchestratorImplementation
     {
         private readonly ILogger<OrchestratorImplementation> _logger;
-        private SidecarService.SidecarServiceClient firstStepClient;
-        private SidecarService.SidecarServiceClient secondStepClient;
 
-        public OrchestratorImplementation(ILogger<OrchestratorImplementation> logger)
+        private readonly IRequestRouter _requestRouter;
+
+        public OrchestratorImplementation(ILogger<OrchestratorImplementation> logger, IRequestRouter requestRouter)
         {
             _logger = logger;
-            var firstStepChannel = GrpcChannel.ForAddress("http://localhost:5003");
-            var secondStepChannel = GrpcChannel.ForAddress("http://localhost:5005");
-
-            this.firstStepClient = new SidecarService.SidecarServiceClient(firstStepChannel);
-            this.secondStepClient = new SidecarService.SidecarServiceClient(secondStepChannel);
+            _requestRouter = requestRouter;
         }
         public async Task<DataEventReply> ProcessDataEvent(DataEventRequest req)
         {
@@ -26,7 +22,11 @@ namespace OrchestratorService.Definitions
             if (string.IsNullOrEmpty(req.RequestId))
             {
                 _logger.LogInformation("Received empty request id, means external trigger");
-                // trigger the first step
+
+                var channel = await this._requestRouter.GetGrpcChannelForRequest("step1", req.Metadata.DataLocalization);
+
+                var client = new SidecarService.SidecarServiceClient(channel);
+                
                 var stepTriggerRequest = new StepTriggerRequest
                 {
                     Metadata = req.Metadata,
@@ -34,7 +34,7 @@ namespace OrchestratorService.Definitions
                 };
 
                 _logger.LogInformation("Triggering the first step computation");
-                var result = await firstStepClient.TriggerStepAsync(stepTriggerRequest);
+                var result = await client.TriggerStepAsync(stepTriggerRequest);
 
                 return new DataEventReply
                 {
@@ -43,13 +43,18 @@ namespace OrchestratorService.Definitions
             }
             if (req.RequestId == "test1")
             {
+                // TODO need to call the cluster state provider to get all the options for step 2
                 var stepTriggerRequest = new StepTriggerRequest
                 {
                     Metadata = req.Metadata,
                     RequestId = "test2"
                 };
 
-                var result = await secondStepClient.TriggerStepAsync(stepTriggerRequest);
+                var channel = await this._requestRouter.GetGrpcChannelForRequest("step2", req.Metadata.DataLocalization);
+
+                var client = new SidecarService.SidecarServiceClient(channel);
+                
+                var result = await client.TriggerStepAsync(stepTriggerRequest);
             }
 
             return new DataEventReply

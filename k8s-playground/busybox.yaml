@@ -1,22 +1,32 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: bb
+  name: busybox
 spec:
   selector:
     matchLabels:
-      app: bb
+      app: busybox
   template:
     metadata:
       labels:
-        app: bb
+        app: busybox
     spec:
       containers:
-      - name: bb
+      - name: busybox
         image: busybox:latest
-        args:
-        - sh
+        stdin: true
+        stdinOnce: true
+        tty: true
+        command: [ "/bin/bash", "-c", "--" ]
+        args: [ "while true; do sleep 30; done;" ]
         resources:
           limits:
             memory: "128Mi"
             cpu: "500m"
+        volumeMounts:
+          - mountPath: /test
+            name: test-volume
+      volumes:
+        - name: test-volume
+          hostPath:
+            path: /home/alin/sandbox/test

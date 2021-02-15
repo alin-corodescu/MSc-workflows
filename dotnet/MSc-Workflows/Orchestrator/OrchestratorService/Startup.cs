@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Commons;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -30,6 +27,10 @@ namespace OrchestratorService
             services.AddGrpc();
             services.AddGrpcReflection();
             services.AddSingleton<IOrchestratorImplementation, OrchestratorImplementation>();
+            services.AddSingleton<IClusterStateProvider, KubernetesClusterStateProvider>();
+            services.AddSingleton<IPodSelector, KubernetesPodSelector>();
+            services.AddSingleton<IGrpcChannelPool, GrpcChannelPool>();
+            services.AddSingleton<IRequestRouter, RequestRouter>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
