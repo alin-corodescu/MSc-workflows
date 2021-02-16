@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: orchestrator-pod
+  labels:
+    app: orchestrator-service
+spec:
+  containers:
+      - name: orchestrator-service
+        image: orchestrator-service:latest
+        imagePullPolicy: Never
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        env:
+          - name: ASPNETCORE_URLS
+            value: http://+:9376
+        ports:
+          - containerPort: 9376
+            protocol: TCP

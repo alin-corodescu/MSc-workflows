@@ -11,6 +11,7 @@ namespace TestGrpcService.Clients
 {
     public class OrchestratorServiceClient : IOrchestratorServiceClient
     {
+        private readonly ILogger<OrchestratorServiceClient> _logger;
         private readonly IConfiguration _configuration;
         private readonly IGrpcChannelPool _channelPool;
         private OrchestratorService.OrchestratorServiceClient _client;
@@ -18,6 +19,7 @@ namespace TestGrpcService.Clients
 
         public OrchestratorServiceClient(ILogger<OrchestratorServiceClient> logger, IConfiguration configuration, IGrpcChannelPool channelPool)
         {
+            _logger = logger;
             _configuration = configuration;
             _channelPool = channelPool;
 
@@ -25,6 +27,7 @@ namespace TestGrpcService.Clients
             var orchestratorServiceAddr = configuration["ORCHESTRATOR_SERVICE_HOST"];
             var port = configuration["ORCHESTRATOR_SERVICE_PORT"];
             
+            logger.LogInformation($"Orchestrator service add: {orchestratorServiceAddr}:{port}");
             var channel = GrpcChannel.ForAddress($"http://{orchestratorServiceAddr}:{port}");
             _client = new OrchestratorService.OrchestratorServiceClient(channel);
             this._stream = _client.NotifyDataAvailable();
