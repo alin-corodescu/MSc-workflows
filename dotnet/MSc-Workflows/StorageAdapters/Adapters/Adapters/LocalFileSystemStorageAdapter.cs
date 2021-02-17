@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Reflection.Metadata;
 using System.Threading.Tasks;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
@@ -18,10 +20,18 @@ namespace Definitions.Adapters
         private readonly ILogger<LocalFileSystemStorageAdapter> _logger;
         private readonly string _permanentStorageBasePath;
 
-        public LocalFileSystemStorageAdapter(IConfiguration configuration, ILogger<LocalFileSystemStorageAdapter> logger)
+        private IDataMasterService _dataMaster;
+        private IPeerPool _peerPool;
+
+        private ISet<Guid> _localFiles; 
+
+        public LocalFileSystemStorageAdapter(IDataMasterService dataMaster, IConfiguration configuration, ILogger<LocalFileSystemStorageAdapter> logger, IPeerPool peerPool)
         {
+            this._dataMaster = dataMaster;
             _logger = logger;
+            _peerPool = peerPool;
             _permanentStorageBasePath = configuration["StorageAdapter:PermStoragePath"];
+            _localFiles = new HashSet<Guid>();
         }
 
         /// <summary>
@@ -31,30 +41,28 @@ namespace Definitions.Adapters
         /// <returns><see cref="MetadataEvent"/> containing information about where in the "permanent" storage the file was stored</returns>
         public async Task<MetadataEvent> PushDataToStorage(string filePath)
         {
-            // TODO seems hard linking works because the inodes of the underlying filesystem are shared.
+            this._logger.LogInformation($"Pushing data to storage from: {filePath}");
+            var destinationFileNameGuid = Guid.NewGuid();
             
-            return await Task.Run(() =>
+            // TODO seems hard linking works because the inodes of the underlying filesystem are shared.
+            File.Copy(filePath, $"{_permanentStorageBasePath}/{destinationFileNameGuid}");
+            
+            this._logger.LogInformation($"The data in permanent storage is {_permanentStorageBasePath}/{destinationFileNameGuid}");
+            var localFileSystemMetadata = new LocalFileSystemMetadata
             {
-                this._logger.LogInformation($"Pushing data to storage from: {filePath}");
-                var destinationFileNameGuid = Guid.NewGuid();
-                // Copy the file from filePath to some permanent storage
-                File.Copy(filePath, $"{_permanentStorageBasePath}/{destinationFileNameGuid}");
-                
-                this._logger.LogInformation($"The data in permanent storage is {_permanentStorageBasePath}/{destinationFileNameGuid}");
-                var localFileSystemMetadata = new LocalFileSystemMetadata
-                {
-                    FileNameGuidBytes =
-                        ByteString.CopyFrom(destinationFileNameGuid.ToByteArray())
-                };
+                FileNameGuidBytes =
+                    ByteString.CopyFrom(destinationFileNameGuid.ToByteArray())
+            };
 
-                var metadata = Any.Pack(localFileSystemMetadata);
-                var @event = new MetadataEvent
-                {
-                    Metadata = metadata
-                };
+            var metadata = Any.Pack(localFileSystemMetadata);
+            var @event = new MetadataEvent
+            {
+                Metadata = metadata
+            };
 
-                return @event;
-            });
+            // Publish the information that the data chunk is now available
+            await _dataMaster.PublishFile(destinationFileNameGuid);
+            return @event;
         }
 
         /// <summary>
@@ -63,18 +71,31 @@ namespace Definitions.Adapters
         /// <param name="metadata">The metadata used to identify the </param>
         /// <param name="destinationPath"></param>
         /// <returns></returns>
-        public Task PullDataFromStorage(MetadataEvent metadata, string destinationPath)
-        {
-            return Task.Run(() =>
-            {
+        public async Task PullDataFromStorage(MetadataEvent metadata, string destinationPath)
+        { 
+            
                 var localFileSystemMetadata = metadata.Metadata.Unpack<LocalFileSystemMetadata>();
 
                 var filenameGuid = new Guid(localFileSystemMetadata.FileNameGuidBytes.ToByteArray());
 
-                var permanentStoragePath = $"{_permanentStorageBasePath}/{filenameGuid}";
+                if (this._localFiles.Contains(filenameGuid))
+                {
+                    var permanentStoragePath = $"{_permanentStorageBasePath}/{filenameGuid}";
 
-                File.Copy(permanentStoragePath, destinationPath);
-            });
+                    // TODO hard linking is a better option
+                    File.Copy(permanentStoragePath, destinationPath);
+                }
+                else
+                {
+                    // need to get the node ip of the hosting the data so I can actually get it from there
+                    var addr = await this._dataMaster.GetAddressForFile(filenameGuid);
+
+                    // Get the service for the peer hosting the data I am interested in
+                    var peer = this._peerPool.GetServiceForPeer(addr);
+
+                    // Download the data from the peer directly to the destination path
+                    await peer.DownloadDataFromPeer(filenameGuid, destinationPath);
+                }
         }
     }
 }
