@@ -56,3 +56,19 @@ The assumption that employing a microservice oriented architecture will have per
 
 
 Compute step: add one line to a particular file.
+
+
+
+------
+
+Define the proto files for the data medium communication
+Test this stuff in Kubernetes
+
+After that, I can focus on writing on my thesis.
+    Dump my ideas for the 
+        design
+        implementation sections
+        possible experiment structure
+
+Then I need to write some stuff about the background.
+    With fresh eyes, look through the motivation, background, etc.

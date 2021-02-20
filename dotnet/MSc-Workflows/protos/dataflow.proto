@@ -60,3 +60,43 @@ service StorageAdapter {
   
   rpc PullData (PullDataRequest) returns (PullDataReply);
 }
+
+message DataChunkAvailableRequest{
+  LocalFileSystemMetadata metadata = 1; 
+}
+
+message DataChunkAvailableReply {
+  bool isSuccess = 1;
+}
+
+message AddressRequest {
+  LocalFileSystemMetadata metadata = 1;
+}
+
+message AddressReply {
+  string address = 1;
+}
+
+// Service hosted by the master node of the data flow solution
+service DataMasterService {
+  // Consider using streaming instead. for better throughput.
+  rpc SignalDataChunkAvailable (DataChunkAvailableRequest) returns (DataChunkAvailableReply);
+  
+  rpc GetAddrForDataChunk (AddressRequest) returns (AddressReply);
+}
+
+message PeerDataRequest{
+  LocalFileSystemMetadata identifier = 1;
+}
+
+message PeerDataReplyChunk {
+  bytes payload = 1;
+  
+  // todo need to be be able to support streaming of data in multiple chunks
+}
+
+// Service hosted by every pod hosting some data for the data flow medium
+service DataPeerService {
+  // For a data request, returns a stream of chunks. Small sized-chunks
+  rpc GetData (PeerDataRequest) returns (stream PeerDataReplyChunk);
+}

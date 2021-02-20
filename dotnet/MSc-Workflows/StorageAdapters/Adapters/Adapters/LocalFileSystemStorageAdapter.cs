@@ -20,12 +20,12 @@ namespace Definitions.Adapters
         private readonly ILogger<LocalFileSystemStorageAdapter> _logger;
         private readonly string _permanentStorageBasePath;
 
-        private IDataMasterService _dataMaster;
+        private IDataMasterClient _dataMaster;
         private IPeerPool _peerPool;
 
         private ISet<Guid> _localFiles; 
 
-        public LocalFileSystemStorageAdapter(IDataMasterService dataMaster, IConfiguration configuration, ILogger<LocalFileSystemStorageAdapter> logger, IPeerPool peerPool)
+        public LocalFileSystemStorageAdapter(IDataMasterClient dataMaster, IConfiguration configuration, ILogger<LocalFileSystemStorageAdapter> logger, IPeerPool peerPool)
         {
             this._dataMaster = dataMaster;
             _logger = logger;
@@ -72,9 +72,8 @@ namespace Definitions.Adapters
         /// <param name="destinationPath"></param>
         /// <returns></returns>
         public async Task PullDataFromStorage(MetadataEvent metadata, string destinationPath)
-        { 
-            
-                var localFileSystemMetadata = metadata.Metadata.Unpack<LocalFileSystemMetadata>();
+        {
+            var localFileSystemMetadata = metadata.Metadata.Unpack<LocalFileSystemMetadata>();
 
                 var filenameGuid = new Guid(localFileSystemMetadata.FileNameGuidBytes.ToByteArray());
 

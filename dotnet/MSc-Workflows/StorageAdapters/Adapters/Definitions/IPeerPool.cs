@@ -1,3 +1,7 @@
+using System.Collections.Generic;
+using Grpc.Net.Client;
+using Microsoft.Extensions.Configuration;
+
 namespace Workflows.StorageAdapters.Definitions
 {
     /// <summary>
@@ -10,6 +14,36 @@ namespace Workflows.StorageAdapters.Definitions
         /// </summary>
         /// <param name="addr">the address at which the peer is reachable</param>
         /// <returns></returns>
-        public IPeerDataNodeService GetServiceForPeer(string addr);
+        public IPeerDataNodeServiceClient GetServiceForPeer(string addr);
+    }
+
+    class PeerPool : IPeerPool
+    {
+        private readonly IConfiguration _configuration;
+        private Dictionary<string, IPeerDataNodeServiceClient> _peerPool;
+
+        public PeerPool(IConfiguration configuration)
+        {
+            _configuration = configuration;
+            _peerPool = new Dictionary<string, IPeerDataNodeServiceClient>();
+        }
+
+        public IPeerDataNodeServiceClient GetServiceForPeer(string addr)
+        {
+            if (_peerPool.ContainsKey(addr))
+            {
+                return _peerPool[addr];
+            }
+            else
+            {
+                var grpcChannel = GrpcChannel.ForAddress(addr);
+                
+                var newClient = new PeerDataNodeServiceClient(grpcChannel);
+
+                _peerPool[addr] = newClient;
+
+                return newClient;
+            }
+        }
     }
 }
