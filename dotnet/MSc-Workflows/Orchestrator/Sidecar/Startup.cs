@@ -1,4 +1,5 @@
 ﻿using System;
+using Commons;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -31,7 +32,7 @@ namespace TestGrpcService
             services.AddSingleton<IDataSourceAdapter, LocalFileSystemClient>();
             services.AddSingleton<IDataSinkAdapter, LocalFileSystemClient>();
             services.AddSingleton<IOrchestratorServiceClient, OrchestratorServiceClient>();
-
+            services.AddSingleton<IGrpcChannelPool, GrpcChannelPool>();
             services.AddSingleton<ISidecar, Sidecar>();
             
             Console.WriteLine($"Config: {Configuration["Sidecar:InputPath"]}");

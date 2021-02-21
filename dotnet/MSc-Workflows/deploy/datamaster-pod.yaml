@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: orchestrator-pod
+  name: datamaster-pod
   labels:
-    app: orchestrator
+    app: datamaster
 spec:
   containers:
-      - name: orchestrator-service
-        image: orchestrator-service:latest
+      - name: data-master
+        image: data-master:latest
         imagePullPolicy: Never
         resources:
           limits:
@@ -15,7 +15,7 @@ spec:
             cpu: "500m"
         env:
           - name: ASPNETCORE_URLS
-            value: http://+:9376
+            value: http://+:9377
         ports:
-          - containerPort: 9376
+          - containerPort: 9377
             protocol: TCP

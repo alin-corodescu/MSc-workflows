@@ -26,6 +26,8 @@ namespace DataMaster
         {            
             services.AddGrpc();
             services.AddGrpcReflection();
+
+            services.AddSingleton<IDataChunkLedger, DataChunkLedger>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -39,8 +41,9 @@ namespace DataMaster
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>
-            {
-                // endpoints.MapGrpcService<GreeterService>();
+            {                
+                endpoints.MapGrpcReflectionService();
+                endpoints.MapGrpcService<DataMasterService>();
 
                 endpoints.MapGet("/",
                     async context =>

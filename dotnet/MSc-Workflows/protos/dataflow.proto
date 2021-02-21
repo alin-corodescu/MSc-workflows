@@ -26,7 +26,7 @@ message DataLocalization {
 
 // Metadata used by the local file system adapter
 message LocalFileSystemMetadata {
-  bytes fileNameGuidBytes = 1;
+  string fileName = 1;
 }
 
 // Request for pushing data
@@ -63,6 +63,7 @@ service StorageAdapter {
 
 message DataChunkAvailableRequest{
   LocalFileSystemMetadata metadata = 1; 
+  string address = 2;
 }
 
 message DataChunkAvailableReply {

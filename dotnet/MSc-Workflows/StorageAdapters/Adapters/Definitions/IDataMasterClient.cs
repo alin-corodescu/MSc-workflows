@@ -17,9 +17,9 @@ namespace Workflows.StorageAdapters.Definitions
         /// <summary>
         /// Returns the ip address of the host/ pod hosting the data identified by the guid passed as parameter
         /// </summary>
-        /// <param name="fileGuid">The guid identifying the data</param>
+        /// <param name="fileName">The name of the file</param>
         /// <returns>The ip address of the host/ pod hosting the data</returns>
-        public Task<string> GetAddressForFile(Guid fileGuid);
+        public Task<string> GetAddressForFile(string fileName);
 
         /// <summary>
         /// Lets the data master know the piece of data identified by the guid passed as parameter is available
@@ -27,7 +27,7 @@ namespace Workflows.StorageAdapters.Definitions
         /// </summary>
         /// <param name="fileGuid">The identifier for the data chunk available on this node</param>
         /// <returns></returns>
-        public Task PublishFile(Guid fileGuid);
+        public Task PublishFile(string fileName);
     }
 
     class DataMasterClient : IDataMasterClient
@@ -35,26 +35,28 @@ namespace Workflows.StorageAdapters.Definitions
         private readonly IConfiguration _configuration;
         private readonly ILogger<DataMasterClient> _logger;
         private DataMasterService.DataMasterServiceClient _client;
+        private string _addr;
 
         public DataMasterClient(IConfiguration configuration, ILogger<DataMasterClient> logger)
         {
             _configuration = configuration;
             _logger = logger;
             
-            // take the address of the service via environment varaibles (look for the data master service)
-
-            var grpcChannel = GrpcChannel.ForAddress("");
+            var orchestratorServiceAddr = configuration["DATAMASTER_SERVICE_HOST"];
+            var port = configuration["DATAMASTER_SERVICE_PORT"];
+            _addr = configuration["NODE_IP"];
+            var grpcChannel = GrpcChannel.ForAddress($"http://{orchestratorServiceAddr}:{port}");
 
             _client = new DataMasterService.DataMasterServiceClient(grpcChannel);
         }
 
-        public async Task<string> GetAddressForFile(Guid fileGuid)
+        public async Task<string> GetAddressForFile(string name)
         {
             var addressRequest = new AddressRequest
             {
                 Metadata = new LocalFileSystemMetadata
                 {
-                    FileNameGuidBytes = ByteString.CopyFrom(fileGuid.ToByteArray())
+                    FileName = name
                 }
             };
 
@@ -63,15 +65,18 @@ namespace Workflows.StorageAdapters.Definitions
             return result.Address;
         }
 
-        public async Task PublishFile(Guid fileGuid)
+        public async Task PublishFile(string fileName)
         {
             var request = new DataChunkAvailableRequest
             {
                 Metadata = new LocalFileSystemMetadata
                 {
-                    FileNameGuidBytes = ByteString.CopyFrom(fileGuid.ToByteArray())
-                }
+                    FileName = fileName
+                    
+                },
+                Address = _addr
             };
+            
             await _client.SignalDataChunkAvailableAsync(request);
         }
     }

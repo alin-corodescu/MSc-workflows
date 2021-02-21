@@ -14,7 +14,7 @@ namespace DummyComputeStep.ExampleSteps
         public DummyStep(IConfiguration configuration)
         {
             this.outputPath = configuration["ComputeStep:OutputPath"];
-            this.stepId = configuration["ComputeStep:StepId"];
+            this.stepId = configuration["POD_NAME"];
         }
         
         public async IAsyncEnumerable<ComputeStepReply> TriggerCompute(ComputeStepRequest request)
@@ -23,7 +23,7 @@ namespace DummyComputeStep.ExampleSteps
 
             var transformed = input + $"\n Dummy step {stepId} was here";
 
-            var outputFilePath = $"{this.outputPath}/Step{stepId}";
+            var outputFilePath = $"{this.outputPath}/Step_{stepId}";
             await File.WriteAllTextAsync(outputFilePath, transformed);
             var reply = new ComputeStepReply
             {

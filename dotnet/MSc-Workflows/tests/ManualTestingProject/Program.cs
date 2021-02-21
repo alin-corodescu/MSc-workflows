@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Net.Client;
 using Workflows.Models;
 using Workflows.Models.DataEvents;
@@ -11,19 +12,22 @@ namespace ManualTestingProject
     {
         static void Main(string[] args)
         {
-
-            var storageChannel = GrpcChannel.ForAddress("http://localhost:5001");
-            var storageClient = new StorageAdapter.StorageAdapterClient(storageChannel);
-
-            var orchestrationChannel = GrpcChannel.ForAddress("http://localhost:5002");
-            var orchestrationClient = new OrchestratorService.OrchestratorServiceClient(orchestrationChannel);
             
-            File.WriteAllText("/tmp/workflows/input.txt", "Hello World!");
+            var orchestrationChannel = GrpcChannel.ForAddress("http://localhost:9000");
+            var orchestrationClient = new OrchestratorService.OrchestratorServiceClient(orchestrationChannel);
 
-            var pushResponse = storageClient.PushData(new PushDataRequest
+            var localFSMetadata = new LocalFileSystemMetadata
             {
-                SourceFilePath = "/tmp/workflows/input.txt"
-            });
+                FileName = "25bf71dc-0230-4ef9-9a4b-7b9f596ee9f2"
+            };
+            
+            var pushResponse = new PushDataReply
+            {
+                GeneratedMetadata = new MetadataEvent
+                {
+                    Metadata = Any.Pack(localFSMetadata)
+                }
+            };
 
             var stream = orchestrationClient.NotifyDataAvailable();
             var dataEventRequest = new DataEventRequest

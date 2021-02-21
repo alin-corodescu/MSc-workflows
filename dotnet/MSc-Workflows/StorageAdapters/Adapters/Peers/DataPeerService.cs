@@ -18,22 +18,22 @@ namespace StorageAdapters.Peers
         private IConfiguration _configuration;
 
         private string _permStorageBasePath;
+        private string _addr;
 
         public DataPeerService(ILogger<DataPeerService> logger, IConfiguration configuration)
         {
             _logger = logger;
             _configuration = configuration;
+            _addr = configuration["NODE_IP"];
             _permStorageBasePath = configuration["StorageAdapter:PermStoragePath"];
         }
 
 
         public override async Task GetData(PeerDataRequest request, IServerStreamWriter<PeerDataReplyChunk> responseStream, ServerCallContext context)
         {
-            var fileNameGuid = new Guid(request.Identifier.FileNameGuidBytes.ToByteArray());
-
-            var fileBytes = await File.ReadAllBytesAsync($"{_permStorageBasePath}/{fileNameGuid}");
+            var fileBytes = await File.ReadAllBytesAsync($"{_permStorageBasePath}/{request.Identifier.FileName}");
             
-            _logger.LogInformation($"Serving the file at: {_permStorageBasePath}/{fileNameGuid}");
+            _logger.LogInformation($"Serving the file at: {_permStorageBasePath}/{request.Identifier.FileName}");
             var peerDataReplyChunk = new PeerDataReplyChunk
             {
                 Payload = ByteString.CopyFrom(fileBytes)

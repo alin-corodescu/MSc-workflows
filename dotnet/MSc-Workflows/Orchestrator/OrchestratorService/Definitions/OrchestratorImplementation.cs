@@ -43,13 +43,14 @@ namespace OrchestratorService.Definitions
             }
             if (req.RequestId == "test1")
             {
-                // TODO need to call the cluster state provider to get all the options for step 2
+                _logger.LogInformation("Received request id == test1, meaning we need to trigger step2");
                 var stepTriggerRequest = new StepTriggerRequest
                 {
                     Metadata = req.Metadata,
                     RequestId = "test2"
                 };
 
+                
                 var channel = await this._requestRouter.GetGrpcChannelForRequest("step2", req.Metadata.DataLocalization);
 
                 var client = new SidecarService.SidecarServiceClient(channel);

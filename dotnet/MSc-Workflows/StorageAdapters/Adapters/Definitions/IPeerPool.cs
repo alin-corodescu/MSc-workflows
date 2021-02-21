@@ -36,7 +36,9 @@ namespace Workflows.StorageAdapters.Definitions
             }
             else
             {
-                var grpcChannel = GrpcChannel.ForAddress(addr);
+                // 5001 is the standard port for the data service
+                var grpcAddr = $"http://{addr}:5001";
+                var grpcChannel = GrpcChannel.ForAddress(grpcAddr);
                 
                 var newClient = new PeerDataNodeServiceClient(grpcChannel);
 

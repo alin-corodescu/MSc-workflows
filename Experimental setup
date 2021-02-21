@@ -1,0 +1,33 @@
+Experimental setup:
+
+For the data solution:
+
+    1 data master service
+    1 data master pod
+    2 data peer pod
+
+
+1. Copy data into the first data pod manually
+2. Using GRPCUI + Kubeproxy, register the piece of data into the data master (under the ip of the data pod 1)
+3. From Data pod2, request a the file just added to data pod1.
+
+
+For the experimental setup of the workflow:
+    1 data master (Service + Pod)
+    1 orchestrator (Service + Pod)
+    1 data peer pod (DaemonSet)
+
+    2 compute steps
+        One with label = step1,
+        One with label = step2.
+
+
+To differentiate between compute steps, I can use the pod name (injected as an env variable to the code)
+
+1. copy data into the data peer pod manually
+2. Register the piece of data into the data master under the node_ip 
+3. using GRPCUI + port-forward, trigger a workflow on the Orchestrator service (by putitng the metadata in there and a request id == ""
+4. At the end, I should see the output in perm_storage: with Hello World! Step1 was here, step2 was here.
+
+This will also ensure that the data master service is working to some degree
+

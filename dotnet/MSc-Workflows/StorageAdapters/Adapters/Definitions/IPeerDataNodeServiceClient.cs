@@ -19,7 +19,7 @@ namespace Workflows.StorageAdapters.Definitions
         /// <param name="remoteFileIdentifier">The identifier of the data chunk on the remote node</param>
         /// <param name="targetLocalPath">The local path at which to download the data chunk</param>
         /// <returns></returns>
-        public Task DownloadDataFromPeer(Guid remoteFileIdentifier, string targetLocalPath);
+        public Task DownloadDataFromPeer(string remoteFileIdentifier, string targetLocalPath);
     }
 
     public class PeerDataNodeServiceClient : IPeerDataNodeServiceClient
@@ -31,13 +31,13 @@ namespace Workflows.StorageAdapters.Definitions
             client = new DataPeerService.DataPeerServiceClient(channel);
         }
 
-        public async Task DownloadDataFromPeer(Guid remoteFileIdentifier, string targetLocalPath)
+        public async Task DownloadDataFromPeer(string remoteFileIdentifier, string targetLocalPath)
         {
             var dataRequest = new PeerDataRequest
             {
                 Identifier = new LocalFileSystemMetadata
                 {
-                    FileNameGuidBytes = ByteString.CopyFrom(remoteFileIdentifier.ToByteArray())
+                    FileName = remoteFileIdentifier
                 }
             };
 

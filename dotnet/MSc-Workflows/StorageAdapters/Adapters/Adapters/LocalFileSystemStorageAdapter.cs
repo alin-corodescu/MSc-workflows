@@ -23,7 +23,7 @@ namespace Definitions.Adapters
         private IDataMasterClient _dataMaster;
         private IPeerPool _peerPool;
 
-        private ISet<Guid> _localFiles; 
+        private ISet<string> _localFiles; 
 
         public LocalFileSystemStorageAdapter(IDataMasterClient dataMaster, IConfiguration configuration, ILogger<LocalFileSystemStorageAdapter> logger, IPeerPool peerPool)
         {
@@ -31,7 +31,7 @@ namespace Definitions.Adapters
             _logger = logger;
             _peerPool = peerPool;
             _permanentStorageBasePath = configuration["StorageAdapter:PermStoragePath"];
-            _localFiles = new HashSet<Guid>();
+            _localFiles = new HashSet<string>();
         }
 
         /// <summary>
@@ -50,8 +50,7 @@ namespace Definitions.Adapters
             this._logger.LogInformation($"The data in permanent storage is {_permanentStorageBasePath}/{destinationFileNameGuid}");
             var localFileSystemMetadata = new LocalFileSystemMetadata
             {
-                FileNameGuidBytes =
-                    ByteString.CopyFrom(destinationFileNameGuid.ToByteArray())
+                FileName =  destinationFileNameGuid.ToString()
             };
 
             var metadata = Any.Pack(localFileSystemMetadata);
@@ -61,7 +60,7 @@ namespace Definitions.Adapters
             };
 
             // Publish the information that the data chunk is now available
-            await _dataMaster.PublishFile(destinationFileNameGuid);
+            await _dataMaster.PublishFile(destinationFileNameGuid.ToString());
             return @event;
         }
 
@@ -74,27 +73,25 @@ namespace Definitions.Adapters
         public async Task PullDataFromStorage(MetadataEvent metadata, string destinationPath)
         {
             var localFileSystemMetadata = metadata.Metadata.Unpack<LocalFileSystemMetadata>();
+            
+            if (this._localFiles.Contains(localFileSystemMetadata.FileName))
+            {
+                var permanentStoragePath = $"{_permanentStorageBasePath}/{localFileSystemMetadata.FileName}";
 
-                var filenameGuid = new Guid(localFileSystemMetadata.FileNameGuidBytes.ToByteArray());
+                // TODO hard linking is a better option
+                File.Copy(permanentStoragePath, destinationPath);
+            }
+            else
+            {
+                // need to get the node ip of the hosting the data so I can actually get it from there
+                var addr = await this._dataMaster.GetAddressForFile(localFileSystemMetadata.FileName);
 
-                if (this._localFiles.Contains(filenameGuid))
-                {
-                    var permanentStoragePath = $"{_permanentStorageBasePath}/{filenameGuid}";
+                // Get the service for the peer hosting the data I am interested in
+                var peer = this._peerPool.GetServiceForPeer(addr);
 
-                    // TODO hard linking is a better option
-                    File.Copy(permanentStoragePath, destinationPath);
-                }
-                else
-                {
-                    // need to get the node ip of the hosting the data so I can actually get it from there
-                    var addr = await this._dataMaster.GetAddressForFile(filenameGuid);
-
-                    // Get the service for the peer hosting the data I am interested in
-                    var peer = this._peerPool.GetServiceForPeer(addr);
-
-                    // Download the data from the peer directly to the destination path
-                    await peer.DownloadDataFromPeer(filenameGuid, destinationPath);
-                }
+                // Download the data from the peer directly to the destination path
+                await peer.DownloadDataFromPeer(localFileSystemMetadata.FileName, destinationPath);
+            }
         }
     }
 }

@@ -27,6 +27,9 @@ namespace StorageAdapters
         {
             services.AddGrpc();
             services.AddGrpcReflection();
+
+            services.AddSingleton<IDataMasterClient, DataMasterClient>();
+            services.AddSingleton<IPeerPool, PeerPool>();
             services.AddSingleton<IStorageAdapter, LocalFileSystemStorageAdapter>();
             
         }

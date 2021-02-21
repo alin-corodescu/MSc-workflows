@@ -61,6 +61,20 @@ Compute step: add one line to a particular file.
 
 ------
 
+IDEA: compare GRPC streaming with non-streaming solution.
+IDEA: compare channel sharing with non-channel sharing solution.
+
+The above are made possible through shared containers.
+
+
+MQTT vs GRPC RPC.
+What is edge specific about my implementation?
+
+
+Word the purpose of the thesis as optimizing different layers, with the end-goal of:
+    Supporting edge workloads
+    Offseting the container
+    
 Define the proto files for the data medium communication
 Test this stuff in Kubernetes
 

@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -31,13 +32,15 @@ namespace TestGrpcService
         {
             var metadata = request.Metadata;
             var reqId = request.RequestId;
-            var targetPath = $"{_inputPath}/{Guid.NewGuid()}";
+
+            var fileName = Guid.NewGuid().ToString();
+            var targetPathForDataDaeomn = $"/store/inputs/{fileName}";
             // 1. Ask the data source to download the data.
-            _logger.LogInformation($"Downloading data from the data source. TargetPath = {targetPath}");
+            _logger.LogInformation($"Downloading data from the data source. TargetPath = {targetPathForDataDaeomn}");
             var pullDataRequest = new PullDataRequest
             {
                 Metadata = metadata,
-                TargetPath = targetPath
+                TargetPath = targetPathForDataDaeomn
             };
             await _dataSource.DownloadData(pullDataRequest);
             
@@ -45,17 +48,22 @@ namespace TestGrpcService
 
             var computeStepRequest = new ComputeStepRequest
             {
-                LocalPath = targetPath
+                LocalPath = $"/in/{fileName}"
             };
 
             _logger.LogInformation("Triggered the compute step, awaiting responses");
             await foreach (var response in _computeStep.TriggerCompute(computeStepRequest))
             {
-                _logger.LogInformation("Publishing data to the data sink");
                 // TODO these calls do not need to be awaited actually. We could parallelize the work across multiple files.
+                //response.OutputFilePath
+                // the compute step request contains the data in a format that the compute step understood
+                // /out/{filename}
+                
+                var fName = Path.GetFileName(response.OutputFilePath);
+                _logger.LogInformation($"Publishing data to the data sink /store/outputs/{fName}");
                 var reply = await _dataSink.PushData(new PushDataRequest
                 {
-                    SourceFilePath = response.OutputFilePath
+                    SourceFilePath = $"/store/outputs/{fName}"
                 });
 
                 _logger.LogInformation("Publishing metadata to the orchestrator service");
