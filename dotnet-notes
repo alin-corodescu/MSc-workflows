@@ -1,20 +1,3 @@
-1. Need to create the GRPC service for pushing/ retrieving data. - DONE
-2. Hook it up to an ASP.NET program. -- via the dependency injection mechanism
-3. Create a docker image from that guy
-4. Deploy it as part of Kubernetes
-
-Attach pods
-
-
-Generate the GRPC client for the storage adapter
-Write the side car logic:
-    -> GRPC server for processing a request coming from the orchestrator
-    -> GRPC client for sending a request to the storage adapter
-
-GRPC definition for SideCar <-> Compute step communication
-GRPC client for calling into the Orchestrator to signal data avaialble.
-
-
 Orchestrator logic:
     Sends a request to one of the compute steps
 
@@ -56,7 +39,6 @@ The assumption that employing a microservice oriented architecture will have per
 
 
 Compute step: add one line to a particular file.
-
 
 
 ------

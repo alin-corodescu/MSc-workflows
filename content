@@ -1,0 +1,65 @@
+Intro & Background:
+
+Story:
+    High level definition of a workflow for our thesis (just enough so the story makes sense)
+    Starting from the assumption that containerizing workflows can have a detrimental effect to performance due to the need of data serialization 
+    Keep the advantages of containerizing workflows while, at the same time, optimize as much as possible
+    Build on top and using the considerents from other works (isolate components to be able to capture stuff in a DSL)
+
+    In a data-intensive disitributed system, especially one that's geographically distributed, ensuring data is processed as close to the source provides a great benefit to the overall throughtput and performance of the system.
+    Lifecycle management, especially in the context of edge computing - continous streams of data.
+
+    Data flow solution: 
+        Data adatpers for different data storage solutions:
+        Using different data storage adapters allowing us to have data adapters that can be plugged in by the user as long as they adhere to an interface.
+        Is this actually part of the story or just a side-effect of the chosen design? -- consider it a side effect of the chosen side effect with nice-to have part of the artifact. Include it in the artifact summary at the end.
+
+    Requirements:
+
+    Some requirements are easily measurable: Bandwidth used, Performance E2E
+    Others are requirements inherited from the other solutions: 
+        -> Keep being able to use multiple techs across steps and 
+    
+    Requirements for the thesis: 
+        -> Comparative perf/bandwidth analysis between different design/implementation decisions
+        -> Example workflow to showcase the E2E benefits of the proposed implementation.
+
+
+Design
+Why Kubernetes - abstracts the hardware away for us, and allows us to orchestrate the workflows over heterogenous hardware.
+
+List challenges here (taxonomy - like the challenges with Control plane, data plane)
+Microservices architecture
+    Separation of concerns + the benefits.
+Data locality design part. 
+
+
+Implementation
+
+Kubernetes abstractions used (Services, Daemon sets)
+IDL = Protobuf - a good option for 
+Transport: REST over HTTP, gRPC over HTTP2, MQTT
+Implemented optimizations:
+    Shared containers
+    Hard linking vs copying the files around on the same host
+        Explain why this works in the context of containers
+    Data locality
+    GRPC streaming vs non-streaming solution
+    GRPC channel pool
+
+Experiments
+
+What is the benefit of local improvements in the overall picture: where is the time spent basically - am I optimizing the correct things?
+    Prove my theory about what needs to be optimized.
+
+
+Baseline to compare against for the assumption that containerizing workflows can have a detrimental effect -- a single workflow with all steps inlined in the same process. 
+
+Understand local benefits, but to also understand the overall picture, propose a workflow and measure the final numbers (
+    Bandwidth used,
+    Throghput,
+    Latency
+)
+
+
+
