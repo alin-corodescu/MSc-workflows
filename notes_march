@@ -1,0 +1,39 @@
+1. Split up the solution file into multiple, smaller ones.
+    To easier work with them.
+
+
+2. Diagrams, etc. explain the solution in a lot of detail.
+    Explain with a diagram where the routing decision happens and what are the parameters that influence that decision.
+        Explain/.
+5. Run and document the Experiments
+    Collect them from everywhere
+7. Example workflow: both data intensive and control flow intensive.
+8. Data locality that actually works
+
+
+3. Need to add references to all chapters
+4. Fill in the background chapter
+    -> Need to figure out the final sections - what will I go into? Perhaps edge taxonomy would be an interesting aspect to get into.
+    -> Communication protocols in between microservices
+    -> Data locality.
+    -> Related works study, in relation with support for data locality, shared containers, edge support
+        -> Might need to add more:
+            Data locality in the cloud is one thing, data locality in the edge is an entirely different hting and treating the edge/ cloud as a computing continuum instead of 
+
+6. Update the intro section
+
+
+
+7. What's left in the implementation part:
+    Thread safety.
+        in the control plane components    
+    Keeping track of busy steps.
+        Gathering data about the current load on a node.
+        Might need to add some stuf
+        f in the design and implemnetation section (if I implement it as a DaeomonSet)
+    Data locality
+    Request queueing
+    Workflow specification language.
+    Gathering the data I need
+    
+    

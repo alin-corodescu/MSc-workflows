@@ -1,0 +1,54 @@
+For the implementation part of it:
+    -> ASP.NET
+        -> How we separated the transport from the logic that needs to be performed to support experimentation without GRPC vs REST or even file communications.
+
+
+    -> Kubernetes
+        -> Go into some details about some of these abstractions, and how we use them. 
+        -> explain what we are using - not only the deployment tech, but we are also leveraging it for runtime concerns.
+        -> 
+    -> Docker as the solution for containerization
+        -> Perhaps dockerfile?
+
+    -> GRPC vs REST vs File communication.
+        -> Why did we choose GRPC (IDL)
+        -> Explain the difference between IDL, Serialization and Transport. [add a figure here]
+
+    -> Explain the Protobuf IDL.
+        -> Copy paste some of the interface definitions when I explain what are the expectation of different components.
+        
+    -> Explain HTTP connection pooling
+        -> Links to how TCP and HTTPS require multiple rountrips to establish a connection.
+        -> This roundtrip time is even exacerbated for data locality 
+        -> Service mesh / possible through shared containers.
+
+    -> Explain the expected behaviour of the user injected components:
+        -> Data solution should copy stuff locally where instructed
+        -> Data flowing is only flowing in the forms of files - nothing else
+                -> Can eventually become a problem due to requirement to write to the file to disk
+                -> Link to shimmy?
+        -> Compute step:
+            -> Able to read the file
+            -> Must implement the GRPC contract for the compute step and expose a server on the port
+
+    -> Data solution:
+        -> Explain hard linking vs copying as a way to further improve communication
+        -> Explain why we chose to implement this data solution -> for data locality
+            -> Role of the data master.
+        -> Kubernetes volumes and their setup in relation to the hosting node.
+        -> Scratchpad data.
+
+    -> Control plane:
+        -> Request queueing
+        -> Workflow specification - how are workflows specified in this primitive framework
+            -> Figure explaining each component in detail : central orchestrator with request queueing. 
+        -> Data locality:
+            -> How the decision is taken
+            -> Highlight how the computation is now effectively a continuum, as the data will be routed to 
+        -> Sidecar
+            -> How it passes the data to the data adapter for it to copy locally. 
+
+    -> Explain the flow of a piece of data through the system the same way I explaine it when I gave the demo.
+
+
+Shoudl I call out more design and implementation flaws? perahps only if related to the targets I'm after.

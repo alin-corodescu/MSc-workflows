@@ -1,0 +1,53 @@
+    Service choregraphy vs orchestration.
+
+    SDK vs Microservices.
+        Who owns what?
+        Compute shipping, and software packaging - so the deployment and provisioning aspect can be handled by the orchestration systems
+        
+    Scalable solution.
+        -> Describe the work from Yared and Flyte
+
+    Interface descriptions - and what they need to accomplish
+        -> at a high level, what is the information contained in the payload.
+        -> needed to offer basic functionality, as well as advanced functionalities.
+
+
+    Data plane:
+        -> Data adapter
+
+    Compute plane:
+        -> the compute steps. Pretty isolated from the rest of the components. it needs to be ready to accept triggers from the sidecar. 
+        -> 
+
+    Control plane:
+        -> Sidecar / Helper component communicating with the compute step and data adapter
+        -> Central orchestrator
+            -> The centrail "brain" ensuring the steps are executed in the correct order
+
+    Data locality:
+        
+        Data locality model
+            -> Needs to support the entire continuum.
+            -> Where is it added (to what control flow messages) and where is it used.
+
+        Request routing:
+            -> The multi-optimization problem we are facing.
+
+    Shared containers: 
+        Shared containers is a central part in the control plane as the orchestrator assumes the existence of certain containers and the scheduling of a piece of work is not tied to the infrastructure provisioning to be able to start.
+            Potentially, discuss the other options here and propose a better best-of-both worlds approach where the container is actually dynamically provisioned but also stays alive for more than one request.
+            Elastic provisioning of more containers if needed.
+    Provsinioning:
+        Opting for a primitive operation.
+
+        
+
+
+
+
+    
+    
+For each design/ implementation decision:
+    Why is this component needed ?
+    How? 
+    What are the alternatives?

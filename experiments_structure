@@ -1,0 +1,11 @@
+
+Experiments:
+    -> For each experiment set up the environment,
+    -> Explain the tools used to gather the data and visualize the gathered Data
+    
+    -> Showcase failing over to other regions
+    -> Data locality on vs data locality off.
+    -> GRPC vs REST
+    -> HTTP connection pooling.
+    -> Bandwidth savings.
+    -> 
