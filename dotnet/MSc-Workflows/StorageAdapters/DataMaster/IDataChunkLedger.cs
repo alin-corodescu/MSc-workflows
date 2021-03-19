@@ -1,7 +1,11 @@
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace DataMaster
 {
+    /// <summary>
+    /// Interface for classes that can keep track of the data that flows through the system.
+    /// </summary>
     public interface IDataChunkLedger
     {
         public string GetAddressForFileName(string fileName);
@@ -11,7 +15,7 @@ namespace DataMaster
 
     class DataChunkLedger : IDataChunkLedger
     {
-        private Dictionary<string, string> dataChunkLedger = new Dictionary<string, string>();
+        private ConcurrentDictionary<string, string> dataChunkLedger = new();
 
         public string GetAddressForFileName(string fileName)
         {

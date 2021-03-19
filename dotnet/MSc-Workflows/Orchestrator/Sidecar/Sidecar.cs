@@ -28,6 +28,7 @@ namespace TestGrpcService
             _logger = logger;
             this._inputPath = configuration["Sidecar:InputPath"];
         }
+        
         public async Task<StepTriggerReply> TriggerStep(StepTriggerRequest request)
         {
             var metadata = request.Metadata;
@@ -35,6 +36,7 @@ namespace TestGrpcService
 
             var fileName = Guid.NewGuid().ToString();
             var targetPathForDataDaeomn = $"/store/inputs/{fileName}";
+            
             // 1. Ask the data source to download the data.
             _logger.LogInformation($"Downloading data from the data source. TargetPath = {targetPathForDataDaeomn}");
             var pullDataRequest = new PullDataRequest

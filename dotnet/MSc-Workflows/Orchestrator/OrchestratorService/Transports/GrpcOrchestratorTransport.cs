@@ -16,6 +16,7 @@ namespace OrchestratorService.Transports
         public override async Task NotifyDataAvailable(IAsyncStreamReader<DataEventRequest> requestStream, IServerStreamWriter<DataEventReply> responseStream,
             ServerCallContext context)
         {
+            //  todo this is bad from the perspective of streaming.
             while (await requestStream.MoveNext())
             {
                 var req = requestStream.Current;

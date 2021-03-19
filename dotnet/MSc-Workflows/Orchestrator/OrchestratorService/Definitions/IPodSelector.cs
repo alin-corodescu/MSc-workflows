@@ -24,6 +24,7 @@ namespace OrchestratorService.Definitions
     {
         public async Task<V1Pod> SelectBestPod(IEnumerable<V1Pod> possibleTargets, DataLocalization dataLocalization)
         {
+            // TODO here I need to implement the data locality logic.
             return await Task.FromResult(possibleTargets.First());
         }
     }

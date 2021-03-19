@@ -21,6 +21,7 @@ namespace TestGrpcService.Clients
             
             _logger.LogInformation($"Connecting to the nodeip: {addr}");
             var channel = channelPool.GetChannelForAddress($"http://{addr}:5001");
+            
             this._client = new StorageAdapter.StorageAdapterClient(channel);
         }
         public async Task<PushDataReply> PushData(PushDataRequest metadata)

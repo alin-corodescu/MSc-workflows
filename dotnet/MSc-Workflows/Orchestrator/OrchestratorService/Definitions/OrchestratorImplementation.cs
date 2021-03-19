@@ -19,6 +19,8 @@ namespace OrchestratorService.Definitions
         public async Task<DataEventReply> ProcessDataEvent(DataEventRequest req)
         {
 
+            // todo HERE I need to add the request queueing 
+            // todo workflow specification + following the specification 
             if (string.IsNullOrEmpty(req.RequestId))
             {
                 _logger.LogInformation("Received empty request id, means external trigger");

@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
@@ -20,12 +21,12 @@ namespace Workflows.StorageAdapters.Definitions
     class PeerPool : IPeerPool
     {
         private readonly IConfiguration _configuration;
-        private Dictionary<string, IPeerDataNodeServiceClient> _peerPool;
+        private ConcurrentDictionary<string, IPeerDataNodeServiceClient> _peerPool;
 
         public PeerPool(IConfiguration configuration)
         {
             _configuration = configuration;
-            _peerPool = new Dictionary<string, IPeerDataNodeServiceClient>();
+            _peerPool = new ConcurrentDictionary<string, IPeerDataNodeServiceClient>();
         }
 
         public IPeerDataNodeServiceClient GetServiceForPeer(string addr)

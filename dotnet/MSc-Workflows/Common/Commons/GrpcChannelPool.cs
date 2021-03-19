@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Grpc.Net.Client;
 
@@ -8,11 +9,11 @@ namespace Commons
     /// </summary>
     public class GrpcChannelPool : IGrpcChannelPool
     {
-        private Dictionary<string, GrpcChannel> pool;
+        private ConcurrentDictionary<string, GrpcChannel> pool;
 
         public GrpcChannelPool()
         {
-            this.pool = new Dictionary<string, GrpcChannel>();
+            this.pool = new ConcurrentDictionary<string, GrpcChannel>();
         }
         
         public GrpcChannel GetChannelForAddress(string addr)
