@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OrchestratorService.Definitions;
 using OrchestratorService.Transports;
+using OrchestratorService.WorkflowSpec;
+using OrchestratorService.WorkTracking;
 
 namespace OrchestratorService
 {
@@ -26,11 +28,14 @@ namespace OrchestratorService
         {
             services.AddGrpc();
             services.AddGrpcReflection();
+            services.AddGrpcHttpApi();
+            services.AddSingleton<IWorkflowRegistry, WorkflowRegistry>();
             services.AddSingleton<IOrchestratorImplementation, OrchestratorImplementation>();
             services.AddSingleton<IClusterStateProvider, KubernetesClusterStateProvider>();
             services.AddSingleton<IPodSelector, KubernetesPodSelector>();
             services.AddSingleton<IGrpcChannelPool, GrpcChannelPool>();
             services.AddSingleton<IRequestRouter, RequestRouter>();
+            services.AddSingleton<IWorkTracker, WorkTracker>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,7 +52,7 @@ namespace OrchestratorService
             {
                 endpoints.MapGrpcReflectionService();
                 endpoints.MapGrpcService<GrpcOrchestratorTransport>();
-                
+                endpoints.MapGrpcService<WorkflowRegistrationService>();
                 endpoints.MapGet("/",
                     async context =>
                     {

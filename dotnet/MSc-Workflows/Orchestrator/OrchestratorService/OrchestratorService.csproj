@@ -13,6 +13,9 @@
 
     <ItemGroup>
         <Protobuf Include="../../protos/*.proto" />
+        <Protobuf Update="..\..\protos\spec.proto">
+          <Link>protos\spec.proto</Link>
+        </Protobuf>
     </ItemGroup>
 
     <ItemGroup>

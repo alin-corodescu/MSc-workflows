@@ -18,6 +18,10 @@ message StepTriggerRequest {
   // Todo should also add a compute parameter injection thingy.
   
   string requestId = 2;
+  
+  string dataSource = 3;
+  
+  string dataSink = 4;
 }
 
 message StepTriggerReply {

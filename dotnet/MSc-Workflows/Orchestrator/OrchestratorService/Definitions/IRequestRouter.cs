@@ -2,6 +2,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Commons;
 using Grpc.Net.Client;
+using k8s.Models;
 using Microsoft.Extensions.Logging;
 using Workflows.Models.DataEvents;
 
@@ -12,7 +13,14 @@ namespace OrchestratorService.Definitions
     /// </summary>
     public interface IRequestRouter
     {
-        public Task<GrpcChannel> GetGrpcChannelForRequest(string stepName, DataLocalization dataLocalization);
+        public Task<ChannelChoice> GetGrpcChannelForRequest(string stepName, DataLocalization dataLocalization);
+    }
+
+    public class ChannelChoice
+    {
+        public GrpcChannel GrpcChannel { get; set; }
+        
+        public V1Pod PodChoice { get; set; }
     }
 
     public class RequestRouter : IRequestRouter
@@ -33,7 +41,7 @@ namespace OrchestratorService.Definitions
             _logger = logger;
         }
 
-        public async Task<GrpcChannel> GetGrpcChannelForRequest(string stepName, DataLocalization dataLocalization)
+        public async Task<ChannelChoice> GetGrpcChannelForRequest(string stepName, DataLocalization dataLocalization)
         {
             _logger.LogInformation($"Routing request for {stepName}");
 
@@ -48,7 +56,11 @@ namespace OrchestratorService.Definitions
             
             var podAddr = $"http://{targetPod.Status.PodIP}:5000";
 
-            return this._grpcChannelPool.GetChannelForAddress(podAddr);
+            return new ChannelChoice
+            {
+                GrpcChannel = this._grpcChannelPool.GetChannelForAddress(podAddr),
+                PodChoice = targetPod
+            };
         }
     }
 }
