@@ -26,7 +26,7 @@ namespace DataMaster
         {            
             services.AddGrpc();
             services.AddGrpcReflection();
-
+            services.AddGrpcHttpApi();
             services.AddSingleton<IDataChunkLedger, DataChunkLedger>();
         }
 
@@ -44,13 +44,6 @@ namespace DataMaster
             {                
                 endpoints.MapGrpcReflectionService();
                 endpoints.MapGrpcService<DataMasterService>();
-
-                endpoints.MapGet("/",
-                    async context =>
-                    {
-                        await context.Response.WriteAsync(
-                            "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
-                    });
             });
         }
     }

@@ -12,6 +12,20 @@ namespace ManualTestingProject
     {
         static void Main(string[] args)
         {
+            var test = new LocalFileSystemMetadata
+            {
+                FileName = "test"
+            };
+            var evt = new MetadataEvent
+            {
+                Metadata = Any.Pack(test),
+                DataLocalization = new DataLocalization
+                {
+                    Region = "region1",
+                    HostIdentifier = "Host1"
+                }
+            };
+            
             
             var orchestrationChannel = GrpcChannel.ForAddress("http://localhost:9000");
             var orchestrationClient = new OrchestratorService.OrchestratorServiceClient(orchestrationChannel);

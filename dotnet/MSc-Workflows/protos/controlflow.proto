@@ -14,6 +14,9 @@ option csharp_namespace = "Workflows.Models";
 message StepTriggerRequest {
   // The metadata associated with data that needs to processed by the step
   MetadataEvent metadata = 1;
+  
+  // Todo should also add a compute parameter injection thingy.
+  
   string requestId = 2;
 }
 

@@ -2,6 +2,8 @@ syntax = "proto3";
 
 import "google/protobuf/any.proto";
 
+import "google/api/annotations.proto";
+
 option csharp_namespace = "Workflows.Models.DataEvents";
 
 // The event describing new data being available in the system
@@ -9,8 +11,10 @@ message MetadataEvent {
   // Implementation specific metadata used to locate the data
   google.protobuf.Any metadata = 1;
   
+  string metadataButInStringForm = 2;
+  
   // Data localization information. Used to perform locality-aware scheduling.
-  DataLocalization dataLocalization = 2;
+  DataLocalization dataLocalization = 3;
   
   //TODO need something to identify the data source
 }
@@ -56,12 +60,25 @@ message PullDataReply {
 
 // Interface for storage adapters
 service StorageAdapter {
-  rpc PushData (PushDataRequest) returns (PushDataReply);
+  rpc PushData (PushDataRequest) returns (PushDataReply)
+  {
+    option (google.api.http) = {
+      post: "/v1/data"
+      body: "*"
+    };
+  }
   
-  rpc PullData (PullDataRequest) returns (PullDataReply);
+  rpc PullData (PullDataRequest) returns (PullDataReply)
+  {
+    option (google.api.http) = {
+      post: "/v1/data/get"
+      body: "*"
+    };
+  }
+  
 }
 
-message DataChunkAvailableRequest{
+message DataChunkAvailableRequest {
   LocalFileSystemMetadata metadata = 1; 
   string address = 2;
 }
@@ -81,9 +98,20 @@ message AddressReply {
 // Service hosted by the master node of the data flow solution
 service DataMasterService {
   // Consider using streaming instead. for better throughput.
-  rpc SignalDataChunkAvailable (DataChunkAvailableRequest) returns (DataChunkAvailableReply);
+  rpc SignalDataChunkAvailable (DataChunkAvailableRequest) returns (DataChunkAvailableReply)
+  {
+    option (google.api.http) = {
+      post: "/v1/data"
+      body: "*"
+    }; 
+  }
   
-  rpc GetAddrForDataChunk (AddressRequest) returns (AddressReply);
+  rpc GetAddrForDataChunk (AddressRequest) returns (AddressReply)
+  {
+    option (google.api.http) = {
+      get: "/v1/data/{metadata.fileName}"
+    };
+  }
 }
 
 message PeerDataRequest{
