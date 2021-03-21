@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OrchestratorService.Definitions;
+using OrchestratorService.Proximity;
 using OrchestratorService.Transports;
 using OrchestratorService.WorkflowSpec;
 using OrchestratorService.WorkTracking;
@@ -36,6 +37,7 @@ namespace OrchestratorService
             services.AddSingleton<IGrpcChannelPool, GrpcChannelPool>();
             services.AddSingleton<IRequestRouter, RequestRouter>();
             services.AddSingleton<IWorkTracker, WorkTracker>();
+            services.AddSingleton<IProximityTable, ProximityTable>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -16,6 +16,7 @@ namespace OrchestratorService.WorkTracking
         void MarkWorkAsStarted(string requestId, int eventSourcePosition, string name);
 
         void MarkWorkAsFinished(string reqRequestId);
+        int GetCurrentLoadForPod(string name);
     }
 
     class WorkTracker : IWorkTracker
@@ -55,6 +56,11 @@ namespace OrchestratorService.WorkTracking
                 (s) => 0,
                 (s, i) => i - 1
             );
+        }
+
+        public int GetCurrentLoadForPod(string name)
+        {
+            return podNameToCurrentLoad[name];
         }
     }
 }
