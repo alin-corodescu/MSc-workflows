@@ -1,0 +1,17 @@
+Look into examples of workflows:
+
+Restructured the bg section to match the thesis script:
+    1. Present data locality in geneneral
+    2. Later, in the problem framing explain why my solution is advancing the state of the art.
+
+    Tried to keep the problem framing short to concise to transmit how exactly the thesis is advancing the state of the art.
+
+    Can I move the probem statement from the introduction to after the problem framing somwhere? It logically belongs there. It's hard to introduce the research questions without the context provided by the background and problem framing sections.
+        Alternatively, I could mentinon that more details will be given in that chapter.
+
+    Revisited the chapter summary - still not done.
+    Research design was also revised.
+
+Added stuff to the design/ implementation - I have a skeleton of these 2 sections now.
+
+REST API vs GRPC - found a way to convert
