@@ -47,7 +47,7 @@ namespace OrchestratorService.Definitions
             // sort the possibilities based on their proximity
             // and then based on the current load of each pod.
 
-            return possibleTargets.Select(pod =>
+            return await Task.FromResult(possibleTargets.Select(pod =>
                 {
                     var podLocalization = this.ExtractDataLocalization(pod);
                     var currentLoad = _workTracker.GetCurrentLoadForPod(pod.Name());
@@ -65,7 +65,7 @@ namespace OrchestratorService.Definitions
                 .Where(x => x.Load < 5)
                 .OrderBy(arg => arg.Distance)
                 .First()
-                .Pod;
+                .Pod);
         }
 
         private DataLocalization ExtractDataLocalization(V1Pod pod)

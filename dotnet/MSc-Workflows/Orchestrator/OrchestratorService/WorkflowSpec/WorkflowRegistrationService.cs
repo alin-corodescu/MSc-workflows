@@ -17,20 +17,20 @@ namespace OrchestratorService.WorkflowSpec
         {
             var wfId = this._workflowRegistry.StoreWorkflow(request.Workflow);
 
-            return new RegisterWorkflowReply
+            return await Task.FromResult(new RegisterWorkflowReply
             {
                 WorkflowId = wfId
-            };
+            });
         }
 
         public override async Task<GetWorkflowReply> GetWorkflow(GetWorkflowRequest request, ServerCallContext context)
         {
             var wf = this._workflowRegistry.RetrieveWorkflow(request.WorkflowId);
 
-            return new GetWorkflowReply
+            return await Task.FromResult(new GetWorkflowReply
             {
                 Workflow = wf
-            };
+            });
         }
     }
 }

@@ -21,11 +21,8 @@ message MetadataEvent {
 
 // Captures information about where data is localized.
 message DataLocalization {
-  // The identifier of the region where data is stored
-  string region = 1;
-  
-  // The identifier of the host storing the data
-  string hostIdentifier = 2;
+  // Localization elements - ordered list capturing the localization coordinates
+  repeated string localizationCoordinates = 1;
 }
 
 // Metadata used by the local file system adapter

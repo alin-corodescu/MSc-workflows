@@ -11,7 +11,19 @@ Restructured the bg section to match the thesis script:
 
     Revisited the chapter summary - still not done.
     Research design was also revised.
-
+    
 Added stuff to the design/ implementation - I have a skeleton of these 2 sections now.
 
 REST API vs GRPC - found a way to convert
+
+Why a synthetic workflow might be better for the validation.
+    With a nice-to-have real workflow implementation.
+
+Basically finished up the implementation - need to add one more nice to have
+    The data locality - we don't measure 
+
+Future: 
+    Looking into the test bed.
+
+    Go through my planned experiments and figure out what data I need to gather and  how to gather it + analyze it.
+        Let this decision guide my thinking.

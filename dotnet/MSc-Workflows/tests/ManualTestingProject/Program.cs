@@ -21,8 +21,7 @@ namespace ManualTestingProject
                 Metadata = Any.Pack(test),
                 DataLocalization = new DataLocalization
                 {
-                    Region = "region1",
-                    HostIdentifier = "Host1"
+                    LocalizationCoordinates = { "host1", "region1"}
                 }
             };
             

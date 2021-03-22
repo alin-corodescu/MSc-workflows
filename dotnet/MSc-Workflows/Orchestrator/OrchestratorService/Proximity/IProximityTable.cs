@@ -14,17 +14,16 @@ namespace OrchestratorService.Proximity
     {
         public int GetDistance(DataLocalization @from, DataLocalization to)
         {
-            if (@from.HostIdentifier == to.HostIdentifier)
+            for (int i = 0; i < from.LocalizationCoordinates.Count; i++)
             {
-                return 0;
+                // return the position of the first coordinate that matches (can be host - the first one, or others).
+                if (from.LocalizationCoordinates[i] == to.LocalizationCoordinates[i])
+                {
+                    return i;
+                }
             }
 
-            if (@from.Region == @to.HostIdentifier)
-            {
-                return 1;
-            }
-
-            return 2;
+            return from.LocalizationCoordinates.Count;
         }
     }
 }
