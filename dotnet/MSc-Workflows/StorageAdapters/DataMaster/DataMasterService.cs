@@ -24,7 +24,7 @@ namespace DataMaster
         
         public override Task<DataChunkAvailableReply> SignalDataChunkAvailable(DataChunkAvailableRequest request, ServerCallContext context)
         {
-            _logger.LogInformation($"Got a request signaling data chunk is available, from the peer: {context.Peer}");
+            _logger.LogInformation("Got a request signaling data chunk is available, from the peer: {Peer}", context.Peer);
 
             _ledger.StoreAddressForFileName(request.Metadata.FileName, request.Address);
 
