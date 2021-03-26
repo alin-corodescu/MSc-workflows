@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper.Configuration;
 using Commons;
 using Grpc.Net.Client;
 using k8s.Models;
@@ -32,13 +33,20 @@ namespace OrchestratorService.Definitions
         private IClusterStateProvider _clusterStateProvider;
 
         private ILogger<RequestRouter> _logger;
+        
+        private readonly IConfiguration _config;
 
-        public RequestRouter(IGrpcChannelPool grpcChannelPool, IPodSelector podSelector, IClusterStateProvider clusterStateProvider, ILogger<RequestRouter> logger)
+        public RequestRouter(IGrpcChannelPool grpcChannelPool,
+            IPodSelector podSelector,
+            IClusterStateProvider clusterStateProvider,
+            ILogger<RequestRouter> logger,
+            IConfiguration config)
         {
             _grpcChannelPool = grpcChannelPool;
             _podSelector = podSelector;
             _clusterStateProvider = clusterStateProvider;
             _logger = logger;
+            _config = config;
         }
 
         public async Task<ChannelChoice> GetGrpcChannelForRequest(string stepName, DataLocalization dataLocalization)

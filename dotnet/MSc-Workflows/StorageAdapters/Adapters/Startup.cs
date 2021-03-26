@@ -1,11 +1,15 @@
+using System.Diagnostics;
 using Definitions.Adapters;
 using Definitions.Transports;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using StorageAdapters.Peers;
 using Workflows.StorageAdapters.Definitions;
 
@@ -31,7 +35,30 @@ namespace StorageAdapters
             services.AddSingleton<IDataMasterClient, DataMasterClient>();
             services.AddSingleton<IPeerPool, PeerPool>();
             services.AddSingleton<IStorageAdapter, LocalFileSystemStorageAdapter>();
+
+            services.AddSingleton(new ActivitySource("Workflows"));
             
+            // This one creates a singleton of the type TracerProvider.
+            services.AddOpenTelemetryTracing((builder) =>
+            {
+                builder
+                    .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("DataAdapter"))
+                    .AddSource("Workflows")
+                    // For incoming requests
+                    .AddAspNetCoreInstrumentation()
+                    // For outgoing requests
+                    .AddGrpcClientInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    // Export everything to the console.
+                    // .AddConsoleExporter();
+                    .AddJaegerExporter();
+            });
+            
+            services.Configure<KestrelServerOptions>(options =>
+            {
+                options.AllowSynchronousIO = true;
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

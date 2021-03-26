@@ -1,11 +1,15 @@
 ﻿using System;
+using System.Diagnostics;
 using Commons;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using TestGrpcService.Clients;
 using TestGrpcService.Definitions;
 using TestGrpcService.Transports;
@@ -34,6 +38,29 @@ namespace TestGrpcService
             services.AddSingleton<IOrchestratorServiceClient, OrchestratorServiceClient>();
             services.AddSingleton<IGrpcChannelPool, GrpcChannelPool>();
             services.AddSingleton<ISidecar, Sidecar>();
+            
+            services.AddSingleton(new ActivitySource("Workflows"));
+            
+            // This one creates a singleton of the type TracerProvider.
+            services.AddOpenTelemetryTracing((builder) =>
+            {
+                builder
+                    .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("DataAdapter"))
+                    .AddSource("Workflows")
+                    // For incoming requests
+                    .AddAspNetCoreInstrumentation()
+                    // For outgoing requests
+                    .AddGrpcClientInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    // Export everything to the console.
+                    // .AddConsoleExporter();
+                    .AddJaegerExporter();
+            });
+            
+            services.Configure<KestrelServerOptions>(options =>
+            {
+                options.AllowSynchronousIO = true;
+            });
             
             Console.WriteLine($"Config: {Configuration["Sidecar:InputPath"]}");
         }

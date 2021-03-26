@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection.Metadata;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using OpenTelemetry.Trace;
 using Workflows.Models.DataEvents;
 using Workflows.StorageAdapters.Definitions;
 
@@ -20,18 +22,27 @@ namespace Definitions.Adapters
         private readonly ILogger<LocalFileSystemStorageAdapter> _logger;
         private readonly string _permanentStorageBasePath;
 
+        private ActivitySource _activitySource;
+        
         private IDataMasterClient _dataMaster;
         private IPeerPool _peerPool;
 
-        private ISet<string> _localFiles; 
+        private ISet<string> _localFiles;
+        private bool _useHardLinking;
 
-        public LocalFileSystemStorageAdapter(IDataMasterClient dataMaster, IConfiguration configuration, ILogger<LocalFileSystemStorageAdapter> logger, IPeerPool peerPool)
+        public LocalFileSystemStorageAdapter(IDataMasterClient dataMaster,
+            IConfiguration configuration,
+            ILogger<LocalFileSystemStorageAdapter> logger,
+            IPeerPool peerPool,
+            ActivitySource activitySource)
         {
             this._dataMaster = dataMaster;
             _logger = logger;
             _peerPool = peerPool;
             _permanentStorageBasePath = configuration["StorageAdapter:PermStoragePath"];
             _localFiles = new HashSet<string>();
+            _useHardLinking = bool.Parse(configuration["UseHardLinking"]);
+            _activitySource = activitySource;
         }
 
         /// <summary>
@@ -45,7 +56,18 @@ namespace Definitions.Adapters
             var destinationFileNameGuid = Guid.NewGuid();
             
             // TODO seems hard linking works because the inodes of the underlying filesystem are shared.
-            File.Copy(filePath, $"{_permanentStorageBasePath}/{destinationFileNameGuid}");
+
+            if (!_useHardLinking)
+            {
+                File.Copy(filePath, $"{_permanentStorageBasePath}/{destinationFileNameGuid}");
+            }
+            else
+            {
+                var activity = _activitySource.StartActivity("hard-link");
+                activity.Start();
+                await CreateHardLink(filePath, $"{_permanentStorageBasePath}/{destinationFileNameGuid}");
+                activity.Stop();
+            }
             
             this._logger.LogInformation($"The data in permanent storage is {_permanentStorageBasePath}/{destinationFileNameGuid}");
             var localFileSystemMetadata = new LocalFileSystemMetadata
@@ -62,6 +84,25 @@ namespace Definitions.Adapters
             // Publish the information that the data chunk is now available
             await _dataMaster.PublishFile(destinationFileNameGuid.ToString());
             return @event;
+        }
+
+        public static async Task CreateHardLink(string from, string to)
+        {
+            var process = new Process()
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "/bin/bash",
+                    Arguments = $"-c \"ln {from} {to}\"",
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                }
+            };
+
+            process.Start();
+
+            await process.WaitForExitAsync();
         }
 
         /// <summary>

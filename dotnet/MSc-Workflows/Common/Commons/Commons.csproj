@@ -6,5 +6,12 @@
 
     <ItemGroup>
         <PackageReference Include="Grpc.AspNetCore" Version="2.34.0" />
+        <PackageReference Include="OpenTelemetry" Version="1.1.0-beta1" />
+        <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.1.0-beta1" />
+        <PackageReference Include="OpenTelemetry.Exporter.Jaeger" Version="1.1.0-beta1" />
+        <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-rc3" />
+        <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.0-rc3" />
+        <PackageReference Include="OpenTelemetry.Instrumentation.GrpcNetClient" Version="1.0.0-rc3" />
+        <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.0.0-rc3" />
     </ItemGroup>
 </Project>

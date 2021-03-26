@@ -1,8 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper.Configuration;
 using k8s.Models;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using OrchestratorService.Proximity;
 using OrchestratorService.WorkTracking;
@@ -46,7 +47,19 @@ namespace OrchestratorService.Definitions
             // Here I need to add stuff about the distance between different regions
             // sort the possibilities based on their proximity
             // and then based on the current load of each pod.
+            if (_configuration["UseDataLocality"] == "false")
+            {
+                // choose a random node from the possible choices.
+                // should I do round-robin instead?
+                // or just based on the current load?
+                
+                var v1Pods = possibleTargets.ToList();
+                var max = v1Pods.Count - 1;
+                var idx = new Random().Next(0, max);
 
+                return v1Pods.ElementAt(idx);
+            }
+            
             return await Task.FromResult(possibleTargets.Select(pod =>
                 {
                     var podLocalization = this.ExtractDataLocalization(pod);

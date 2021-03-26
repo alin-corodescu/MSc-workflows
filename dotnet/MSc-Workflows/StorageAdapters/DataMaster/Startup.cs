@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 namespace DataMaster
 {
@@ -28,6 +32,32 @@ namespace DataMaster
             services.AddGrpcReflection();
             services.AddGrpcHttpApi();
             services.AddSingleton<IDataChunkLedger, DataChunkLedger>();
+            
+            services.AddSingleton(new ActivitySource("Workflows"));
+            
+            // This one creates a singleton of the type TracerProvider.
+            services.AddOpenTelemetryTracing((builder) =>
+            {
+                builder
+                    // Set the resource name for prettier printing.
+                    .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("DataMaster"))
+                    // Register the source which emits our own activities.
+                    .AddSource("Worfklows")
+                    // For incoming requests
+                    .AddAspNetCoreInstrumentation()
+                    // For outgoing requests
+                    .AddGrpcClientInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    // Export everything to the console.
+                    // .AddConsoleExporter();
+                    .AddJaegerExporter();
+            });
+            
+            services.Configure<KestrelServerOptions>(options =>
+            {
+                options.AllowSynchronousIO = true;
+            });
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

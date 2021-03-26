@@ -9,6 +9,13 @@
         <PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.34.0" />
         <PackageReference Include="KubernetesClient" Version="4.0.10" />
         <PackageReference Include="Microsoft.AspNetCore.Grpc.HttpApi" Version="0.1.0-alpha.20580.2" />
+        <PackageReference Include="OpenTelemetry" Version="1.1.0-beta1" />
+        <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.1.0-beta1" />
+        <PackageReference Include="OpenTelemetry.Exporter.Jaeger" Version="1.1.0-beta1" />
+        <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-rc3" />
+        <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.0-rc3" />
+        <PackageReference Include="OpenTelemetry.Instrumentation.GrpcNetClient" Version="1.0.0-rc3" />
+        <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.0.0-rc3" />
     </ItemGroup>
 
     <ItemGroup>

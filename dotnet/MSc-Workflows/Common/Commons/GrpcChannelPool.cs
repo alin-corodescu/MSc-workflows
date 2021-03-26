@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using Grpc.Net.Client;
+using Microsoft.Extensions.Configuration;
 
 namespace Commons
 {
@@ -11,13 +12,25 @@ namespace Commons
     {
         private ConcurrentDictionary<string, GrpcChannel> pool;
 
-        public GrpcChannelPool()
+        private bool useConnectionPooling = true;
+
+        public GrpcChannelPool(IConfiguration configuration)
         {
+            if (configuration["UseConnectionPooling"] == "false")
+            {
+                useConnectionPooling = false;
+            }
+            
             this.pool = new ConcurrentDictionary<string, GrpcChannel>();
         }
         
         public GrpcChannel GetChannelForAddress(string addr)
         {
+            if (!useConnectionPooling)
+            {
+                return GrpcChannel.ForAddress(addr);
+            }
+            
             if (pool.ContainsKey(addr))
             {
                 // TODO how about failed or closed channels?

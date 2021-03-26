@@ -14,72 +14,14 @@ namespace UnitTests
 {
     public class LocalStorageTests
     {
-        private const string inputDir = "/tmp/workflows/in";
-        private const string permDir = "/tmp/workflows/perm";
-        
-        [SetUp]
-        public void Setup()
-        {
-            Directory.CreateDirectory(permDir);
-            Directory.CreateDirectory(inputDir);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            Directory.Delete("/tmp/workflows/", recursive: true);   
-        }
-
         [Test]
         public async Task PushData_WorksAsExpected()
         {
-            var inputPath = $"{inputDir}/testFile";
+            var inputPath = $"/home/alin/store/test.txt";
 
-            var config = new Mock<ILocalStorageAdapterConfig>();
-            config.Setup(x => x.PermanentStoragePath).Returns(permDir);
-            
-            
-            var localFileSystemStorageAdapter = new LocalFileSystemStorageAdapter(config.Object);
-            
-            await File.WriteAllTextAsync(inputPath, "myContents");
+            await LocalFileSystemStorageAdapter.CreateHardLink(inputPath, "/home/alin/store/perm_storage/link.txt");
 
-            var metadata = await localFileSystemStorageAdapter.PushDataToStorage(inputPath);
-
-            var receivedMetadata = metadata.Metadata.Unpack<LocalFileSystemMetadata>();
-
-            var fileName = new Guid(receivedMetadata.FileNameGuidBytes.ToByteArray()).ToString();
-
-            Assert.IsTrue(File.Exists($"{permDir}/{fileName}"));
-
-            Assert.AreEqual("myContents",File.ReadAllText($"{permDir}/{fileName}"));
         }
-        
-        [Test]
-        public async Task PullData_WorksAsExpected()
-        {
-            var fileNameGuid = Guid.NewGuid();
-            var existingPermFile = $"{permDir}/{fileNameGuid}";
 
-            var config = new Mock<ILocalStorageAdapterConfig>();
-            config.Setup(x => x.PermanentStoragePath).Returns(permDir);
-            var localFileSystemStorageAdapter = new LocalFileSystemStorageAdapter(config.Object);
-            
-            await File.WriteAllTextAsync(existingPermFile, "myContents");
-
-            var fileMetadata = new LocalFileSystemMetadata
-            {
-                FileNameGuidBytes = ByteString.CopyFrom(fileNameGuid.ToByteArray())
-            };
-            var @event = new MetadataEvent
-            {
-                Metadata = Any.Pack(fileMetadata)
-            };
-
-            await localFileSystemStorageAdapter.PullDataFromStorage(@event, $"{inputDir}/destination");
-
-            Assert.IsTrue(File.Exists($"{inputDir}/destination"));
-
-            Assert.AreEqual("myContents",File.ReadAllText($"{inputDir}/destination"));
-        }
     }
 }
