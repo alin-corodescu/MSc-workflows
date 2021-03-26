@@ -7,11 +7,12 @@ namespace OrchestratorService.WorkTracking
     public interface IWorkTracker
     {
         int GetPositionInWorkflowForRequest(string reqRequestId);
-        
+
         /// <summary>
         /// Registers the work as started
         /// </summary>
         /// <param name="requestId"></param>
+        /// <param name="eventSourcePosition"></param>
         /// <param name="name"></param>
         void MarkWorkAsStarted(string requestId, int eventSourcePosition, string name);
 

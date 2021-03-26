@@ -41,7 +41,7 @@ namespace DummyComputeStep
             services.AddOpenTelemetryTracing((builder) =>
             {
                 builder
-                    .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("DataAdapter"))
+                    .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("ComputeStep"))
                     .AddSource("Workflows")
                     // For incoming requests
                     .AddAspNetCoreInstrumentation()

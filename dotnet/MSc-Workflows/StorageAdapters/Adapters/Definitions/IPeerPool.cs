@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
 
@@ -15,21 +16,23 @@ namespace Workflows.StorageAdapters.Definitions
         /// </summary>
         /// <param name="addr">the address at which the peer is reachable</param>
         /// <returns></returns>
-        public IPeerDataNodeServiceClient GetServiceForPeer(string addr);
+        public IPeerDataNodeServiceClient GetPeerClient(string addr);
     }
 
     class PeerPool : IPeerPool
     {
         private readonly IConfiguration _configuration;
+        private readonly ActivitySource _activitySource;
         private ConcurrentDictionary<string, IPeerDataNodeServiceClient> _peerPool;
 
-        public PeerPool(IConfiguration configuration)
+        public PeerPool(IConfiguration configuration, ActivitySource activitySource)
         {
             _configuration = configuration;
+            _activitySource = activitySource;
             _peerPool = new ConcurrentDictionary<string, IPeerDataNodeServiceClient>();
         }
 
-        public IPeerDataNodeServiceClient GetServiceForPeer(string addr)
+        public IPeerDataNodeServiceClient GetPeerClient(string addr)
         {
             if (_peerPool.ContainsKey(addr))
             {
@@ -41,7 +44,7 @@ namespace Workflows.StorageAdapters.Definitions
                 var grpcAddr = $"http://{addr}:5001";
                 var grpcChannel = GrpcChannel.ForAddress(grpcAddr);
                 
-                var newClient = new PeerDataNodeServiceClient(grpcChannel);
+                var newClient = new PeerDataNodeServiceClient(grpcChannel, _activitySource);
 
                 _peerPool[addr] = newClient;
 

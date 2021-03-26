@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,10 +25,12 @@ namespace Workflows.StorageAdapters.Definitions
 
     public class PeerDataNodeServiceClient : IPeerDataNodeServiceClient
     {
+        private readonly ActivitySource _activitySource;
         private DataPeerService.DataPeerServiceClient client;
 
-        public PeerDataNodeServiceClient(GrpcChannel channel)
+        public PeerDataNodeServiceClient(GrpcChannel channel, ActivitySource activitySource)
         {
+            _activitySource = activitySource;
             client = new DataPeerService.DataPeerServiceClient(channel);
         }
 
@@ -45,9 +48,12 @@ namespace Workflows.StorageAdapters.Definitions
 
             while (await streamedResults.ResponseStream.MoveNext(new CancellationToken()))
             {
+                var activity = _activitySource.StartActivity("FlushToDisk");
+                activity.Start();
                 var chunk = streamedResults.ResponseStream.Current;
                 
                 await File.WriteAllBytesAsync(targetLocalPath, chunk.Payload.ToByteArray());
+                activity.Stop();
             }
         }
     }

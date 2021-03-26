@@ -45,7 +45,7 @@ namespace TestGrpcService
             services.AddOpenTelemetryTracing((builder) =>
             {
                 builder
-                    .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("DataAdapter"))
+                    .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("Sidecar"))
                     .AddSource("Workflows")
                     // For incoming requests
                     .AddAspNetCoreInstrumentation()

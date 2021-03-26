@@ -57,17 +57,17 @@ namespace Definitions.Adapters
             
             // TODO seems hard linking works because the inodes of the underlying filesystem are shared.
 
+            var activity = _activitySource.StartActivity("MoveToPermStorage");
+            activity.Start();
             if (!_useHardLinking)
             {
                 File.Copy(filePath, $"{_permanentStorageBasePath}/{destinationFileNameGuid}");
             }
             else
             {
-                var activity = _activitySource.StartActivity("hard-link");
-                activity.Start();
                 await CreateHardLink(filePath, $"{_permanentStorageBasePath}/{destinationFileNameGuid}");
-                activity.Stop();
             }
+            activity.Stop();
             
             this._logger.LogInformation($"The data in permanent storage is {_permanentStorageBasePath}/{destinationFileNameGuid}");
             var localFileSystemMetadata = new LocalFileSystemMetadata
@@ -118,9 +118,18 @@ namespace Definitions.Adapters
             if (this._localFiles.Contains(localFileSystemMetadata.FileName))
             {
                 var permanentStoragePath = $"{_permanentStorageBasePath}/{localFileSystemMetadata.FileName}";
-
-                // TODO hard linking is a better option
-                File.Copy(permanentStoragePath, destinationPath);
+                
+                var activity = _activitySource.StartActivity("MoveToPodVolume");
+                activity.Start();
+                if (!_useHardLinking)
+                {
+                    File.Copy(permanentStoragePath, destinationPath);
+                }
+                else
+                {
+                    await CreateHardLink(permanentStoragePath, destinationPath);
+                }
+                activity.Stop();
             }
             else
             {
@@ -128,7 +137,7 @@ namespace Definitions.Adapters
                 var addr = await this._dataMaster.GetAddressForFile(localFileSystemMetadata.FileName);
 
                 // Get the service for the peer hosting the data I am interested in
-                var peer = this._peerPool.GetServiceForPeer(addr);
+                var peer = this._peerPool.GetPeerClient(addr);
 
                 // Download the data from the peer directly to the destination path
                 await peer.DownloadDataFromPeer(localFileSystemMetadata.FileName, destinationPath);
