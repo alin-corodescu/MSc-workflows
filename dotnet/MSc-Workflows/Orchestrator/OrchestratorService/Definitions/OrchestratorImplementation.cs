@@ -44,7 +44,7 @@ namespace OrchestratorService.Definitions
                 // todo here I should finish a span that started all the way when the data chunk was first registered.
                 _logger.LogInformation("Workflow finished for 1 data chunk");
             }
-
+    
             var nextStep = workflowDefinition.Steps[eventSourcePosition + 1];
             
             var channelChoice = await this._requestRouter.GetGrpcChannelForRequest(nextStep.ComputeImage, req.Metadata.DataLocalization);
