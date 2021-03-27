@@ -50,7 +50,10 @@ namespace DummyComputeStep
                     .AddHttpClientInstrumentation()
                     // Export everything to the console.
                     // .AddConsoleExporter();
-                    .AddJaegerExporter();
+                    .AddJaegerExporter(o =>
+                    {
+                        o.AgentHost = Configuration["NODE_IP"];
+                    });
             });
             
             services.Configure<KestrelServerOptions>(options =>

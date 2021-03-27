@@ -16,6 +16,10 @@ spec:
         env:
           - name: ASPNETCORE_URLS
             value: http://+:9376
+          - name: NODE_IP
+            valueFrom:
+              fieldRef: 
+                fieldPath: status.hostIP
         ports:
           - containerPort: 9376
             protocol: TCP

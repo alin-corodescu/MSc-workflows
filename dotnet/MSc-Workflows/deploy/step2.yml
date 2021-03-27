@@ -39,6 +39,10 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.name
+          - name: NODE_IP
+            valueFrom:
+              fieldRef: 
+                fieldPath: status.hostIP
         volumeMounts:
           - mountPath: /in
             name: inputs

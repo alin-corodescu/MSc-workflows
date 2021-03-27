@@ -99,3 +99,8 @@ To the best of our knowledge, we are the first to add data locality concepts in 
 
 
 Related works ++ Flyte (from Lyft). Dagster doesn't support wrapping steps in containers.
+
+Feedback:
+    Related works to include stuff about data locality
+
+    Software containers and how they are used in the big data world - different taxonomies. 
