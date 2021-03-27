@@ -20,6 +20,10 @@ data:
       @type null
     </match>
 
+    <match kubernetes.var.log.containers.**elasticsearch**.log>
+      @type null
+    </match>
+
     <source>
       @type tail
       path /var/log/containers/*.log

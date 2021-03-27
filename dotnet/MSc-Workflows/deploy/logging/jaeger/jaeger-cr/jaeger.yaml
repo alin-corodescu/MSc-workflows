@@ -1,0 +1,15 @@
+apiVersion: jaegertracing.io/v1
+kind: Jaeger
+metadata:
+  name: jaeggy
+spec:
+  strategy: production
+  storage:
+    type: elasticsearch
+    options:
+      es:
+        server-urls: http://elasticsearch:9200
+  agent:
+    strategy: DaemonSet
+  query:
+    replicas: 1

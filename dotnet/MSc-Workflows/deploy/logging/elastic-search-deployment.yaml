@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: es-cluster
+  name: elasticsearch
   namespace: default
 spec:
   replicas: 1
@@ -27,7 +27,7 @@ spec:
           protocol: TCP
         env:
           - name: cluster.name
-            value: k8s-logs
+            value: workflows
           - name: node.name
             valueFrom:
               fieldRef:
