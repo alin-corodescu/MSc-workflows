@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Definitions.Adapters;
 using Definitions.Transports;
@@ -37,6 +39,9 @@ namespace StorageAdapters
             services.AddSingleton<IStorageAdapter, LocalFileSystemStorageAdapter>();
 
             services.AddSingleton(new ActivitySource("Workflows"));
+            
+            // these are the local files store.
+            services.AddSingleton<IDictionary<string, int>, ConcurrentDictionary<string, int>>();
             
             // This one creates a singleton of the type TracerProvider.
             services.AddOpenTelemetryTracing((builder) =>
@@ -79,6 +84,7 @@ namespace StorageAdapters
                 endpoints.MapGrpcReflectionService();
                 endpoints.MapGrpcService<GrpcStorageAdapter>();
                 endpoints.MapGrpcService<DataPeerService>();
+                endpoints.MapGrpcService<GrpcDataInjectionService>();
                 
                 endpoints.MapGet("/",
                     async context =>

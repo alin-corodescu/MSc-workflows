@@ -27,22 +27,37 @@ namespace Definitions.Adapters
         private IDataMasterClient _dataMaster;
         private IPeerPool _peerPool;
 
-        private ISet<string> _localFiles;
+        private IDictionary<string, int> _localFiles;
         private bool _useHardLinking;
+
+        private DataLocalization _localization;
 
         public LocalFileSystemStorageAdapter(IDataMasterClient dataMaster,
             IConfiguration configuration,
             ILogger<LocalFileSystemStorageAdapter> logger,
             IPeerPool peerPool,
+            IDictionary<string, int> localFiles,
             ActivitySource activitySource)
         {
             this._dataMaster = dataMaster;
             _logger = logger;
             _peerPool = peerPool;
             _permanentStorageBasePath = configuration["StorageAdapter:PermStoragePath"];
-            _localFiles = new HashSet<string>();
+            _localFiles = localFiles;
             _useHardLinking = bool.Parse(configuration["UseHardLinking"]);
             _activitySource = activitySource;
+            _localization = ExtractLocalization(configuration);
+        }
+
+        public static DataLocalization ExtractLocalization(IConfiguration configuration)
+        {
+            var nodeIp = configuration["NODE_IP"];
+
+            // TODO need to extract the zones and regions as well.
+            return new DataLocalization
+            {
+                LocalizationCoordinates = {nodeIp, "unknown", "unknown"}
+            };
         }
 
         /// <summary>
@@ -78,9 +93,13 @@ namespace Definitions.Adapters
             var metadata = Any.Pack(localFileSystemMetadata);
             var @event = new MetadataEvent
             {
-                Metadata = metadata
+                Metadata = metadata,
+                DataLocalization = this._localization
             };
 
+            // store this guy in the local files as well.
+            _localFiles[destinationFileNameGuid.ToString()] = 1;
+            
             // Publish the information that the data chunk is now available
             await _dataMaster.PublishFile(destinationFileNameGuid.ToString());
             return @event;
@@ -115,7 +134,7 @@ namespace Definitions.Adapters
         {
             var localFileSystemMetadata = metadata.Metadata.Unpack<LocalFileSystemMetadata>();
             
-            if (this._localFiles.Contains(localFileSystemMetadata.FileName))
+            if (this._localFiles.ContainsKey(localFileSystemMetadata.FileName))
             {
                 var permanentStoragePath = $"{_permanentStorageBasePath}/{localFileSystemMetadata.FileName}";
                 

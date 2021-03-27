@@ -17,8 +17,9 @@ namespace OrchestratorService.Proximity
             for (int i = 0; i < from.LocalizationCoordinates.Count; i++)
             {
                 // return the position of the first coordinate that matches (can be host - the first one, or others).
-                if (from.LocalizationCoordinates[i] == to.LocalizationCoordinates[i])
+                if (from.LocalizationCoordinates[i] == to.LocalizationCoordinates[i] && from.LocalizationCoordinates[i] != "unknown")
                 {
+                    // todo different treatment for different zones (they may be closer to one another)
                     return i;
                 }
             }

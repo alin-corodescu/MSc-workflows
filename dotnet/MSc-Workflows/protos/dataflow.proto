@@ -72,7 +72,6 @@ service StorageAdapter {
       body: "*"
     };
   }
-  
 }
 
 message DataChunkAvailableRequest {
@@ -125,4 +124,23 @@ message PeerDataReplyChunk {
 service DataPeerService {
   // For a data request, returns a stream of chunks. Small sized-chunks
   rpc GetData (PeerDataRequest) returns (stream PeerDataReplyChunk);
+}
+
+message DataInjectionRequest {
+  // The size of the injected content
+  int32 contentSize = 1;
+  
+  // How many are needed.
+  int32 count = 2;
+}
+
+message DataInjectionReply {
+  // The generated metadata events.
+  repeated MetadataEvent events = 1;
+}
+
+// Service used to inject data into the cluster -- 
+// the injected data will be later used to 
+service DataInjectionService {
+  rpc InjectData(DataInjectionRequest) returns (DataInjectionReply);
 }

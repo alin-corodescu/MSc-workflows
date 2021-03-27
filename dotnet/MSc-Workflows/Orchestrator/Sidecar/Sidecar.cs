@@ -33,7 +33,7 @@ namespace TestGrpcService
         {
             var metadata = request.Metadata;
             var reqId = request.RequestId;
-
+            
             var fileName = Guid.NewGuid().ToString();
             var targetPathForDataDaeomn = $"/store/inputs/{fileName}";
             
@@ -44,6 +44,8 @@ namespace TestGrpcService
                 Metadata = metadata,
                 TargetPath = targetPathForDataDaeomn
             };
+            
+            // TODO select data source and data sink based on the parameters.
             await _dataSource.DownloadData(pullDataRequest);
             
             _logger.LogInformation("Passing the data to the compute step");
@@ -57,9 +59,6 @@ namespace TestGrpcService
             await foreach (var response in _computeStep.TriggerCompute(computeStepRequest))
             {
                 // TODO these calls do not need to be awaited actually. We could parallelize the work across multiple files.
-                //response.OutputFilePath
-                // the compute step request contains the data in a format that the compute step understood
-                // /out/{filename}
                 
                 var fName = Path.GetFileName(response.OutputFilePath);
                 _logger.LogInformation($"Publishing data to the data sink /store/outputs/{fName}");
@@ -67,7 +66,7 @@ namespace TestGrpcService
                 {
                     SourceFilePath = $"/store/outputs/{fName}"
                 });
-
+                
                 _logger.LogInformation("Publishing metadata to the orchestrator service");
                 await _orchestrator.PublishData(new DataEventRequest
                 {

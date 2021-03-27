@@ -83,8 +83,13 @@ namespace OrchestratorService.Definitions
 
         private DataLocalization ExtractDataLocalization(V1Pod pod)
         {
-            // todo need to parse some labels.
-            return new DataLocalization();
+            var nodeIp = pod.Status.HostIP;
+            
+            // todo need to parse some labels for the zone and the region.
+            return new DataLocalization
+            {
+                LocalizationCoordinates = {nodeIp, "unknown", "unknown"}
+            };
         }
     }
 }
