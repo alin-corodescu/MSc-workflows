@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Serilog;
+using Serilog.Events;
+using Serilog.Formatting.Compact;
 
 namespace StorageAdapters
 {
@@ -7,6 +10,12 @@ namespace StorageAdapters
     {
         public static void Main(string[] args)
         {
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                .Enrich.FromLogContext()
+                .WriteTo.Console(new CompactJsonFormatter())
+                .CreateLogger();
+            
             CreateHostBuilder(args).Build().Run();
         }
 
@@ -14,6 +23,7 @@ namespace StorageAdapters
         // For instructions on how to configure Kestrel and gRPC clients on macOS, visit https://go.microsoft.com/fwlink/?linkid=2099682
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .UseSerilog()
                 .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
     }
 }
