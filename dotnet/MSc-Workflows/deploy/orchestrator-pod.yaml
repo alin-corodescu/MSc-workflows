@@ -23,3 +23,5 @@ spec:
         ports:
           - containerPort: 9376
             protocol: TCP
+          - containerPort: 10001
+            protocol: TCP

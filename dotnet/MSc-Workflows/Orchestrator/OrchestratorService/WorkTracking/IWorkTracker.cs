@@ -49,6 +49,11 @@ namespace OrchestratorService.WorkTracking
 
         public void MarkWorkAsFinished(string reqRequestId)
         {
+            if (string.IsNullOrEmpty(reqRequestId))
+            {
+                return;
+            }
+            
             var name = requestIdToNameMapping[reqRequestId];
             requestIdToPositionMapping.Remove(reqRequestId);
             requestIdToNameMapping.Remove(reqRequestId);
@@ -61,6 +66,11 @@ namespace OrchestratorService.WorkTracking
 
         public int GetCurrentLoadForPod(string name)
         {
+            if (!podNameToCurrentLoad.ContainsKey(name))
+            {
+                return 0;
+            }
+            
             return podNameToCurrentLoad[name];
         }
     }

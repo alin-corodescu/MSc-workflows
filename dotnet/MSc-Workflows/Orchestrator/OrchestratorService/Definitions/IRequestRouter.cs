@@ -1,9 +1,9 @@
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper.Configuration;
 using Commons;
 using Grpc.Net.Client;
 using k8s.Models;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Workflows.Models.DataEvents;
 

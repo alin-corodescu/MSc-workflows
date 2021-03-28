@@ -21,5 +21,9 @@ spec:
               fieldRef: 
                 fieldPath: status.hostIP
         ports:
+        # For GRPC calls
           - containerPort: 9377
+            protocol: TCP
+        # For REST calls
+          - containerPort: 10001
             protocol: TCP

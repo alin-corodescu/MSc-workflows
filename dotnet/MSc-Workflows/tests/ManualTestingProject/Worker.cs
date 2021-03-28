@@ -1,31 +1,25 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Workflows.Models;
 using Workflows.Models.DataEvents;
 
 namespace LoadGenerator
 {
-    public class Worker : BackgroundService
+    public class Worker
     {
-        private readonly ILogger<Worker> _logger;
         private readonly IConfiguration _configuration;
 
-        public Worker(ILogger<Worker> logger, IConfiguration configuration)
+        public Worker(IConfiguration configuration)
         {
-            _logger = logger;
             _configuration = configuration;
         }
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        public async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("Executing the work");
+            Console.WriteLine("Executing the work");
             
             // create a GRPC channel to the data injector
 
@@ -42,13 +36,13 @@ namespace LoadGenerator
                 ContentSize = dataSize
             });
 
-            _logger.LogInformation("Injected data into the cluster");
+            Console.WriteLine("Injected data into the cluster");
             var events = reply.Events;
 
             var orchestrationChannel = GrpcChannel.ForAddress($"http://{_configuration["OrchestratorUrl"]}");
             var orchestrationClient = new OrchestratorService.OrchestratorServiceClient(orchestrationChannel);
 
-            _logger.LogInformation("Forwarding the events to the orchestrator");
+            Console.WriteLine("Forwarding the events to the orchestrator");
             var stream = orchestrationClient.NotifyDataAvailable();
             foreach (var ev in events)
             {
@@ -61,6 +55,7 @@ namespace LoadGenerator
                 await stream.ResponseStream.MoveNext(CancellationToken.None);
             }
 
+            await stream.RequestStream.CompleteAsync();
         }
     }
 }

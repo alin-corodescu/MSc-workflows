@@ -42,6 +42,8 @@ namespace Definitions.Transports
                 var fileName = Guid.NewGuid().ToString();
                 
                 await File.WriteAllBytesAsync($"{permStoragePath}/{fileName}", content);
+
+                _localFiles[fileName] = 1;
                 
                 var localFileSystemMetadata = new LocalFileSystemMetadata
                 {

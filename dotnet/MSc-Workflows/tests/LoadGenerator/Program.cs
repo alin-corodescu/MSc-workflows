@@ -11,6 +11,7 @@ namespace LoadGenerator
     {
         public static void Main(string[] args)
         {
+            
             CreateHostBuilder(args).Build().Run();
         }
 
@@ -19,7 +20,6 @@ namespace LoadGenerator
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddHostedService<Worker>();
-                    
                 });
     }
 }

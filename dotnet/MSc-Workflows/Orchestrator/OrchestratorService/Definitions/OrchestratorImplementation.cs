@@ -43,6 +43,11 @@ namespace OrchestratorService.Definitions
             {
                 // todo here I should finish a span that started all the way when the data chunk was first registered.
                 _logger.LogInformation("Workflow finished for 1 data chunk");
+
+                return new DataEventReply
+                {
+                    IsSuccess = true
+                };
             }
     
             var nextStep = workflowDefinition.Steps[eventSourcePosition + 1];
