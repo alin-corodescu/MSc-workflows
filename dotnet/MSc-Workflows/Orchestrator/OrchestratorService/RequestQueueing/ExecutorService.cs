@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
@@ -12,15 +13,18 @@ namespace OrchestratorService.RequestQueueing
     {
         private readonly ILogger<ExecutorService> _logger;
         private readonly IOrchestratorImplementation _implementation;
+        private readonly ActivitySource _source;
         private readonly IOrchestrationQueue queue;
 
         public ExecutorService(IOrchestrationQueue queue,
             ILogger<ExecutorService> logger,
-            IOrchestratorImplementation implementation)
+            IOrchestratorImplementation implementation,
+            ActivitySource source)
         {
             this.queue = queue;
             _logger = logger;
             _implementation = implementation;
+            _source = source;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -30,18 +34,32 @@ namespace OrchestratorService.RequestQueueing
             while (!stoppingToken.IsCancellationRequested)
             {
                 var req = await queue.DequeueOrchestrationWork();
+                
+                _logger.LogInformation($"Executor spinning up background work for reqId: {req.Item1.RequestId}");
 
+                var activity = _source.StartActivity("ProcessDataEvent",
+                    ActivityKind.Consumer,
+                    new ActivityContext(ActivityTraceId.CreateRandom(),
+                        new ActivitySpanId(),
+                        ActivityTraceFlags.Recorded));
+                
+                activity.Start();
+                
                 // spin off a background task to do it for me. I could very well do it from the "syncrhonous" part
                 // and the Jaeger traces might look better actually
-                var _ = Run(async () =>
+                var _ = Task.Run(async () =>
                 {
                     try
                     {
-                        await _implementation.ProcessDataEvent(req);
+                        await _implementation.ProcessDataEvent(req.Item1);
                     }
                     catch (Exception e)
                     {
                         _logger.LogError(e, "Exception happened during orchestration");
+                    }
+                    finally
+                    {
+                        activity.Stop();
                     }
                 });
             }

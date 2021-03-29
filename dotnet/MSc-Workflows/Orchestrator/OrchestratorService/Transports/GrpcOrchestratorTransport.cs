@@ -1,6 +1,8 @@
+using System.Diagnostics;
 using System.Threading.Tasks;
 using Grpc.Core;
 using OrchestratorService.Definitions;
+using OrchestratorService.RequestQueueing;
 using Workflows.Models;
 
 namespace OrchestratorService.Transports
@@ -8,15 +10,21 @@ namespace OrchestratorService.Transports
     public class GrpcOrchestratorTransport : Workflows.Models.OrchestratorService.OrchestratorServiceBase
     {
         private IOrchestratorImplementation _impl;
+        private readonly IOrchestrationQueue _workQueue;
 
-        public GrpcOrchestratorTransport(IOrchestratorImplementation implementation)
+        public GrpcOrchestratorTransport(IOrchestratorImplementation implementation, IOrchestrationQueue workQueue)
         {
             this._impl = implementation;
+            _workQueue = workQueue;
         }
 
         public override async Task<DataEventReply> NotifyDataAvailable(DataEventRequest request, ServerCallContext context)
         {
-            return await _impl.ProcessDataEvent(request);
+            _workQueue.QueueOrchestrationWork(request, Activity.Current.Context);
+            return await Task.FromResult(new DataEventReply
+            {
+                IsSuccess = true
+            });
         }
     }
 }

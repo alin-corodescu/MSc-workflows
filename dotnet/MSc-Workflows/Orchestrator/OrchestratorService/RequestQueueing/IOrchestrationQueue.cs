@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Workflows.Models;
@@ -10,25 +12,25 @@ namespace OrchestratorService.RequestQueueing
     /// </summary>
     public interface IOrchestrationQueue
     {
-        void QueueOrchestrationWork(DataEventRequest request);
+        void QueueOrchestrationWork(DataEventRequest request, ActivityContext context);
 
-        Task<DataEventRequest> DequeueOrchestrationWork();
+        Task<Tuple<DataEventRequest, ActivityContext>> DequeueOrchestrationWork();
     }
 
     class OrchestrationQueue : IOrchestrationQueue
     {
-        private ConcurrentQueue<DataEventRequest> _events = new();
+        private ConcurrentQueue<Tuple<DataEventRequest, ActivityContext>> _events = new();
 
         private SemaphoreSlim _dataPresentSignal = new SemaphoreSlim(0);
 
 
-        public void QueueOrchestrationWork(DataEventRequest request)
+        public void QueueOrchestrationWork(DataEventRequest request, ActivityContext currentContext)
         {
-            _events.Enqueue(request);
+            _events.Enqueue(new Tuple<DataEventRequest, ActivityContext>(request, currentContext));
             _dataPresentSignal.Release();
         }
 
-        public async Task<DataEventRequest> DequeueOrchestrationWork()
+        public async Task<Tuple<DataEventRequest, ActivityContext>> DequeueOrchestrationWork()
         {
             // Wait for data to be available in the queue.
             await _dataPresentSignal.WaitAsync();
