@@ -4,6 +4,8 @@ metadata:
   name: step1-pod
   labels:
     stepName: step1
+    zone: zone1
+    region: region1
 spec:
   containers:
       - name: sidecar

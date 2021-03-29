@@ -10,6 +10,8 @@ spec:
     metadata:
       labels:
         name: storage-adapter
+        zone: zone1
+        region: region1
     spec:
       tolerations:
       # this toleration is to have the daemonset runnable on master nodes
@@ -39,6 +41,19 @@ spec:
             valueFrom:
               fieldRef: 
                 fieldPath: status.hostIP
+          - name: LOCALIZATION_HOST
+            valueFrom:
+              fieldRef: 
+                fieldPath: status.hostIP
+          - name: LOCALIZATION_ZONE
+            valueFrom:
+              fieldRef: 
+                fieldPath: metadata.labels['zone']
+          - name: LOCALIZATION_REGION
+            valueFrom:
+              fieldRef: 
+                fieldPath: metadata.labels['region']
+          
       volumes:
       - name: store
         hostPath:

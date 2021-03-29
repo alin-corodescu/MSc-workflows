@@ -51,12 +51,13 @@ namespace Definitions.Adapters
 
         public static DataLocalization ExtractLocalization(IConfiguration configuration)
         {
-            var nodeIp = configuration["NODE_IP"];
-
-            // TODO need to extract the zones and regions as well.
+            var nodeIp = configuration["LOCALIZATION_HOST"];
+            var zone = configuration["LOCALIZATION_ZONE"];
+            var region = configuration["LOCALIZATION_REGION"];
+            
             return new DataLocalization
             {
-                LocalizationCoordinates = {nodeIp, "unknown", "unknown"}
+                LocalizationCoordinates = {nodeIp, zone, region}
             };
         }
 

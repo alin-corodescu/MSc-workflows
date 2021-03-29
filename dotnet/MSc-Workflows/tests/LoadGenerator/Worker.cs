@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Net.Client;
@@ -42,20 +44,24 @@ namespace LoadGenerator
             var orchestrationChannel = GrpcChannel.ForAddress($"http://{_configuration["OrchestratorUrl"]}");
             var orchestrationClient = new OrchestratorService.OrchestratorServiceClient(orchestrationChannel);
 
+            Console.WriteLine("Press any key to forward the events to the orchestrator...");
+            Console.ReadKey();
+            
             Console.WriteLine("Forwarding the events to the orchestrator");
-            var stream = orchestrationClient.NotifyDataAvailable();
-            foreach (var ev in events)
-            {
-                await stream.RequestStream.WriteAsync(new DataEventRequest
+            
+            var tasks = events.Select(ev => Task.Run(async () =>
                 {
-                    Metadata = ev,
-                    RequestId = ""
-                });
+                    var stream = orchestrationClient.NotifyDataAvailable();
 
-                await stream.ResponseStream.MoveNext(CancellationToken.None);
-            }
+                    await stream.RequestStream.WriteAsync(new DataEventRequest {Metadata = ev, RequestId = ""});
 
-            await stream.RequestStream.CompleteAsync();
+                    await stream.ResponseStream.MoveNext(CancellationToken.None);
+
+                    await stream.RequestStream.CompleteAsync();
+                }, stoppingToken))
+                .ToList();
+
+            await Task.WhenAll(tasks);
         }
     }
 }

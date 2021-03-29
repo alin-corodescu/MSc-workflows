@@ -31,6 +31,7 @@ namespace OrchestratorService.Definitions
         private readonly IConfiguration _configuration;
         private readonly IProximityTable _proximityTable;
         private readonly IWorkTracker _workTracker;
+        private readonly int _maxLoad;
 
         public KubernetesPodSelector(ILogger<KubernetesPodSelector> logger, IConfiguration configuration,
             IProximityTable proximityTable,
@@ -40,6 +41,7 @@ namespace OrchestratorService.Definitions
             _configuration = configuration;
             _proximityTable = proximityTable;
             _workTracker = workTracker;
+            _maxLoad = Convert.ToInt32(_configuration["MaxLoad"]);
         }
         
         public async Task<V1Pod> SelectBestPod(IEnumerable<V1Pod> possibleTargets, DataLocalization dataLocalization)
@@ -75,7 +77,7 @@ namespace OrchestratorService.Definitions
                         Distance = distance
                     };
                 })
-                .Where(x => x.Load < 5)
+                .Where(x => x.Load < _maxLoad)
                 .OrderBy(arg => arg.Distance)
                 .First()
                 .Pod);
@@ -84,11 +86,12 @@ namespace OrchestratorService.Definitions
         private DataLocalization ExtractDataLocalization(V1Pod pod)
         {
             var nodeIp = pod.Status.HostIP;
+            var zone = pod.Metadata.Labels["zone"];
+            var region = pod.Metadata.Labels["region"];
             
-            // todo need to parse some labels for the zone and the region.
             return new DataLocalization
             {
-                LocalizationCoordinates = {nodeIp, "unknown", "unknown"}
+                LocalizationCoordinates = { nodeIp, zone, region }
             };
         }
     }

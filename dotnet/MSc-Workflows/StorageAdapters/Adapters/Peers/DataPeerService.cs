@@ -31,15 +31,21 @@ namespace StorageAdapters.Peers
 
         public override async Task GetData(PeerDataRequest request, IServerStreamWriter<PeerDataReplyChunk> responseStream, ServerCallContext context)
         {
-            var fileBytes = await File.ReadAllBytesAsync($"{_permStorageBasePath}/{request.Identifier.FileName}");
-            
             _logger.LogInformation($"Serving the file at: {_permStorageBasePath}/{request.Identifier.FileName}");
-            var peerDataReplyChunk = new PeerDataReplyChunk
-            {
-                Payload = ByteString.CopyFrom(fileBytes)
-            };
             
-            await responseStream.WriteAsync(peerDataReplyChunk);
+            var dataChunkSize = int.Parse(this._configuration["DataChunkSize"]);
+            await using var file = File.OpenRead($"{_permStorageBasePath}/{request.Identifier.FileName}");
+            using var binaryReader = new BinaryReader(file);
+            while (binaryReader.BaseStream.Position != binaryReader.BaseStream.Length)
+            {
+                var bytes = binaryReader.ReadBytes(dataChunkSize);
+                var peerDataReplyChunk = new PeerDataReplyChunk
+                {
+                    Payload = ByteString.CopyFrom(bytes)
+                };
+
+                await responseStream.WriteAsync(peerDataReplyChunk);
+            }
         }
     }
 }

@@ -36,13 +36,25 @@ namespace Definitions.Transports
             
             for (int i = 0; i < request.Count; i++)
             {
-                var content = new byte[request.ContentSize];
-                new Random().NextBytes(content);
-
                 var fileName = Guid.NewGuid().ToString();
+                await using (
+                    var file = File.OpenWrite($"{permStoragePath}/{fileName}"))
+                {
+                    await using (
+                        var writer = new BinaryWriter(file))
+                    {
+                        // write 1 KB at a time on the file
+                        for (int j = 0; j < request.ContentSize / 1024; j++)
+                        {
+                            var content = new byte[1024];
+                            new Random().NextBytes(content);
+                            
+                            writer.Write(content);
+                            writer.Flush();
+                        }
+                    }
+                }
                 
-                await File.WriteAllBytesAsync($"{permStoragePath}/{fileName}", content);
-
                 _localFiles[fileName] = 1;
                 
                 var localFileSystemMetadata = new LocalFileSystemMetadata

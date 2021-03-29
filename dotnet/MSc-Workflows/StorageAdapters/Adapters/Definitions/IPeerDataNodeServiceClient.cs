@@ -44,6 +44,9 @@ namespace Workflows.StorageAdapters.Definitions
                 }
             };
 
+            using var file = File.OpenRead(targetLocalPath);
+            using var binaryWriter = new BinaryWriter(file);
+            
             var streamedResults = client.GetData(dataRequest);
 
             while (await streamedResults.ResponseStream.MoveNext(new CancellationToken()))
@@ -51,8 +54,10 @@ namespace Workflows.StorageAdapters.Definitions
                 var activity = _activitySource.StartActivity("FlushToDisk");
                 activity.Start();
                 var chunk = streamedResults.ResponseStream.Current;
+
+                binaryWriter.Write(chunk.Payload.ToByteArray());
+                binaryWriter.Flush();
                 
-                await File.WriteAllBytesAsync(targetLocalPath, chunk.Payload.ToByteArray());
                 activity.Stop();
             }
         }

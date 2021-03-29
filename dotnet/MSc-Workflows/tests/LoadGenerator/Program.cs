@@ -1,25 +1,28 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Google.Protobuf.WellKnownTypes;
+using Grpc.Net.Client;
+using LoadGenerator;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using Workflows.Models;
+using Workflows.Models.DataEvents;
 
-namespace LoadGenerator
+namespace ManualTestingProject
 {
-    public class Program
+    class Program
     {
-        public static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            
-            CreateHostBuilder(args).Build().Run();
-        }
+            IConfiguration config = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddEnvironmentVariables()
+                .AddCommandLine(args)
+                .Build();
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureServices((hostContext, services) =>
-                {
-                    services.AddHostedService<Worker>();
-                });
+            await new Worker(config).ExecuteAsync(CancellationToken.None);
+        }
     }
 }
