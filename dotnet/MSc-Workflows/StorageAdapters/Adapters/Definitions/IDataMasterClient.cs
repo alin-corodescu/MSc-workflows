@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Threading.Tasks;
+using Definitions.Adapters;
 using Google.Protobuf;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
@@ -19,7 +20,7 @@ namespace Workflows.StorageAdapters.Definitions
         /// </summary>
         /// <param name="fileName">The name of the file</param>
         /// <returns>The ip address of the host/ pod hosting the data</returns>
-        public Task<string> GetAddressForFile(string fileName);
+        public Task<AddressReply> GetAddressForFile(string fileName);
 
         /// <summary>
         /// Lets the data master know the piece of data identified by the guid passed as parameter is available
@@ -36,6 +37,7 @@ namespace Workflows.StorageAdapters.Definitions
         private readonly ILogger<DataMasterClient> _logger;
         private DataMasterService.DataMasterServiceClient _client;
         private string _addr;
+        private DataLocalization _localization;
 
         public DataMasterClient(IConfiguration configuration, ILogger<DataMasterClient> logger)
         {
@@ -48,9 +50,11 @@ namespace Workflows.StorageAdapters.Definitions
             var grpcChannel = GrpcChannel.ForAddress($"http://{orchestratorServiceAddr}:{port}");
 
             _client = new DataMasterService.DataMasterServiceClient(grpcChannel);
+
+            _localization = LocalFileSystemStorageAdapter.ExtractLocalization(configuration);
         }
 
-        public async Task<string> GetAddressForFile(string name)
+        public async Task<AddressReply> GetAddressForFile(string name)
         {
             var addressRequest = new AddressRequest
             {
@@ -62,7 +66,7 @@ namespace Workflows.StorageAdapters.Definitions
 
             var result =  await _client.GetAddrForDataChunkAsync(addressRequest).ResponseAsync;
 
-            return result.Address;
+            return result;
         }
 
         public async Task PublishFile(string fileName)
@@ -72,9 +76,9 @@ namespace Workflows.StorageAdapters.Definitions
                 Metadata = new LocalFileSystemMetadata
                 {
                     FileName = fileName
-                    
                 },
-                Address = _addr
+                Address = _addr,
+                Localization = _localization
             };
             
             await _client.SignalDataChunkAvailableAsync(request);

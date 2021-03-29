@@ -1,8 +1,10 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Definitions.Adapters;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace Workflows.StorageAdapters.Definitions
 {
@@ -19,14 +21,16 @@ namespace Workflows.StorageAdapters.Definitions
         public IPeerDataNodeServiceClient GetPeerClient(string addr);
     }
 
-    class PeerPool : IPeerPool
+    public class PeerPool : IPeerPool
     {
+        private readonly ILogger<PeerPool> _logger;
         private readonly IConfiguration _configuration;
         private readonly ActivitySource _activitySource;
         private ConcurrentDictionary<string, IPeerDataNodeServiceClient> _peerPool;
 
-        public PeerPool(IConfiguration configuration, ActivitySource activitySource)
+        public PeerPool(ILogger<PeerPool> logger, IConfiguration configuration, ActivitySource activitySource)
         {
+            _logger = logger;
             _configuration = configuration;
             _activitySource = activitySource;
             _peerPool = new ConcurrentDictionary<string, IPeerDataNodeServiceClient>();
@@ -43,8 +47,10 @@ namespace Workflows.StorageAdapters.Definitions
                 // 5001 is the standard port for the data service
                 var grpcAddr = $"http://{addr}:5001";
                 var grpcChannel = GrpcChannel.ForAddress(grpcAddr);
+
+                var localization = LocalFileSystemStorageAdapter.ExtractLocalization(_configuration);
                 
-                var newClient = new PeerDataNodeServiceClient(grpcChannel, _activitySource);
+                var newClient = new PeerDataNodeServiceClient(grpcChannel, _activitySource, _logger, localization);
 
                 _peerPool[addr] = newClient;
 

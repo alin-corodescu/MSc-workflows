@@ -157,10 +157,10 @@ namespace Definitions.Adapters
                 var addr = await this._dataMaster.GetAddressForFile(localFileSystemMetadata.FileName);
 
                 // Get the service for the peer hosting the data I am interested in
-                var peer = this._peerPool.GetPeerClient(addr);
+                var peer = this._peerPool.GetPeerClient(addr.Address);
 
                 // Download the data from the peer directly to the destination path
-                await peer.DownloadDataFromPeer(localFileSystemMetadata.FileName, destinationPath);
+                await peer.DownloadDataFromPeer(localFileSystemMetadata.FileName, destinationPath, addr.Localization);
             }
         }
     }

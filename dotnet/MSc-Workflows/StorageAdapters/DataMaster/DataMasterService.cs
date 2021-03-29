@@ -26,7 +26,11 @@ namespace DataMaster
         {
             _logger.LogInformation("Got a request signaling data chunk is available, from the peer: {Peer}", context.Peer);
 
-            _ledger.StoreAddressForFileName(request.Metadata.FileName, request.Address);
+            _ledger.StoreAddressForFileName(request.Metadata.FileName, new LedgerValue
+            {
+                Address = request.Address,
+                Localization = request.Localization
+            });
 
             return Task.FromResult(new DataChunkAvailableReply
             {
@@ -36,9 +40,11 @@ namespace DataMaster
 
         public override Task<AddressReply> GetAddrForDataChunk(AddressRequest request, ServerCallContext context)
         {
+            var value = _ledger.GetAddressForFileName(request.Metadata.FileName);
             var reply = new AddressReply
             {
-                Address = _ledger.GetAddressForFileName(request.Metadata.FileName)
+                Address = value.Address,
+                Localization = value.Localization
             };
 
             return Task.FromResult(reply);

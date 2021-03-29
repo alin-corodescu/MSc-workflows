@@ -11,6 +11,7 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using OrchestratorService.Definitions;
 using OrchestratorService.Proximity;
+using OrchestratorService.RequestQueueing;
 using OrchestratorService.Transports;
 using OrchestratorService.WorkflowSpec;
 using OrchestratorService.WorkTracking;
@@ -42,6 +43,11 @@ namespace OrchestratorService
             services.AddSingleton<IRequestRouter, RequestRouter>();
             services.AddSingleton<IWorkTracker, WorkTracker>();
             services.AddSingleton<IProximityTable, ProximityTable>();
+
+            // Request queueing stuff.
+            services.AddSingleton<IOrchestrationQueue, OrchestrationQueue>();
+            services.AddHostedService<ExecutorService>();
+            
             
             services.AddSingleton(new ActivitySource("Workflows"));
             
