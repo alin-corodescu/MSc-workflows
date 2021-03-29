@@ -51,13 +51,7 @@ namespace LoadGenerator
             
             var tasks = events.Select(ev => Task.Run(async () =>
                 {
-                    var stream = orchestrationClient.NotifyDataAvailable();
-
-                    await stream.RequestStream.WriteAsync(new DataEventRequest {Metadata = ev, RequestId = ""});
-
-                    await stream.ResponseStream.MoveNext(CancellationToken.None);
-
-                    await stream.RequestStream.CompleteAsync();
+                    await orchestrationClient.NotifyDataAvailableAsync(new DataEventRequest {Metadata = ev, RequestId = ""});
                 }, stoppingToken))
                 .ToList();
 

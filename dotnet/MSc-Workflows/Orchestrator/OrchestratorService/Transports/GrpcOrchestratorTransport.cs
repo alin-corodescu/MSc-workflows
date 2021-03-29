@@ -13,18 +13,10 @@ namespace OrchestratorService.Transports
         {
             this._impl = implementation;
         }
-        public override async Task NotifyDataAvailable(IAsyncStreamReader<DataEventRequest> requestStream, IServerStreamWriter<DataEventReply> responseStream,
-            ServerCallContext context)
+
+        public override async Task<DataEventReply> NotifyDataAvailable(DataEventRequest request, ServerCallContext context)
         {
-            //  todo this is bad as we are actually sequentially processing the requests.
-            while (await requestStream.MoveNext())
-            {
-                var req = requestStream.Current;
-
-               var response =  await _impl.ProcessDataEvent(req);
-
-               await responseStream.WriteAsync(response);
-            }
+            return await _impl.ProcessDataEvent(request);
         }
     }
 }
