@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using DummyComputeStep.Definitions;
 using Microsoft.Extensions.Configuration;
 using Workflows.Models;
@@ -19,12 +21,23 @@ namespace DummyComputeStep.ExampleSteps
         
         public async IAsyncEnumerable<ComputeStepReply> TriggerCompute(ComputeStepRequest request)
         {
-            var input = await File.ReadAllTextAsync(request.LocalPath);
+            await using var inputFile = File.OpenRead(request.LocalPath);
+            using var binaryReader = new BinaryReader(inputFile);
 
-            var transformed = input + $"\n Dummy step {stepId} was here";
+            var outputFilePath = $"{this.outputPath}/Step_{Guid.NewGuid().ToString()}";
+            await using var outputFile = File.OpenWrite(outputFilePath);
+            await using var binaryWriter = new BinaryWriter(outputFile);
+            
+            var random = new Random();
+            while (binaryReader.BaseStream.Position != binaryReader.BaseStream.Length)
+            {
+                var readBytes = binaryReader.ReadBytes(100 * 1024);
+                
+                var output = readBytes.OrderBy(x => random.Next()).ToArray();
+                
+                binaryWriter.Write(output);
+            }
 
-            var outputFilePath = $"{this.outputPath}/Step_{stepId}";
-            await File.WriteAllTextAsync(outputFilePath, transformed);
             var reply = new ComputeStepReply
             {
                 OutputFilePath = outputFilePath
