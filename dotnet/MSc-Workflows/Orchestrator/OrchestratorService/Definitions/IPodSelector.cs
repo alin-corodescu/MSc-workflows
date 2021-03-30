@@ -61,8 +61,9 @@ namespace OrchestratorService.Definitions
 
                 return v1Pods.ElementAt(idx);
             }
-            
-            return await Task.FromResult(possibleTargets.Select(pod =>
+
+
+            var result = possibleTargets.Select(pod =>
                 {
                     var podLocalization = this.ExtractDataLocalization(pod);
                     var currentLoad = _workTracker.GetCurrentLoadForPod(pod.Name());
@@ -79,8 +80,14 @@ namespace OrchestratorService.Definitions
                 })
                 .Where(x => x.Load < _maxLoad)
                 .OrderBy(arg => arg.Distance)
-                .First()
-                .Pod);
+                .FirstOrDefault();
+            
+            if (result != null)
+            {
+                return await Task.FromResult(result.Pod);
+            }
+
+            return null;
         }
 
         private DataLocalization ExtractDataLocalization(V1Pod pod)

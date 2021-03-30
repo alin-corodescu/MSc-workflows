@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Grpc.Net.Client;
 using k8s.Models;
 using Microsoft.Extensions.Logging;
+using OrchestratorService.RequestQueueing;
 using OrchestratorService.WorkflowSpec;
 using OrchestratorService.WorkTracking;
 using Workflows.Models;
@@ -18,17 +19,20 @@ namespace OrchestratorService.Definitions
         private readonly IRequestRouter _requestRouter;
         private readonly IWorkflowRegistry _registry;
         private readonly IWorkTracker _workTracker;
+        private readonly IOrchestrationQueue _orchestrationQueue;
 
         public OrchestratorImplementation(
             ILogger<OrchestratorImplementation> logger, 
             IRequestRouter requestRouter,
             IWorkflowRegistry registry,
-            IWorkTracker workTracker)
+            IWorkTracker workTracker,
+            IOrchestrationQueue orchestrationQueue)
         {
             _logger = logger;
             _requestRouter = requestRouter;
             _registry = registry;
             _workTracker = workTracker;
+            _orchestrationQueue = orchestrationQueue;
         }
         
         public async Task<DataEventReply> ProcessDataEvent(DataEventRequest req)
@@ -53,9 +57,18 @@ namespace OrchestratorService.Definitions
             var nextStep = workflowDefinition.Steps[eventSourcePosition + 1];
             
             var channelChoice = await this._requestRouter.GetGrpcChannelForRequest(nextStep.ComputeImage, req.Metadata.DataLocalization);
-
-            var client = new SidecarService.SidecarServiceClient(channelChoice.GrpcChannel);
             
+            var client = new SidecarService.SidecarServiceClient(channelChoice.GrpcChannel);
+
+            // The request router will return null if there is no available pod.
+            if (channelChoice == null)
+            {
+                // TODO this could be a bit more informative (like canRetry=true)
+                return new DataEventReply
+                {
+                    IsSuccess = false
+                };
+            }
             var stepTriggerRequest = new StepTriggerRequest
             {
                 Metadata = req.Metadata,

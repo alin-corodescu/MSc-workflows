@@ -51,7 +51,12 @@ namespace OrchestratorService.RequestQueueing
                 {
                     try
                     {
-                        await _implementation.ProcessDataEvent(req.Item1);
+                        var result = await _implementation.ProcessDataEvent(req.Item1);
+                        if (result.IsSuccess == false)
+                        {
+                            // TODO should guard against infinite loops here.
+                            queue.QueueOrchestrationWork(req.Item1, req.Item2);
+                        }
                     }
                     catch (Exception e)
                     {

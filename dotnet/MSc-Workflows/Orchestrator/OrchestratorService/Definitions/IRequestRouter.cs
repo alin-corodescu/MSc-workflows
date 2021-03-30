@@ -60,6 +60,11 @@ namespace OrchestratorService.Definitions
 
             var targetPod = await _podSelector.SelectBestPod(possibleSteps, dataLocalization);
 
+            if (targetPod == null)
+            {
+                return null;
+            }
+            
             _logger.LogInformation($"The choice is {targetPod.Metadata.Name}. Retrieving or creating GRPC channel");
             
             var podAddr = $"http://{targetPod.Status.PodIP}:5000";
