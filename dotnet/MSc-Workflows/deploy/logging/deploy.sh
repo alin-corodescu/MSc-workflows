@@ -20,7 +20,7 @@ sleep 5
 
 echo "Creating the fluentd config map\n"
 
-kubectl apply -f fluentd-config-map.yml
+kubectl apply -f fluentd-config-map-containerd.yml
 
 sleep 5
 

@@ -1,0 +1,12 @@
+For today:
+    Setup a local cluster with Kind. 
+        Step 1 & 2 can be on both the edge and cloud zones. -- to highlight the fallback function
+        Step 3 & 4 are cloud only -- to make the computation move to the cloud.
+    
+    4 nodes - 2 in the cloud, 2 in the edge zone.
+        Through their labels, and schedule pods using affinity / taints
+
+    
+Have the analysis pipeline running.
+    -> Piecharts with where time is spent.
+    => 

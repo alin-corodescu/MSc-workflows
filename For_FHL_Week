@@ -27,3 +27,18 @@ Future:
 
     Go through my planned experiments and figure out what data I need to gather and  how to gather it + analyze it.
         Let this decision guide my thinking.
+
+
+For how to inject variables for data locality:
+    https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.20/#envvarsource-v1-core 
+
+Workflow specification:
+    No need for steps that split one chunk into multiple smaller chunks because it is equivalent with tweaking the DataCount/ DataSize parameters at the input
+    Last step needs to be in the cloud if I'm to make it great.
+
+Shared container make connection pooling possible.
+
+
+https://blog.scottlowe.org/2020/11/30/assigning-node-labels-during-kubernetes-cluster-bootstrapping/ -- how to assign labels in 
+
+

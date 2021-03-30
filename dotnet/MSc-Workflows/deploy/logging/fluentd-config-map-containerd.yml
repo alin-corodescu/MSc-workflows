@@ -10,12 +10,13 @@ data:
       path /var/log/containers/*.log
       pos_file /var/log/fluentd-containers.log.pos
       tag kubernetes.*
-      read_from_head false
+      read_from_head true
       <parse>
-        @type json
-        json_parser oj
-        time_format %Y-%m-%dT%H:%M:%S
+        @type regexp
+        expression /^(?<time>.+) (?<stream>stdout|stderr)( (?<logtag>.))? (?<log>.*)$/
+        time_format %Y-%m-%dT%H:%M:%S.%NZ
       </parse>
+      exclude_path ["/var/log/containers/fluentd*"]
     </source>
 
     <label @FLUENT_LOG>

@@ -1,0 +1,50 @@
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: workflow-cluster
+nodes:
+- role: control-plane
+- role: worker
+  kubeadmConfigPatches:
+  - |
+    kind: JoinConfiguration
+    nodeRegistration:
+      kubeletExtraArgs:
+        node-labels: "zone=edge"
+  # Mount individual stores in pointing to the local folders
+  extraMounts:
+  - hostPath: /home/alin/store/1
+    containerPath: /store
+- role: worker
+  kubeadmConfigPatches:
+  - |
+    kind: JoinConfiguration
+    nodeRegistration:
+      kubeletExtraArgs:
+        node-labels: "zone=edge"
+  # Mount individual stores in pointing to the local folders
+  extraMounts:
+  - hostPath: /home/alin/store/2
+    containerPath: /store
+- role: worker
+  kubeadmConfigPatches:
+  - |
+    kind: JoinConfiguration
+    nodeRegistration:
+      kubeletExtraArgs:
+        node-labels: "zone=cloud"
+  # Mount individual stores in pointing to the local folders
+  extraMounts:
+  - hostPath: /home/alin/store/3
+    containerPath: /store
+- role: worker
+  kubeadmConfigPatches:
+  - |
+    kind: JoinConfiguration
+    nodeRegistration:
+      kubeletExtraArgs:
+        node-labels: "zone=cloud"
+  # Mount individual stores in pointing to the local folders
+  extraMounts:
+  - hostPath: /home/alin/store/4
+    containerPath: /store
+  
