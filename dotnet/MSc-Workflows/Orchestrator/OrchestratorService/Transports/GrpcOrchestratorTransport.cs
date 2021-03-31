@@ -20,7 +20,7 @@ namespace OrchestratorService.Transports
 
         public override async Task<DataEventReply> NotifyDataAvailable(DataEventRequest request, ServerCallContext context)
         {
-            _workQueue.QueueOrchestrationWork(request, Activity.Current.Context);
+            _workQueue.QueueOrchestrationWork(request);
             return await Task.FromResult(new DataEventReply
             {
                 IsSuccess = true

@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Reflection.Metadata;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Hosting;
@@ -37,13 +38,8 @@ namespace OrchestratorService.RequestQueueing
                 
                 _logger.LogInformation($"Executor spinning up background work for reqId: {req.Item1.RequestId}");
 
-                var activity = _source.StartActivity("ProcessDataEvent",
-                    ActivityKind.Consumer,
-                    new ActivityContext(ActivityTraceId.CreateRandom(),
-                        new ActivitySpanId(),
-                        ActivityTraceFlags.Recorded));
-                
-                activity.Start();
+                var oldCurrentActivity = Activity.Current;
+                Activity.Current = req.Item2;
                 
                 // spin off a background task to do it for me. I could very well do it from the "syncrhonous" part
                 // and the Jaeger traces might look better actually
@@ -57,6 +53,11 @@ namespace OrchestratorService.RequestQueueing
                             // TODO should guard against infinite loops here.
                             queue.QueueOrchestrationWork(req.Item1, req.Item2);
                         }
+                        else
+                        {
+                            // only stop the activity when the processing was successful
+                            req.Item2.Stop();
+                        }
                     }
                     catch (Exception e)
                     {
@@ -64,7 +65,7 @@ namespace OrchestratorService.RequestQueueing
                     }
                     finally
                     {
-                        activity.Stop();
+                        Activity.Current = oldCurrentActivity;
                     }
                 });
             }

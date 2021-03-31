@@ -12,25 +12,42 @@ namespace OrchestratorService.RequestQueueing
     /// </summary>
     public interface IOrchestrationQueue
     {
-        void QueueOrchestrationWork(DataEventRequest request, ActivityContext context);
+        void QueueOrchestrationWork(DataEventRequest request, Activity existingActivity = null);
 
-        Task<Tuple<DataEventRequest, ActivityContext>> DequeueOrchestrationWork();
+        Task<Tuple<DataEventRequest, Activity>> DequeueOrchestrationWork();
     }
 
     class OrchestrationQueue : IOrchestrationQueue
     {
-        private ConcurrentQueue<Tuple<DataEventRequest, ActivityContext>> _events = new();
+        private readonly ActivitySource _source;
+        private ConcurrentQueue<Tuple<DataEventRequest, Activity>> _events = new();
 
         private SemaphoreSlim _dataPresentSignal = new SemaphoreSlim(0);
 
-
-        public void QueueOrchestrationWork(DataEventRequest request, ActivityContext currentContext)
+        public OrchestrationQueue(ActivitySource source)
         {
-            _events.Enqueue(new Tuple<DataEventRequest, ActivityContext>(request, currentContext));
+            _source = source;
+        }
+        
+        public void QueueOrchestrationWork(DataEventRequest request, Activity existingActivity = null)
+        {
+            if (existingActivity == null)
+            {
+                existingActivity = _source.StartActivity("ProcessDataEvent",
+                    ActivityKind.Consumer,
+                    new ActivityContext(ActivityTraceId.CreateRandom(),
+                        new ActivitySpanId(),
+                        ActivityTraceFlags.Recorded));
+                
+                existingActivity.Start();
+                
+            }
+
+            _events.Enqueue(new Tuple<DataEventRequest, Activity>(request, existingActivity));
             _dataPresentSignal.Release();
         }
 
-        public async Task<Tuple<DataEventRequest, ActivityContext>> DequeueOrchestrationWork()
+        public async Task<Tuple<DataEventRequest, Activity>> DequeueOrchestrationWork()
         {
             // Wait for data to be available in the queue.
             await _dataPresentSignal.WaitAsync();
