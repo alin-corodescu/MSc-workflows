@@ -32,12 +32,12 @@ namespace OrchestratorService.Proximity
         
         public int GetDistance(DataLocalization @from, DataLocalization to)
         {
-            if (from.LocalizationCoordinates[0] == to.LocalizationCoordinates[0])
+            if (from.Host == to.Host)
             {
                 return SameHostDistance;
             }
-            var fromZone = ZoneIndex[from.LocalizationCoordinates[1]];
-            var toZone = ZoneIndex[to.LocalizationCoordinates[1]];
+            var fromZone = ZoneIndex[from.Zone];
+            var toZone = ZoneIndex[to.Zone];
 
             return InterZoneDistanceMatrix[fromZone][toZone];
         }

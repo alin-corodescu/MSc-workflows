@@ -53,11 +53,11 @@ namespace Definitions.Adapters
         {
             var nodeIp = configuration["LOCALIZATION_HOST"];
             var zone = configuration["LOCALIZATION_ZONE"];
-            var region = configuration["LOCALIZATION_REGION"];
             
             return new DataLocalization
             {
-                LocalizationCoordinates = {nodeIp, zone, region}
+                Host = nodeIp,
+                Zone = zone
             };
         }
 

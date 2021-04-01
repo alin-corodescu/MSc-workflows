@@ -4,13 +4,11 @@ metadata:
   name: step1-pod
   labels:
     stepName: step1
-    zone: zone1
-    region: region1
+    zone: edge1
 spec:
   containers:
       - name: sidecar
-        image: sidecar:latest
-        imagePullPolicy: Never
+        image: alincorodescu/msc-workflows-sidecar:latest
         resources:
           limits:
             memory: "128Mi"
@@ -28,8 +26,7 @@ spec:
 
 
       - name: compute
-        image: compute:latest
-        imagePullPolicy: Never
+        image: alincorodescu/msc-workflows-compute:latest
         resources:
           limits:
             memory: "128Mi"

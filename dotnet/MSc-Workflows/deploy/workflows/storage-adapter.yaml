@@ -10,18 +10,16 @@ spec:
     metadata:
       labels:
         name: storage-adapter
-        zone: zone1
-        region: region1
+        zone: edge1
     spec:
-      tolerations:
+      # tolerations:
       # this toleration is to have the daemonset runnable on master nodes
       # remove it if your masters can't run pods
-      - key: node-role.kubernetes.io/master
-        effect: NoSchedule
+      # - key: node-role.kubernetes.io/master
+      #   effect: NoSchedule
       containers:
       - name: storage-adapter
-        image: storage-adapter:latest
-        imagePullPolicy: Never
+        image: alincorodescu/msc-workflows-storage-adapter:latest
         resources:
           limits:
             memory: 500Mi
@@ -49,11 +47,6 @@ spec:
             valueFrom:
               fieldRef: 
                 fieldPath: metadata.labels['zone']
-          - name: LOCALIZATION_REGION
-            valueFrom:
-              fieldRef: 
-                fieldPath: metadata.labels['region']
-          
       volumes:
       - name: store
         hostPath:

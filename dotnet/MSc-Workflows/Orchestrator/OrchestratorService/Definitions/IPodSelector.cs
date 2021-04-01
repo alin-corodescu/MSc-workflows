@@ -94,11 +94,11 @@ namespace OrchestratorService.Definitions
         {
             var nodeIp = pod.Status.HostIP;
             var zone = pod.Metadata.Labels["zone"];
-            var region = pod.Metadata.Labels["region"];
             
             return new DataLocalization
             {
-                LocalizationCoordinates = { nodeIp, zone, region }
+                Host = nodeIp, 
+                Zone = zone
             };
         }
     }

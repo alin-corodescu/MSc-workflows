@@ -1,9 +1,10 @@
-﻿using System.Threading;
+﻿
+
+using System.Threading;
 using System.Threading.Tasks;
-using LoadGenerator;
 using Microsoft.Extensions.Configuration;
 
-namespace ManualTestingProject
+namespace TelemetryReader
 {
     class Program
     {
@@ -14,7 +15,6 @@ namespace ManualTestingProject
                 .AddEnvironmentVariables()
                 .AddCommandLine(args)
                 .Build();
-
             await new Worker(config).ExecuteAsync(CancellationToken.None);
         }
     }

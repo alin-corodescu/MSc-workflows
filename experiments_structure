@@ -9,3 +9,96 @@ Experiments:
     -> HTTP connection pooling.
     -> Bandwidth savings.
     -> 
+
+
+Control:
+    Total: Orchestrator/ProcessDataEvent - (4 + 11 + 9)
+        // captures the total time spent doing something else beside
+        // data handling and computation.
+
+Data wrangling
+    (4) Sidecar : StorageAdapter/PullData
+        Client side call of the sidecar (includes localhost calls)
+
+    (11) Sidecar: StorageAdapter/PushData
+
+Compute
+    Constant as 
+        (9) Sidecar : ComputeStepService/TriggerCompute
+            -> This is the client call from the sidecar towards the compute
+            (includes localhost call)
+    Maybe in some cases it isn't constant, and the compute time is actually eclipsing everything.
+
+
+
+Container initializtion:
+    For our solution, we assume our containers exist, but that's thanks to the SharedContainers approach
+    
+
+For localhost being negligible, we can do an experiment on monolith architecture
+For GRPC vs REST, performance may not be amazing, but CPU utilization/ memory is.
+Data streaming into the compute container instead of file based communication. File based communication requires batching. Use sockets instead? Or memory shared channels?
+
+
+
+For Data Wrangling:
+    Further break down (4) and (11):
+        (4 - Remote) Master call
+                    Peer download
+        (4 - Local) Copy/ Hard linking
+        (11) Copy / Hard linking
+             Master call
+
+Compare with Airflow since that's the one that provides data locality. - but that's relevant for SharedContainers only.
+Compare with Argo for non-data local comparison.
+
+Mention why E2E numbers aren't that relevant:
+    Because they are highly dependent on the nature of the workflow.
+        They are dependent on the size of data,
+        Available resources (if we fall back out of the host hosting the most data)
+
+
+
+Experiments with:
+    DL off, HL off, CP off.
+    DataSize x 3, Cloud and 1 Edge deployments.
+
+    Control %, avg
+    Data: %, avg
+    Compute: %, avg
+
+Experiments with:
+    DL on, HL on, CP on.
+    DataSize x 3, Cloud and 1 Edge deployments.
+
+    Control: %,avg
+    Data: %, avg
+    Compute: %, avg
+
+    Conclusion : How the data and control have been sped up signficantly.
+
+        Break down the data even further:
+            Local vs Remote count depends on the event count (current load).
+                Avg local, avg remote (per zone to zone combination)
+
+            For 4 - local and 11, run new experiment 
+                => DL on, HL on/off, CP on.
+                Data Size x 3
+
+            Conclusion: HL is constant time, while copying is dependent on the data size.
+
+            For 4 - Remote, Chunk_Size is a parameter that can be adjusted - but htat's not the focus of the thesis.
+            
+        For 4 - Remote - indicate how highly dependent it is on physical distance. Disclaimer, since we are using cloud instances, these have high speed links even between their regions, which may give the wrong indication.
+
+    Bandwidth savings:
+        Zone to Zone. Heavily dependent on other configurations such as data count.
+    
+New data with count increased + cloud and 2 edge deployment.
+    Conclusion : Ability to use the entire computing continuum efficiently (falling over the closer region).
+
+Narrative:
+    Prove what the primitive values these depend on and argue why E2E numbers may not be entirely relevant.
+    But in the best case scenario, it can save up to X time and Y bandwidth.
+
+    

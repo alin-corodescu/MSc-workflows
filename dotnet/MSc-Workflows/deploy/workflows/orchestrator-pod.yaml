@@ -7,8 +7,7 @@ metadata:
 spec:
   containers:
       - name: orchestrator-service
-        image: orchestrator-service:latest
-        imagePullPolicy: Never
+        image: alincorodescu/msc-workflows-orchestrator:latest
         resources:
           limits:
             memory: "128Mi"

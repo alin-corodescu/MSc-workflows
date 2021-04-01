@@ -49,7 +49,7 @@ namespace Workflows.StorageAdapters.Definitions
                 }
             };
 
-            using var file = File.OpenRead(targetLocalPath);
+            using var file = File.OpenWrite(targetLocalPath);
             using var binaryWriter = new BinaryWriter(file);
             
             var streamedResults = client.GetData(dataRequest);
@@ -69,8 +69,15 @@ namespace Workflows.StorageAdapters.Definitions
                 activity.Stop();
             }
 
-            string from = string.Join('-', _currentNodeLocalization.LocalizationCoordinates);
-            string to = string.Join('-', peerLocalization.LocalizationCoordinates);
+            string from = $"{peerLocalization.Host}-{peerLocalization.Zone}";
+            string to = $"{_currentNodeLocalization.Host}-{_currentNodeLocalization.Zone}";
+
+            var currentActivity = Activity.Current;
+            currentActivity.SetTag("wf-from", from);
+            currentActivity.SetTag("wf-to", to);
+            currentActivity.SetTag("wf-ds", totalSize.ToString());
+            
+            
             _logger.LogInformation("Downloaded data {from} {to} {totalSize}", from, to, totalSize);
         }
     }

@@ -1,0 +1,40 @@
+Need to gather the data from the logs and from Jaeger query service:
+
+
+For the logs:
+
+Can get a csv:
+
+from, to, payload.
+
+    Computing continuum fallback - when data locality is enabled.
+
+    Reducing the data trasnfer in general and especially in edge -> cloud communication.
+        Data Locality on vs off.
+
+
+From Jaeger
+    I want a piechart with where time is spent for 1 particular DataAvailableEvent. 
+    
+    From the time the orchestrator is made aware of a new data chunk being available to the moment the output of the step is fully registered and ready to trigger the next step.
+
+    (or average trace visualized in Jaeger UI)
+
+
+For End2End numbers:
+    For an example workflow.
+    What is the throughput
+    What is the end2end execution time.
+
+
+TODO 01.04.2021:
+    DONE - Data locality with Host and Zone - explicit through the GRPC contract
+    DONE - Attach size of the request to current activity as a tag to the GRPC request
+    
+    Write the script to output csvs with the experimental data.
+    Write pandas python code to draw the visualizations of the data.
+
+    DONE - Publish the images to dockerhub
+    Multi-zone deployments/ daemonsets.
+    Write the thesis/experiment contents.
+    Set up Kubernetes in Azure.
