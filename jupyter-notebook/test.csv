@@ -1,0 +1,3 @@
+tId,dataPullType,FromZone,ToZone,DataSize,TotalDuration,TriggerStepDuration,DataPullDuration,DataPushDuration,ComputeDuration,DataMasterPullCall,DataPeerPullcall,DataMasterPushCall
+abc,remote,edge1,edge1,1024,1500,150,350,350,300,150,200,250
+def,remote,edge1,edge1,1024,1200,150,350,350,300,150,200,250

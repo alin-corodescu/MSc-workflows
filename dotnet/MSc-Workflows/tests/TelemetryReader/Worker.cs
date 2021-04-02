@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Google.Protobuf.WellKnownTypes;
@@ -42,6 +44,26 @@ namespace TelemetryReader
             };
             var streamResult = client.FindTraces(findTracesRequest, cancellationToken: stoppingToken).ResponseStream;
 
+            var currentTraceId = "";
+            TraceDetails currentTraceDetails = null;
+            using var fileName = File.OpenWrite(_configuration["outputPath"]);
+            using var textWriter = new StreamWriter(fileName);
+
+            var headers = string.Join(',', "tId"
+                , "dataPullType"
+                , "FromZone"
+                , "ToZone"
+                , "DataSize"
+                , "TotalDuration"
+                , "TriggerStepDuration"
+                , "DataPullDuration"
+                , "DataPushDuration"
+                , "ComputeDuration"
+                , "DataMasterPullCall"
+                , "DataPeerPullCall"
+                , "DataMasterPushCall");
+            
+            await textWriter.WriteLineAsync(headers);
             while (await streamResult.MoveNext(CancellationToken.None))
             {
                 Console.WriteLine("Starting new chunk");
@@ -51,34 +73,88 @@ namespace TelemetryReader
                 // And then, for each trace, calculate the aggregates
                 foreach (var span in currentChunk.Spans)
                 {
-                    Console.WriteLine(span.TraceId.ToBase64());
-                    Console.WriteLine(span.Process.ServiceName + ":" + span.OperationName);
-                    //span.Duration.ToTimeSpan().Ticks;
+                    if (span.TraceId.ToBase64() != currentTraceId)
+                    {
+                        await textWriter.FlushAsync();
+                        // new trace is starting.
+                        if (currentTraceDetails != null)
+                        {
+                            await textWriter.WriteLineAsync(currentTraceDetails.ToString());
+                        }
+                        currentTraceId = span.TraceId.ToBase64();
+                        currentTraceDetails.TraceId = currentTraceId;
+                    }
+
+                    AddInfoToCurrentTraceDetails(span, currentTraceDetails);
                 }
             }
-            
-            // Top Level breakdown: All Up, Local Data, Remote data
-            // per zone-zone combination for : b/w and latency.
-            
-            // trace id, 
-            // from 
-            // to 
-            // dataSize
-            // type = local/ remote
-            // duration of ProcessDataEvent. (control 2).
-            // duration of TriggerStep client span. (control 1)
-            // duration of data pulling
-            // duration of data pushing
-            // duration of compute
-            
-            // --- local communication pull:
-            // copy vs hard linking
-            // --- remote communication pull:
-            // data master, data peer, flushing to disk
-            
-            // --- pushing
-            // copy vs hard linking
-            
+        }
+
+        private static void AddInfoToCurrentTraceDetails(Span span, TraceDetails currentTraceDetails)
+        {
+            if (span.Process.ServiceName == "Orchestrator")
+            {
+                if (span.OperationName == "ProcessDataEvent")
+                {
+                    // set the total duration
+                    currentTraceDetails.TotalDuration = (int) span.Duration.ToTimeSpan().TotalMilliseconds;
+                }
+
+                if (span.OperationName == "SidecarService/TriggerStep")
+                {
+                    // Trigger step duration (excludes the call to the Kubernetes API.
+                    currentTraceDetails.TriggerStepDuration = (int) span.Duration.ToTimeSpan().TotalMilliseconds;
+
+                    if (currentTraceDetails.DataPullType == "none")
+                    {
+                        currentTraceDetails.DataPullType = "local";
+                    }
+                }
+            }
+
+            if (span.Process.ServiceName == "Sidecar")
+            {
+                if (span.OperationName == "StorageAdapter/PullData")
+                {
+                    // 4
+                    currentTraceDetails.DataPullDuration = (int) span.Duration.ToTimeSpan().TotalMilliseconds;
+                }
+
+                if (span.OperationName == "StorageAdapter/PushData")
+                {
+                    // 11
+                    currentTraceDetails.DataPushDuration = (int) span.Duration.ToTimeSpan().TotalMilliseconds;
+                }
+
+                if (span.OperationName == "ComputeStepService/TriggerCompute")
+                {
+                    // 9
+                    currentTraceDetails.ComputeDuration = (int) span.Duration.ToTimeSpan().TotalMilliseconds;
+                }
+            }
+
+            if (span.Process.ServiceName == "DataAdapter")
+            {
+                if (span.OperationName == "DataMasterService/GetAddrForDataChunk")
+                {
+                    currentTraceDetails.DataMasterPullCall = (int) span.Duration.ToTimeSpan().TotalMilliseconds;
+                }
+
+                if (span.OperationName == "DataPeerService/GetData")
+                {
+                    // Here I need to extract a few things
+                    currentTraceDetails.DataPullType = "remote";
+                    currentTraceDetails.FromZone = span.Tags.Single(kv => kv.Key == "wf-from").VStr;
+                    currentTraceDetails.ToZone = span.Tags.Single(kv => kv.Key == "wf-to").VStr;
+                    currentTraceDetails.DataSize = span.Tags.Single(kv => kv.Key == "wf-ds").VInt64;
+                    currentTraceDetails.DataPeerPullCall = (int) span.Duration.ToTimeSpan().TotalMilliseconds;
+                }
+
+                if (span.OperationName == "DataMasterService/SignalDataChunkAvailable")
+                {
+                    currentTraceDetails.DataMasterPushCall = (int) span.Duration.ToTimeSpan().TotalMilliseconds;
+                }
+            }
         }
     }
 }

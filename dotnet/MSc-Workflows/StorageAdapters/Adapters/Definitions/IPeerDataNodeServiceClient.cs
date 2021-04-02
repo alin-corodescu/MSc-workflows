@@ -75,7 +75,7 @@ namespace Workflows.StorageAdapters.Definitions
             var currentActivity = Activity.Current;
             currentActivity.SetTag("wf-from", from);
             currentActivity.SetTag("wf-to", to);
-            currentActivity.SetTag("wf-ds", totalSize.ToString());
+            currentActivity.SetTag("wf-ds", (long) totalSize);
             
             
             _logger.LogInformation("Downloaded data {from} {to} {totalSize}", from, to, totalSize);

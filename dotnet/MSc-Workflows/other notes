@@ -31,7 +31,7 @@ TODO 01.04.2021:
     DONE - Data locality with Host and Zone - explicit through the GRPC contract
     DONE - Attach size of the request to current activity as a tag to the GRPC request
     
-    Write the script to output csvs with the experimental data.
+    DONE - Write the script to output csvs with the experimental data.
     Write pandas python code to draw the visualizations of the data.
 
     DONE - Publish the images to dockerhub

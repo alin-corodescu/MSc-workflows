@@ -1,16 +1,3 @@
-
-Experiments:
-    -> For each experiment set up the environment,
-    -> Explain the tools used to gather the data and visualize the gathered Data
-    
-    -> Showcase failing over to other regions
-    -> Data locality on vs data locality off.
-    -> GRPC vs REST
-    -> HTTP connection pooling.
-    -> Bandwidth savings.
-    -> 
-
-
 Control:
     Total: Orchestrator/ProcessDataEvent - (4 + 11 + 9)
         // captures the total time spent doing something else beside
@@ -79,11 +66,13 @@ Experiments with:
 
         Break down the data even further:
             Local vs Remote count depends on the event count (current load).
-                Avg local, avg remote (per zone to zone combination)
+                Avg local, avg remote 
+                    (per zone to zone combination) - as a further breakdown.
+                    storage-adapter
 
             For 4 - local and 11, run new experiment 
                 => DL on, HL on/off, CP on.
-                Data Size x 3
+                Data Size x 3, only 1 step. Simplee
 
             Conclusion: HL is constant time, while copying is dependent on the data size.
 
@@ -92,13 +81,21 @@ Experiments with:
         For 4 - Remote - indicate how highly dependent it is on physical distance. Disclaimer, since we are using cloud instances, these have high speed links even between their regions, which may give the wrong indication.
 
     Bandwidth savings:
-        Zone to Zone. Heavily dependent on other configurations such as data count.
+        Zone to Zone. Heavily dependent on other configurations such as data count & capacity to process. The algorithm tries to route to the best solution, so best case scenario all processing that can happen locally (according to the topology and available resources) will happen locally.
+
     
 New data with count increased + cloud and 2 edge deployment.
     Conclusion : Ability to use the entire computing continuum efficiently (falling over the closer region).
+    --> this one can be done in Kind.
 
 Narrative:
     Prove what the primitive values these depend on and argue why E2E numbers may not be entirely relevant.
-    But in the best case scenario, it can save up to X time and Y bandwidth.
+    But in the best case scenario, it can save UP TO X time and Y bandwidth - experiment for the best case scenario.
 
+
+
+
+
+Shameless experiment with another data source, since the data sharing solution is implemented as part of this project as well.
+Or how does Airflow treat 
     
