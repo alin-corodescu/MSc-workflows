@@ -59,8 +59,8 @@ spec:
             name: inputs
           - mountPath: /out
             name: outputs
-        nodeSelector:
-          zone: edge1
+     nodeSelector:
+      zone: edge1
 
   volumes:
   - name: inputs

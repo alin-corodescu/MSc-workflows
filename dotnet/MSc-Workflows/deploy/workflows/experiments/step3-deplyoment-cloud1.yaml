@@ -34,6 +34,10 @@ spec:
         env:
           - name: UseDataLocality
             value: "true"
+          - name: UseConnectionPooling
+            value: "true"
+          - name: UseHardLinking
+            value: "true"
           - name: ASPNETCORE_URLS
             value: http://localhost:5002
           - name: POD_NAME
@@ -49,8 +53,8 @@ spec:
             name: inputs
           - mountPath: /out
             name: outputs
-        nodeSelector:
-          zone: cloud1
+     nodeSelector:
+      zone: cloud1
 
   volumes:
   - name: inputs

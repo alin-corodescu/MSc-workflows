@@ -47,8 +47,8 @@ spec:
             name: inputs
           - mountPath: /out
             name: outputs
-        nodeSelector:
-          zone: cloud1
+     nodeSelector:
+      zone: cloud1
 
   volumes:
   - name: inputs
