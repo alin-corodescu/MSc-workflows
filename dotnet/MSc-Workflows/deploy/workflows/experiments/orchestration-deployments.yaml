@@ -3,7 +3,6 @@ kind: Deployment
 metadata:
   name: orchestrator-deplyoment
   namespace: default
-  zone: edge1
 spec:
   replicas: 1
   selector:
@@ -15,38 +14,37 @@ spec:
         app: orchestrator-pod
         zone: edge1
     spec:
-     containers:
-      - name: orchestrator-service
-        image: alincorodescu/msc-workflows-orchestrator:latest
-        resources:
-          limits:
-            memory: "128Mi"
-            cpu: "500m"
-        env:
-          - name: UseDataLocality
-            value: "true"
-          - name: UseConnectionPooling
-            value: "true"
-          - name: ASPNETCORE_URLS
-            value: http://+:9376
-          - name: NODE_IP
-            valueFrom:
-              fieldRef: 
-                fieldPath: status.hostIP
-        ports:
-          - containerPort: 9376
-            protocol: TCP
-          - containerPort: 10001
-            protocol: TCP
-        nodeSelector:
-          zone: edge1
+      containers:
+        - name: orchestrator-service
+          image: alincorodescu/msc-workflows-orchestrator:latest
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          env:
+            - name: UseDataLocality
+              value: "true"
+            - name: UseConnectionPooling
+              value: "true"
+            - name: ASPNETCORE_URLS
+              value: http://+:9376
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          ports:
+            - containerPort: 9376
+              protocol: TCP
+            - containerPort: 10001
+              protocol: TCP
+      nodeSelector:
+        zone: edge1
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: datanaster-deplyoment
   namespace: default
-  zone: edge1
 spec:
   replicas: 1
   selector:
@@ -58,25 +56,26 @@ spec:
         app: datamaster
         zone: edge1
     spec:
-     containers:
-      - name: data-master
-        image: alincorodescu/msc-workflows-data-master:latest
-        resources:
-          limits:
-            memory: "128Mi"
-            cpu: "500m"
-        env:
-          - name: ASPNETCORE_URLS
-            value: http://+:9377
-          - name: NODE_IP
-            valueFrom:
-              fieldRef: 
-                fieldPath: status.hostIP
-        ports:
-        # For GRPC calls
-          - containerPort: 9377
-            protocol: TCP
-        # For REST calls
-          - containerPort: 10001
-            protocol: TCP
-  
+      containers:
+        - name: data-master
+          image: alincorodescu/msc-workflows-data-master:latest
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+          env:
+            - name: ASPNETCORE_URLS
+              value: http://+:9377
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          ports:
+            # For GRPC calls
+            - containerPort: 9377
+              protocol: TCP
+            # For REST calls
+            - containerPort: 10001
+              protocol: TCP
+      nodeSelector:
+        zone: edge1

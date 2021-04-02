@@ -9,7 +9,7 @@ nodes:
     kind: JoinConfiguration
     nodeRegistration:
       kubeletExtraArgs:
-        node-labels: "zone=edge"
+        node-labels: "zone=edge1"
   # Mount individual stores in pointing to the local folders
   extraMounts:
   - hostPath: /home/alin/store/1
@@ -20,7 +20,7 @@ nodes:
     kind: JoinConfiguration
     nodeRegistration:
       kubeletExtraArgs:
-        node-labels: "zone=edge"
+        node-labels: "zone=edge1"
   # Mount individual stores in pointing to the local folders
   extraMounts:
   - hostPath: /home/alin/store/2
@@ -31,7 +31,7 @@ nodes:
     kind: JoinConfiguration
     nodeRegistration:
       kubeletExtraArgs:
-        node-labels: "zone=cloud"
+        node-labels: "zone=cloud1"
   # Mount individual stores in pointing to the local folders
   extraMounts:
   - hostPath: /home/alin/store/3
@@ -42,7 +42,7 @@ nodes:
     kind: JoinConfiguration
     nodeRegistration:
       kubeletExtraArgs:
-        node-labels: "zone=cloud"
+        node-labels: "zone=cloud1"
   # Mount individual stores in pointing to the local folders
   extraMounts:
   - hostPath: /home/alin/store/4

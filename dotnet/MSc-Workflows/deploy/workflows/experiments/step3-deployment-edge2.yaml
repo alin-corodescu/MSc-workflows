@@ -1,9 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: step3
+  name: step3-edge2
   namespace: default
-  zone: edge2
 spec:
   replicas: 2
   selector:
@@ -16,46 +15,43 @@ spec:
         stepName: step3
         zone: edge2
     spec:
-     containers:
-      - name: sidecar
-        image: alincorodescu/msc-workflows-sidecar:latest
-        env:
-          - name: ASPNETCORE_URLS
-            value: http://+:5000
-          - name: NODE_IP
-            valueFrom:
-              fieldRef: 
-                fieldPath: status.hostIP
-        ports:
-          - containerPort: 5000
-            protocol: TCP
-      - name: compute
-        image: alincorodescu/msc-workflows-compute:latest
-        env:
-          - name: ASPNETCORE_URLS
-            value: http://localhost:5002
-          - name: POD_NAME
-            valueFrom:
-              fieldRef:
-                fieldPath: metadata.name
-          - name: NODE_IP
-            valueFrom:
-              fieldRef: 
-                fieldPath: status.hostIP
-        volumeMounts:
-          - mountPath: /in
-            name: inputs
-          - mountPath: /out
-            name: outputs
-     nodeSelector:
-      zone: edge2
-
-  volumes:
-  - name: inputs
-    hostPath:
-      path: /store/inputs
-  
-  - name: outputs
-    hostPath:
-      path: /store/outputs
-  
+      containers:
+        - name: sidecar
+          image: alincorodescu/msc-workflows-sidecar:latest
+          env:
+            - name: ASPNETCORE_URLS
+              value: http://+:5000
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          ports:
+            - containerPort: 5000
+              protocol: TCP
+        - name: compute
+          image: alincorodescu/msc-workflows-compute:latest
+          env:
+            - name: ASPNETCORE_URLS
+              value: http://localhost:5002
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: NODE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          volumeMounts:
+            - mountPath: /in
+              name: inputs
+            - mountPath: /out
+              name: outputs
+      nodeSelector:
+        zone: edge2
+      volumes:
+        - name: inputs
+          hostPath:
+            path: /store/inputs
+        - name: outputs
+          hostPath:
+            path: /store/outputs

@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: storage-adapter
+  name: storage-adapter-cloud1
 spec:
   selector:
     matchLabels:

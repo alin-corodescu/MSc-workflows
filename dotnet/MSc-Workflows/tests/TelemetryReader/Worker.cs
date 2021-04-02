@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Net.Client;
 using Jaeger.ApiV2;
@@ -29,7 +31,6 @@ namespace TelemetryReader
 
             var client = new QueryService.QueryServiceClient(channel);
 
-            
             var findTracesRequest = new FindTracesRequest
             {
                 Query = new TraceQueryParameters
@@ -44,6 +45,7 @@ namespace TelemetryReader
             };
             var streamResult = client.FindTraces(findTracesRequest, cancellationToken: stoppingToken).ResponseStream;
 
+            List<ByteString> traceIds = new List<ByteString>();
             var currentTraceId = "";
             TraceDetails currentTraceDetails = null;
             using var fileName = File.OpenWrite(_configuration["outputPath"]);
@@ -75,6 +77,7 @@ namespace TelemetryReader
                 {
                     if (span.TraceId.ToBase64() != currentTraceId)
                     {
+
                         await textWriter.FlushAsync();
                         // new trace is starting.
                         if (currentTraceDetails != null)
@@ -83,9 +86,21 @@ namespace TelemetryReader
                         }
                         currentTraceId = span.TraceId.ToBase64();
                         currentTraceDetails.TraceId = currentTraceId;
+                        traceIds.Add(span.TraceId);
                     }
 
                     AddInfoToCurrentTraceDetails(span, currentTraceDetails);
+                }
+            }
+
+            if (_configuration["ArchiveTraces"] == "true")
+            {
+                foreach (var archive in traceIds.Select(traceId => new ArchiveTraceRequest
+                {
+                    TraceId = traceId
+                }))
+                {
+                   await client.ArchiveTraceAsync(archive);
                 }
             }
         }

@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: step3-edge1
+  name: step3-cloud1
   namespace: default
 spec:
   replicas: 2
@@ -13,7 +13,7 @@ spec:
       labels:
         app: step3
         stepName: step3
-        zone: edge1
+        zone: cloud1
     spec:
       containers:
         - name: sidecar
@@ -31,6 +31,12 @@ spec:
         - name: compute
           image: alincorodescu/msc-workflows-compute:latest
           env:
+            - name: UseDataLocality
+              value: "true"
+            - name: UseConnectionPooling
+              value: "true"
+            - name: UseHardLinking
+              value: "true"
             - name: ASPNETCORE_URLS
               value: http://localhost:5002
             - name: POD_NAME
@@ -47,7 +53,7 @@ spec:
             - mountPath: /out
               name: outputs
       nodeSelector:
-        zone: edge1
+        zone: cloud1
       volumes:
         - name: inputs
           hostPath:

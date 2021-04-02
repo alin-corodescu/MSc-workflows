@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: storage-adapter
+  name: storage-adapter-edge2
 spec:
   selector:
     matchLabels:
