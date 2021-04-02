@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Grpc.Net.Client;
 using k8s.Models;
@@ -23,6 +24,7 @@ namespace OrchestratorService.Definitions
         private readonly IOrchestrationQueue _orchestrationQueue;
         private readonly IConfiguration _configuration;
 
+        private static readonly SemaphoreSlim _workTrackingSemaphore = new SemaphoreSlim(1, 1);
         public OrchestratorImplementation(
             ILogger<OrchestratorImplementation> logger, 
             IRequestRouter requestRouter,
@@ -71,30 +73,47 @@ namespace OrchestratorService.Definitions
             {
                 var url =
                     $"http://{_configuration[$"{nextStep.ComputeImage}_SERVICE_HOST"]}:{_configuration[$"{nextStep.ComputeImage}_SERVICE_PORT"]}";
+
+                _logger.LogInformation("Not using data locality, falling back to the serice: {url}", url);
                 
                 channel = GrpcChannel.ForAddress(url);
             }
             else
             {
-                _workTracker.MarkWorkAsFinished(req.RequestId);
-                
-                var channelChoice =
-                    await this._requestRouter.GetGrpcChannelForRequest(nextStep.ComputeImage,
-                        req.Metadata.DataLocalization);
-
-                // The request router will return null if there is no available pod.
-                if (channelChoice == null)
+                await _workTrackingSemaphore.WaitAsync();
+                try
                 {
-                    // TODO this could be a bit more informative (like canRetry=true)
-                    return new DataEventReply
-                    {
-                        IsSuccess = false
-                    };
-                }
+                    _workTracker.MarkWorkAsFinished(req.RequestId);
 
-                channel = channelChoice.GrpcChannel;
-                
-                _workTracker.MarkWorkAsStarted(stepTriggerRequest.RequestId, eventSourcePosition + 1, channelChoice.PodChoice.Name());
+                    var channelChoice =
+                        await this._requestRouter.GetGrpcChannelForRequest(nextStep.ComputeImage,
+                            req.Metadata.DataLocalization);
+
+                    // The request router will return null if there is no available pod.
+                    if (channelChoice == null)
+                    {
+                        _logger.LogInformation("Channel choice is null. We will re-queue the request");
+                        // TODO this could be a bit more informative (like canRetry=true)
+                        return new DataEventReply
+                        {
+                            IsSuccess = false
+                        };
+                    }
+
+                    channel = channelChoice.GrpcChannel;
+
+                    _workTracker.MarkWorkAsStarted(stepTriggerRequest.RequestId, eventSourcePosition + 1,
+                        channelChoice.PodChoice.Name());
+                }
+                catch (Exception e)
+                {
+                    _logger.LogError(e, "Exception for data locality stuff");
+                    throw;
+                }
+                finally
+                {
+                    _workTrackingSemaphore.Release();
+                }
             }
 
             var client = new SidecarService.SidecarServiceClient(channel);

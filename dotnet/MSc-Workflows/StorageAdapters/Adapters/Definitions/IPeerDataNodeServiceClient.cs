@@ -57,8 +57,8 @@ namespace Workflows.StorageAdapters.Definitions
             var totalSize = 0;
             while (await streamedResults.ResponseStream.MoveNext(new CancellationToken()))
             {
-                var activity = _activitySource.StartActivity("FlushToDisk");
-                activity.Start();
+                // var activity = _activitySource.StartActivity("FlushToDisk");
+                // activity.Start();
                 var chunk = streamedResults.ResponseStream.Current;
 
                 totalSize += chunk.Payload.Length;
@@ -66,7 +66,7 @@ namespace Workflows.StorageAdapters.Definitions
                 binaryWriter.Write(chunk.Payload.ToByteArray());
                 binaryWriter.Flush();
                 
-                activity.Stop();
+                // activity.Stop();
             }
 
             string from = $"{peerLocalization.Host}-{peerLocalization.Zone}";

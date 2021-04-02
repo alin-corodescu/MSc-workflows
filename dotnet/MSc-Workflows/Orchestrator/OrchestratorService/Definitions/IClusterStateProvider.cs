@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,7 +26,7 @@ namespace OrchestratorService.Definitions
     {
         private IKubernetes k8s;
 
-        private Dictionary<string, V1PodList> cache = new Dictionary<string, V1PodList>();
+        private ConcurrentDictionary<string, V1PodList> cache = new ();
 
         public KubernetesClusterStateProvider(ILogger<KubernetesClusterStateProvider> logger)
         {

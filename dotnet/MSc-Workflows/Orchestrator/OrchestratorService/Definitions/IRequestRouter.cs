@@ -65,7 +65,7 @@ namespace OrchestratorService.Definitions
                 return null;
             }
             
-            _logger.LogInformation($"The choice is {targetPod.Metadata.Name}. Retrieving or creating GRPC channel");
+            _logger.LogInformation($"The choice is {targetPod.Metadata.Name}. Retrieving or creating GRPC for {targetPod.Status.PodIP}");
             
             var podAddr = $"http://{targetPod.Status.PodIP}:5000";
 

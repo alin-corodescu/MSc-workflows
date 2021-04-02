@@ -43,5 +43,6 @@ TODO 01.04.2021:
     Write the thesis/experiment contents.
     Set up Kubernetes in Azure.
     Learn a bit of Airflow.
+    
     Write pandas python code to draw the visualizations of the data.
     Run an experiment with data count = 10, data size = 1MB.

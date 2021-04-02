@@ -18,7 +18,7 @@ namespace TestGrpcService
         private readonly IOrchestratorServiceClient _orchestrator;
         private readonly ILogger<Sidecar> _logger;
         private string _inputPath;
-        private static readonly SemaphoreSlim _parallelCallSemaphore = new SemaphoreSlim(0, 3);
+        private static readonly SemaphoreSlim _parallelCallSemaphore = new SemaphoreSlim(3, 3);
 
         public Sidecar(IDataSourceAdapter dataSource, IComputeStep computeStep, IDataSinkAdapter dataSink,
             IOrchestratorServiceClient orchestrator, ILogger<Sidecar> logger, IConfiguration configuration)
