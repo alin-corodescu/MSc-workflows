@@ -67,7 +67,7 @@ Experiments with:
         Break down the data even further:
             Local vs Remote count depends on the event count (current load).
             Local vs Remove plays a very important role in the overall latency.
-            
+
                 Avg local, avg remote 
                     (per zone to zone combination) - as a further breakdown.
                     storage-adapter
