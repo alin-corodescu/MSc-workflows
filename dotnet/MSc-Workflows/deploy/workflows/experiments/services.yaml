@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: step1
+spec:
+  selector:
+    app: step1
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: step2
+spec:
+  selector:
+    app: step2
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: step3
+spec:
+  selector:
+    app: step3
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: step4
+spec:
+  selector:
+    app: step4
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: datamaster
+spec:
+  selector:
+    app: datamaster
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 9377
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: orchestrator
+spec:
+  selector:
+    app: orchestrator
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 9376
+      

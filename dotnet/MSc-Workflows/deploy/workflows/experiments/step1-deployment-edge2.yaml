@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: step1
   namespace: default
-  zone: edge1
+  zone: edge2
 spec:
   replicas: 2
   selector:
@@ -14,7 +14,7 @@ spec:
       labels:
         app: step1
         stepName: step1
-        zone: edge1
+        zone: edge2
     spec:
      containers:
       - name: sidecar
@@ -48,7 +48,7 @@ spec:
           - mountPath: /out
             name: outputs
         nodeSelector:
-          zone: edge1
+          zone: edge2
 
   volumes:
   - name: inputs

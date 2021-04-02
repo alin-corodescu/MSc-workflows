@@ -27,6 +27,9 @@ For End2End numbers:
     What is the end2end execution time.
 
 
+The fact that the code is already is instrumented is a good enough artifact to mention in the thesis.
+
+
 TODO 01.04.2021:
     DONE - Data locality with Host and Zone - explicit through the GRPC contract
     DONE - Attach size of the request to current activity as a tag to the GRPC request
@@ -38,3 +41,5 @@ TODO 01.04.2021:
     Multi-zone deployments/ daemonsets.
     Write the thesis/experiment contents.
     Set up Kubernetes in Azure.
+    Learn a bit of Airflow.
+

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -17,6 +18,7 @@ namespace TestGrpcService
         private readonly IOrchestratorServiceClient _orchestrator;
         private readonly ILogger<Sidecar> _logger;
         private string _inputPath;
+        private static readonly SemaphoreSlim _parallelCallSemaphore = new SemaphoreSlim(0, 3);
 
         public Sidecar(IDataSourceAdapter dataSource, IComputeStep computeStep, IDataSinkAdapter dataSink,
             IOrchestratorServiceClient orchestrator, ILogger<Sidecar> logger, IConfiguration configuration)
@@ -31,54 +33,63 @@ namespace TestGrpcService
         
         public async Task<StepTriggerReply> TriggerStep(StepTriggerRequest request)
         {
-            var metadata = request.Metadata;
-            var reqId = request.RequestId;
-            
-            var fileName = Guid.NewGuid().ToString();
-            var targetPathForDataDaeomn = $"/store/inputs/{fileName}";
-            
-            // 1. Ask the data source to download the data.
-            _logger.LogInformation($"Downloading data from the data source. TargetPath = {targetPathForDataDaeomn}");
-            var pullDataRequest = new PullDataRequest
+            // Make sure we are not processing more than 3 requests at a time
+            await _parallelCallSemaphore.WaitAsync();
+            try
             {
-                Metadata = metadata,
-                TargetPath = targetPathForDataDaeomn
-            };
-            
-            // TODO select data source and data sink based on the parameters.
-            await _dataSource.DownloadData(pullDataRequest);
-            
-            _logger.LogInformation("Passing the data to the compute step");
+                var metadata = request.Metadata;
+                var reqId = request.RequestId;
 
-            var computeStepRequest = new ComputeStepRequest
-            {
-                LocalPath = $"/in/{fileName}"
-            };
+                var fileName = Guid.NewGuid().ToString();
+                var targetPathForDataDaeomn = $"/store/inputs/{fileName}";
 
-            _logger.LogInformation("Triggered the compute step, awaiting responses");
-            await foreach (var response in _computeStep.TriggerCompute(computeStepRequest))
-            {
-                // TODO these calls do not need to be awaited actually. We could parallelize the work across multiple files.
-                
-                var fName = Path.GetFileName(response.OutputFilePath);
-                _logger.LogInformation($"Publishing data to the data sink /store/outputs/{fName}");
-                var reply = await _dataSink.PushData(new PushDataRequest
+                // 1. Ask the data source to download the data.
+                _logger.LogInformation(
+                    $"Downloading data from the data source. TargetPath = {targetPathForDataDaeomn}");
+                var pullDataRequest = new PullDataRequest
                 {
-                    SourceFilePath = $"/store/outputs/{fName}"
-                });
-                
-                _logger.LogInformation("Publishing metadata to the orchestrator service");
-                await _orchestrator.PublishData(new DataEventRequest
+                    Metadata = metadata,
+                    TargetPath = targetPathForDataDaeomn
+                };
+
+                // TODO select data source and data sink based on the parameters.
+                await _dataSource.DownloadData(pullDataRequest);
+
+                _logger.LogInformation("Passing the data to the compute step");
+
+                var computeStepRequest = new ComputeStepRequest
                 {
-                    Metadata = reply.GeneratedMetadata,
-                    RequestId = reqId
-                });
+                    LocalPath = $"/in/{fileName}"
+                };
+
+                _logger.LogInformation("Triggered the compute step, awaiting responses");
+                await foreach (var response in _computeStep.TriggerCompute(computeStepRequest))
+                {
+                    var fName = Path.GetFileName(response.OutputFilePath);
+                    _logger.LogInformation($"Publishing data to the data sink /store/outputs/{fName}");
+                    var reply = await _dataSink.PushData(new PushDataRequest
+                    {
+                        SourceFilePath = $"/store/outputs/{fName}"
+                    });
+
+                    _logger.LogInformation("Publishing metadata to the orchestrator service");
+                    await _orchestrator.PublishData(new DataEventRequest
+                    {
+                        Metadata = reply.GeneratedMetadata,
+                        RequestId = reqId
+                    });
+                }
+
+                return new StepTriggerReply
+                {
+                    IsSuccess = true
+                };
             }
-
-            return new StepTriggerReply
+            finally
             {
-                IsSuccess = true
-            };
+                // indicate 1 thread finished.
+                _parallelCallSemaphore.Release();
+            }
         }
     }
 }

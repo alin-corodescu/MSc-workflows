@@ -25,16 +25,22 @@ namespace OrchestratorService.Definitions
     {
         private IKubernetes k8s;
 
+        private Dictionary<string, V1PodList> cache = new Dictionary<string, V1PodList>();
+
         public KubernetesClusterStateProvider(ILogger<KubernetesClusterStateProvider> logger)
         {
             k8s = new Kubernetes(KubernetesClientConfiguration.InClusterConfig());
         }
         public async Task<IEnumerable<V1Pod>> GetPossibleChoicesForStep(string stepName)
         {
-            // todo here I can add the different selectors to get only the steps I need
+            if (cache.ContainsKey(stepName))
+            {
+                return cache[stepName].Items;
+            }
+            
             var pods = await k8s.ListNamespacedPodAsync("default", 
                 labelSelector:$"stepName={stepName}");
-
+            cache[stepName] = pods;
             return pods.Items;
         }
     }

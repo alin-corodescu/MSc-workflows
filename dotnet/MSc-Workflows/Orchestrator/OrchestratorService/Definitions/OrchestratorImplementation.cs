@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Grpc.Net.Client;
 using k8s.Models;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using OrchestratorService.RequestQueueing;
 using OrchestratorService.WorkflowSpec;
@@ -20,19 +21,22 @@ namespace OrchestratorService.Definitions
         private readonly IWorkflowRegistry _registry;
         private readonly IWorkTracker _workTracker;
         private readonly IOrchestrationQueue _orchestrationQueue;
+        private readonly IConfiguration _configuration;
 
         public OrchestratorImplementation(
             ILogger<OrchestratorImplementation> logger, 
             IRequestRouter requestRouter,
             IWorkflowRegistry registry,
             IWorkTracker workTracker,
-            IOrchestrationQueue orchestrationQueue)
+            IOrchestrationQueue orchestrationQueue,
+            IConfiguration configuration)
         {
             _logger = logger;
             _requestRouter = requestRouter;
             _registry = registry;
             _workTracker = workTracker;
             _orchestrationQueue = orchestrationQueue;
+            _configuration = configuration;
         }
         
         public async Task<DataEventReply> ProcessDataEvent(DataEventRequest req)
@@ -40,9 +44,7 @@ namespace OrchestratorService.Definitions
             var workflowDefinition = _registry.GetAllWorkflows().First();
             
             int eventSourcePosition = _workTracker.GetPositionInWorkflowForRequest(req.RequestId);
-            
-            _workTracker.MarkWorkAsFinished(req.RequestId);
-            
+
             if (eventSourcePosition == workflowDefinition.Steps.Count - 1)
             {
                 // todo here I should finish a span that started all the way when the data chunk was first registered.
@@ -55,20 +57,8 @@ namespace OrchestratorService.Definitions
             }
     
             var nextStep = workflowDefinition.Steps[eventSourcePosition + 1];
-            
-            var channelChoice = await this._requestRouter.GetGrpcChannelForRequest(nextStep.ComputeImage, req.Metadata.DataLocalization);
-            
-            var client = new SidecarService.SidecarServiceClient(channelChoice.GrpcChannel);
 
-            // The request router will return null if there is no available pod.
-            if (channelChoice == null)
-            {
-                // TODO this could be a bit more informative (like canRetry=true)
-                return new DataEventReply
-                {
-                    IsSuccess = false
-                };
-            }
+            GrpcChannel channel = null;
             var stepTriggerRequest = new StepTriggerRequest
             {
                 Metadata = req.Metadata,
@@ -76,11 +66,41 @@ namespace OrchestratorService.Definitions
                 DataSink = nextStep.DataSink,
                 DataSource = nextStep.DataSource
             };
+            
+            if (_configuration["UseDataLocality"] == "false")
+            {
+                var url =
+                    $"http://{_configuration[$"{nextStep.ComputeImage}_SERVICE_HOST"]}:{_configuration[$"{nextStep.ComputeImage}_SERVICE_PORT"]}";
+                
+                channel = GrpcChannel.ForAddress(url);
+            }
+            else
+            {
+                _workTracker.MarkWorkAsFinished(req.RequestId);
+                
+                var channelChoice =
+                    await this._requestRouter.GetGrpcChannelForRequest(nextStep.ComputeImage,
+                        req.Metadata.DataLocalization);
 
+                // The request router will return null if there is no available pod.
+                if (channelChoice == null)
+                {
+                    // TODO this could be a bit more informative (like canRetry=true)
+                    return new DataEventReply
+                    {
+                        IsSuccess = false
+                    };
+                }
+
+                channel = channelChoice.GrpcChannel;
+                
+                _workTracker.MarkWorkAsStarted(stepTriggerRequest.RequestId, eventSourcePosition + 1, channelChoice.PodChoice.Name());
+            }
+
+            var client = new SidecarService.SidecarServiceClient(channel);
+            
             _logger.LogInformation($"Triggering the computation for a step {nextStep.ComputeImage}");
-            
-            _workTracker.MarkWorkAsStarted(stepTriggerRequest.RequestId, eventSourcePosition + 1, channelChoice.PodChoice.Name());
-            
+
             var result = await client.TriggerStepAsync(stepTriggerRequest);
 
             return new DataEventReply
