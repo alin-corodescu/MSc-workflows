@@ -33,17 +33,15 @@ The fact that the code is already is instrumented is a good enough artifact to m
 TODO 01.04.2021:
     DONE - Data locality with Host and Zone - explicit through the GRPC contract
     DONE - Attach size of the request to current activity as a tag to the GRPC request
-    
     DONE - Write the script to output csvs with the experimental data.
-    Write pandas python code to draw the visualizations of the data.
-
+    DONE - Write deploy.sh for the multizone thingy
     DONE - Publish the images to dockerhub
-    Multi-zone deployments/ daemonsets.
+    DONE - Multi-zone deployments/ daemonsets.
+    DONE - Archive traces in Jaeger.
+
+
     Write the thesis/experiment contents.
     Set up Kubernetes in Azure.
     Learn a bit of Airflow.
-
-
-    Write deploy.sh for the multizone thingy
+    Write pandas python code to draw the visualizations of the data.
     Run an experiment with data count = 10, data size = 1MB.
-    Archive traces in Jaeger.
