@@ -38,9 +38,7 @@ namespace TelemetryReader
                     OperationName = "ProcessDataEvent",
                     ServiceName = "Orchestrator",
                     StartTimeMin = Timestamp.FromDateTimeOffset(DateTimeOffset.UtcNow - TimeSpan.FromDays(1)),
-                    StartTimeMax = Timestamp.FromDateTimeOffset(DateTimeOffset.UtcNow),
-                    // this is not actually depth, but rather a TopN parameter
-                    SearchDepth = 2
+                    StartTimeMax = Timestamp.FromDateTimeOffset(DateTimeOffset.UtcNow)
                 }
             };
             var streamResult = client.FindTraces(findTracesRequest, cancellationToken: stoppingToken).ResponseStream;
@@ -57,7 +55,8 @@ namespace TelemetryReader
                 , "ToZone"
                 , "DataSize"
                 , "TotalDuration"
-                , "TriggerStepDuration"
+                , "TriggerStepClientDuration"
+                , "TriggerStepServerDuration"
                 , "DataPullDuration"
                 , "DataPushDuration"
                 , "ComputeDuration"
@@ -77,13 +76,14 @@ namespace TelemetryReader
                 {
                     if (span.TraceId.ToBase64() != currentTraceId)
                     {
-
+                        
                         await textWriter.FlushAsync();
                         // new trace is starting.
                         if (currentTraceDetails != null)
                         {
                             await textWriter.WriteLineAsync(currentTraceDetails.ToString());
                         }
+                        currentTraceDetails = new TraceDetails();
                         currentTraceId = span.TraceId.ToBase64();
                         currentTraceDetails.TraceId = currentTraceId;
                         traceIds.Add(span.TraceId);
@@ -91,6 +91,11 @@ namespace TelemetryReader
 
                     AddInfoToCurrentTraceDetails(span, currentTraceDetails);
                 }
+            }
+
+            if (currentTraceDetails != null)
+            {
+                await textWriter.WriteLineAsync(currentTraceDetails.ToString());
             }
 
             if (_configuration["ArchiveTraces"] == "true")
@@ -118,7 +123,7 @@ namespace TelemetryReader
                 if (span.OperationName == "SidecarService/TriggerStep")
                 {
                     // Trigger step duration (excludes the call to the Kubernetes API.
-                    currentTraceDetails.TriggerStepDuration = (int) span.Duration.ToTimeSpan().TotalMilliseconds;
+                    currentTraceDetails.TriggerStepClientDuration = (int) span.Duration.ToTimeSpan().TotalMilliseconds;
 
                     if (currentTraceDetails.DataPullType == "none")
                     {
@@ -129,6 +134,12 @@ namespace TelemetryReader
 
             if (span.Process.ServiceName == "Sidecar")
             {
+                if (span.OperationName == "SidecarService/TriggerStep")
+                {
+                    
+                    currentTraceDetails.TriggerStepServerDuration = (int) span.Duration.ToTimeSpan().TotalMilliseconds;
+                }
+                
                 if (span.OperationName == "StorageAdapter/PullData")
                 {
                     // 4
@@ -152,16 +163,21 @@ namespace TelemetryReader
             {
                 if (span.OperationName == "DataMasterService/GetAddrForDataChunk")
                 {
+                    
+                    currentTraceDetails.DataPullType = "remote";
                     currentTraceDetails.DataMasterPullCall = (int) span.Duration.ToTimeSpan().TotalMilliseconds;
                 }
 
-                if (span.OperationName == "DataPeerService/GetData")
+                if (span.OperationName == "StorageAdapter/PullData")
                 {
                     // Here I need to extract a few things
-                    currentTraceDetails.DataPullType = "remote";
-                    currentTraceDetails.FromZone = span.Tags.Single(kv => kv.Key == "wf-from").VStr;
-                    currentTraceDetails.ToZone = span.Tags.Single(kv => kv.Key == "wf-to").VStr;
-                    currentTraceDetails.DataSize = span.Tags.Single(kv => kv.Key == "wf-ds").VInt64;
+                    var from = span.Tags.SingleOrDefault(kv => kv.Key == "wf-from");
+                    var to = span.Tags.SingleOrDefault(kv => kv.Key == "wf-to");
+                    var ds = span.Tags.SingleOrDefault(kv => kv.Key == "wf-ds");
+                    currentTraceDetails.FromZone = from == null ? "null" : from.VStr.Split("-")[1];  
+                    currentTraceDetails.ToZone = to == null ? "null" : to.VStr.Split("-")[1];
+                    currentTraceDetails.DataSize = ds?.VInt64 ?? 0;
+                    
                     currentTraceDetails.DataPeerPullCall = (int) span.Duration.ToTimeSpan().TotalMilliseconds;
                 }
 

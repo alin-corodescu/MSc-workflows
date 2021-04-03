@@ -1,3 +1,11 @@
-tId,dataPullType,FromZone,ToZone,DataSize,TotalDuration,TriggerStepDuration,DataPullDuration,DataPushDuration,ComputeDuration,DataMasterPullCall,DataPeerPullcall,DataMasterPushCall
-abc,remote,edge1,edge1,1024,1500,150,350,350,300,150,200,250
-def,remote,edge1,edge1,1024,1200,150,350,350,300,150,200,250
+tId,dataPullType,FromZone,ToZone,DataSize,TotalDuration,TriggerStepDuration,DataPullDuration,DataPushDuration,ComputeDuration,DataMasterPullCall,DataPeerPullCall,DataMasterPushCall
+zlA8LWwZZU+fTd4Qp5TOAw==,none,null,null,0,0,0,0,0,0,0,0,0
+LrDy4r5TM02OankeQl8tuA==,none,null,null,0,0,0,0,0,0,0,0,0
+JYvZMGY4N02GWPb9Xg6ZaQ==,remote,cloud1,cloud1,1048576,1966,990,270,26,494,62,196,2
+tgRCBbh8AUiTpGv/ebDcFQ==,local,null,null,0,1874,974,91,11,555,0,24,1
+oyhT0UdYUEu4ovHFZdsgag==,none,null,null,0,0,0,0,0,0,0,0,0
+iPSV0p5z3E+hj6uXBYXN0w==,none,null,null,0,0,0,0,0,0,0,0,0
+373Z/cqpcESq98K32fWk5Q==,remote,cloud1,cloud1,1048576,1966,989,270,12,494,62,196,2
+QZPf/yI9d0a5yo2HndCxUg==,local,null,null,0,1875,901,91,4,581,0,24,1
+TxUCGwCOHk2ptMozjQ/AUg==,local,null,null,0,1944,974,91,4,558,0,24,1
+cDYousz93kulrH71CBkhLg==,none,null,null,0,0,0,0,0,0,0,0,0

@@ -46,3 +46,5 @@ TODO 01.04.2021:
     
     Write pandas python code to draw the visualizations of the data.
     Run an experiment with data count = 10, data size = 1MB.
+
+    Why aren't we dropping the load on the nodes.

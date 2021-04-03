@@ -28,7 +28,7 @@ namespace TelemetryReader
         
         public int TotalDuration { get; set; }
         
-        public int TriggerStepDuration { get; set; }
+        public int TriggerStepClientDuration { get; set; }
         
         public int DataPullDuration { get; set; }
         
@@ -41,6 +41,8 @@ namespace TelemetryReader
         public int DataPeerPullCall { get; set; }
         
         public int DataMasterPushCall { get; set; }
+        
+        public int TriggerStepServerDuration { get; set; }
 
         public override string ToString()
         {
@@ -51,7 +53,8 @@ namespace TelemetryReader
                 ToZone,
                 DataSize,
                 TotalDuration,
-                TriggerStepDuration,
+                TriggerStepClientDuration,
+                TriggerStepServerDuration,
                 DataPullDuration,
                 DataPushDuration,
                 ComputeDuration,

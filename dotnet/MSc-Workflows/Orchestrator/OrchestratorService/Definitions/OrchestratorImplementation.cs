@@ -51,7 +51,17 @@ namespace OrchestratorService.Definitions
             {
                 // todo here I should finish a span that started all the way when the data chunk was first registered.
                 _logger.LogInformation("Workflow finished for 1 data chunk");
-
+                
+                await _workTrackingSemaphore.WaitAsync();
+                try
+                {
+                    _workTracker.MarkWorkAsFinished(req.RequestId);
+                }
+                finally
+                {
+                    _workTrackingSemaphore.Release();
+                }
+                
                 return new DataEventReply
                 {
                     IsSuccess = true
