@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: storage-adapter-cloud1
+  name: storage-adapter-edge2
 spec:
   selector:
     matchLabels:
@@ -10,7 +10,7 @@ spec:
     metadata:
       labels:
         name: storage-adapter
-        zone: cloud1
+        zone: edge2
     spec:
       # tolerations:
       # this toleration is to have the daemonset runnable on master nodes
@@ -50,4 +50,4 @@ spec:
         hostPath:
           path: /store
       nodeSelector:
-        zone: cloud1
+        zone: edge2

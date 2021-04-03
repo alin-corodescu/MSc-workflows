@@ -30,7 +30,7 @@ spec:
           - name: UseHardLinking
             value: "false"
           - name: UseConnectionPooling
-            value: "false"
+            value: "true"
           - name: ASPNETCORE_URLS
             value: http://+:5001
           - name: NODE_IP

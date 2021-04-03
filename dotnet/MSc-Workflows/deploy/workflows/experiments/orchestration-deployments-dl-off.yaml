@@ -19,9 +19,9 @@ spec:
           image: alincorodescu/msc-workflows-orchestrator:latest
           env:
             - name: UseDataLocality
-              value: "true"
+              value: "false"
             - name: UseConnectionPooling
-              value: "true"
+              value: "false"
             - name: ASPNETCORE_URLS
               value: http://+:9376
             - name: NODE_IP
