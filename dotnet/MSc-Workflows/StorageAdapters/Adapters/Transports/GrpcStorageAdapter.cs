@@ -1,5 +1,7 @@
+using System.IO;
 using System.Threading.Tasks;
 using Grpc.Core;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Workflows.Models.DataEvents;
 using Workflows.StorageAdapters.Definitions;
@@ -10,22 +12,30 @@ namespace Definitions.Transports
     {
         private IStorageAdapter implementation;
         private readonly ILogger<GrpcStorageAdapter> _logger;
+        private readonly IConfiguration _configuration;
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="implementation"></param>
-        public GrpcStorageAdapter(IStorageAdapter implementation, ILogger<GrpcStorageAdapter> logger)
+        public GrpcStorageAdapter(IStorageAdapter implementation, ILogger<GrpcStorageAdapter> logger, IConfiguration configuration)
         {
             this.implementation = implementation;
             _logger = logger;
+            _configuration = configuration;
         }
 
         public override async Task<PushDataReply> PushData(PushDataRequest request, ServerCallContext context)
         {
             _logger.LogInformation($"Received request to push data. Forwarding to implementation. {request}");
             var result = await this.implementation.PushDataToStorage(request.SourceFilePath);
-
+            
+            if (_configuration["DeleteDataAfterUse"] == "true")
+            {
+                // Delete the file from the permanent storage.
+                File.Delete(request.DeletePath);
+            }
+            
             var reply = new PushDataReply
             {
                 GeneratedMetadata = result

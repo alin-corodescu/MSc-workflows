@@ -34,7 +34,8 @@ namespace StorageAdapters.Peers
             _logger.LogInformation($"Serving the file at: {_permStorageBasePath}/{request.Identifier.FileName}");
             
             var dataChunkSize = int.Parse(this._configuration["DataChunkSize"]);
-            await using var file = File.OpenRead($"{_permStorageBasePath}/{request.Identifier.FileName}");
+            var path = $"{_permStorageBasePath}/{request.Identifier.FileName}";
+            await using var file = File.OpenRead(path);
             using var binaryReader = new BinaryReader(file);
             while (binaryReader.BaseStream.Position != binaryReader.BaseStream.Length)
             {
@@ -45,6 +46,11 @@ namespace StorageAdapters.Peers
                 };
 
                 await responseStream.WriteAsync(peerDataReplyChunk);
+            }
+
+            if (this._configuration["DeleteDataAfterUse"] == "true")
+            {
+                File.Delete(path);
             }
         }
     }

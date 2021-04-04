@@ -69,7 +69,9 @@ namespace TestGrpcService
                     _logger.LogInformation($"Publishing data to the data sink /store/outputs/{fName}");
                     var reply = await _dataSink.PushData(new PushDataRequest
                     {
-                        SourceFilePath = $"/store/outputs/{fName}"
+                        SourceFilePath = $"/store/outputs/{fName}",
+                        // Delete the input file.
+                        DeletePath = targetPathForDataDaeomn
                     });
 
                     _logger.LogInformation("Publishing metadata to the orchestrator service");

@@ -25,6 +25,7 @@ namespace Definitions.Adapters
         private ActivitySource _activitySource;
         
         private IDataMasterClient _dataMaster;
+        private readonly IConfiguration _configuration;
         private IPeerPool _peerPool;
 
         private IDictionary<string, int> _localFiles;
@@ -40,6 +41,7 @@ namespace Definitions.Adapters
             ActivitySource activitySource)
         {
             this._dataMaster = dataMaster;
+            _configuration = configuration;
             _logger = logger;
             _peerPool = peerPool;
             _permanentStorageBasePath = configuration["StorageAdapter:PermStoragePath"];
@@ -144,10 +146,21 @@ namespace Definitions.Adapters
                 if (!_useHardLinking)
                 {
                     File.Copy(permanentStoragePath, destinationPath);
+                    
+                    if (_configuration["DeleteDataAfterUse"] == "true")
+                    {
+                        // Delete the file from the permanent storage.
+                        File.Delete(permanentStoragePath);
+                    }
                 }
                 else
                 {
                     await CreateHardLink(permanentStoragePath, destinationPath);
+                    if (_configuration["DeleteDataAfterUse"] == "true")
+                    {
+                        // Delete the file from the permanent storage.
+                        File.Delete(permanentStoragePath);
+                    }
                 }
                 activity.Stop();
             }

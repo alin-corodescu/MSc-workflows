@@ -28,9 +28,9 @@ spec:
             hostPort: 5001
         env:
           - name: UseHardLinking
-            value: "false"
+            value: "true"
           - name: UseConnectionPooling
-            value: "false"
+            value: "true"
           - name: ASPNETCORE_URLS
             value: http://+:5001
           - name: NODE_IP

@@ -37,8 +37,8 @@ message PushDataRequest {
   // The file path of the file to be pushed to the storage
   string sourceFilePath = 1;
   
-  // Hint for where the storage should store the data.
-  DataLocalization targetHint = 2;
+  // Path to be deleted  from the input folder(if any)
+  string deletePath = 2;
 }
 
 message PushDataReply {
