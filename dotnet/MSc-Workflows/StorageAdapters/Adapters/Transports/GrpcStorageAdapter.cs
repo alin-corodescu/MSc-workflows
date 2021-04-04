@@ -32,7 +32,7 @@ namespace Definitions.Transports
             
             if (_configuration["DeleteDataAfterUse"] == "true")
             {
-                // Delete the file from the permanent storage.
+                // Delete the file from the input storage.
                 File.Delete(request.DeletePath);
             }
             

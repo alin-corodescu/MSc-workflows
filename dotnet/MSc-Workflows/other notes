@@ -39,6 +39,7 @@ TODO 01.04.2021:
     DONE - Multi-zone deployments/ daemonsets.
     DONE - Archive traces in Jaeger.
     DONE - Write bash scripts to run the experiments and gather the data    
+    DONE - Delete data after use to save storage space.
 
     Set up Kubernetes in Azure. Edge1 and Edge2 are availability zones, Cloud1 is a different zone.
     Write pandas python code to draw the visualizations of the data.
