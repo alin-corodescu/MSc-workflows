@@ -17,7 +17,7 @@ telReaderDir="/home/alin/projects/MSc-workflows/dotnet/MSc-Workflows/tests/Telem
 
 for d in ${dataSizes[@]}; do
     echo "Running experiment for dataSize = $d"
-    fileName="$outDir/$baseFileName-c$d.csv"
+    fileName="$outDir/$baseFileName-d$d.csv"
     echo $fileName
 
     cd $binDir
