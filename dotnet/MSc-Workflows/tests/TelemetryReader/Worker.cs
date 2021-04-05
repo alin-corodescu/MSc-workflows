@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using Google.Protobuf;
@@ -9,6 +10,7 @@ using Google.Protobuf.WellKnownTypes;
 using Grpc.Net.Client;
 using Jaeger.ApiV2;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 namespace TelemetryReader
 {
@@ -23,8 +25,15 @@ namespace TelemetryReader
 
         public async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            Console.WriteLine("Executing the work");
+            var runInfo = new RunInfo {LastRunTime = (DateTimeOffset.UtcNow - TimeSpan.FromHours(1)).UtcTicks};
 
+            if (File.Exists("runInfo.json"))
+            {
+                using var r = new StreamReader("runInfo.json");
+                var json = await r.ReadToEndAsync();
+                runInfo = JsonConvert.DeserializeObject<RunInfo>(json);
+            }
+            
             var jaegerUrl = $"http://{_configuration["JaegerUrl"]}";
 
             var channel = GrpcChannel.ForAddress(jaegerUrl);
@@ -37,10 +46,12 @@ namespace TelemetryReader
                 {
                     OperationName = "ProcessDataEvent",
                     ServiceName = "Orchestrator",
-                    StartTimeMin = Timestamp.FromDateTimeOffset(DateTimeOffset.UtcNow - TimeSpan.FromDays(1)),
+                    StartTimeMin = Timestamp.FromDateTimeOffset(new DateTimeOffset(runInfo.LastRunTime, TimeSpan.Zero)),
                     StartTimeMax = Timestamp.FromDateTimeOffset(DateTimeOffset.UtcNow)
                 }
             };
+            // I could store the time of the last run and look for traces since then...
+            // I could also keep track of all the traces ever looked up, and ignore those.
             var streamResult = client.FindTraces(findTracesRequest, cancellationToken: stoppingToken).ResponseStream;
 
             List<ByteString> traceIds = new List<ByteString>();
@@ -74,6 +85,12 @@ namespace TelemetryReader
                 // And then, for each trace, calculate the aggregates
                 foreach (var span in currentChunk.Spans)
                 {
+                    if (runInfo.UsedTraceIds.Contains(span.TraceId.ToBase64()))
+                    {
+                        Console.WriteLine("Found an old trace, ignoring");
+                        continue;
+                    }
+                    
                     if (span.TraceId.ToBase64() != currentTraceId)
                     {
                         
@@ -98,16 +115,15 @@ namespace TelemetryReader
                 await textWriter.WriteLineAsync(currentTraceDetails.ToString());
             }
 
-            if (_configuration["ArchiveTraces"] == "true")
+
+            foreach (var traceId in traceIds)
             {
-                foreach (var archive in traceIds.Select(traceId => new ArchiveTraceRequest
-                {
-                    TraceId = traceId
-                }))
-                {
-                   await client.ArchiveTraceAsync(archive);
-                }
+                runInfo.UsedTraceIds.Add(traceId.ToBase64());
             }
+
+            runInfo.LastRunTime = DateTimeOffset.UtcNow.Ticks;
+
+            await File.WriteAllTextAsync("runInfo.json", JsonConvert.SerializeObject(runInfo));
         }
 
         private static void AddInfoToCurrentTraceDetails(Span span, TraceDetails currentTraceDetails)
@@ -187,5 +203,15 @@ namespace TelemetryReader
                 }
             }
         }
+    }
+
+    public class RunInfo
+    {
+        public HashSet<string> UsedTraceIds { get; set; } = new();
+        
+        /// <summary>
+        /// Date time offset as UtcTicks
+        /// </summary>
+        public long LastRunTime { get; set; }
     }
 }

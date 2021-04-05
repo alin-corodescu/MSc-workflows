@@ -38,6 +38,10 @@ namespace DummyComputeStep.ExampleSteps
                 binaryWriter.Write(output);
             }
 
+            // Pre-emptively dispose of these guys to ensure the storage adapter can access the file successfully.
+            await binaryWriter.DisposeAsync();
+            await outputFile.DisposeAsync();
+            
             var reply = new ComputeStepReply
             {
                 OutputFilePath = outputFilePath

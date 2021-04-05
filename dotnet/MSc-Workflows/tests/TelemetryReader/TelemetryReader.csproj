@@ -9,5 +9,6 @@
         <PackageReference Include="Grpc.AspNetCore" Version="2.34.0" />
         <PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.34.0" />
         <PackageReference Include="Microsoft.AspNetCore.Grpc.HttpApi" Version="0.1.0-alpha.20580.2" />
+        <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     </ItemGroup>
 </Project>
