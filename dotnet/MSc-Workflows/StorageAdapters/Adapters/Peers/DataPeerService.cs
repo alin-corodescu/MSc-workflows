@@ -48,6 +48,8 @@ namespace StorageAdapters.Peers
                 await responseStream.WriteAsync(peerDataReplyChunk);
             }
 
+            binaryReader.Dispose();
+            file.Dispose();
             if (this._configuration["DeleteDataAfterUse"] == "true")
             {
                 File.Delete(path);

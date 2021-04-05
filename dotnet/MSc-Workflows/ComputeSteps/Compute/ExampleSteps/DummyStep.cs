@@ -28,12 +28,12 @@ namespace DummyComputeStep.ExampleSteps
             await using var outputFile = File.OpenWrite(outputFilePath);
             await using var binaryWriter = new BinaryWriter(outputFile);
             
-            var random = new Random();
             while (binaryReader.BaseStream.Position != binaryReader.BaseStream.Length)
             {
                 var readBytes = binaryReader.ReadBytes(100 * 1024);
                 
-                var output = readBytes.OrderBy(x => random.Next()).ToArray();
+                // var output = readBytes.OrderBy(x => random.Next()).ToArray();
+                var output = readBytes;
                 
                 binaryWriter.Write(output);
             }

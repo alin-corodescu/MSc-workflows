@@ -1,31 +1,29 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Workflows.Models.Spec;
 
 namespace OrchestratorService.WorkflowSpec
 {
     public class WorkflowRegistry : IWorkflowRegistry
     {
-        
-        private ConcurrentDictionary<string, Workflow> _registry = new();
+        private Workflow currentWorkflow;
         
         public string StoreWorkflow(Workflow workflow)
         {
-            var workflowId = Guid.NewGuid();
-            _registry[workflowId.ToString()] = workflow;
-
-            return workflowId.ToString();
+            currentWorkflow = workflow;
+            return "stored";
         }
 
         public Workflow RetrieveWorkflow(string workflowId)
         {
-            return _registry[workflowId];
+            return currentWorkflow;
         }
 
         public IEnumerable<Workflow> GetAllWorkflows()
         {
-            return _registry.Values;
+            return new List<Workflow> {currentWorkflow};
         }
     }
 }

@@ -85,7 +85,17 @@ namespace OrchestratorService.Definitions
                     $"http://{_configuration[$"{nextStep.ComputeImage}_SERVICE_HOST"]}:{_configuration[$"{nextStep.ComputeImage}_SERVICE_PORT"]}";
 
                 _logger.LogInformation("Not using data locality, falling back to the serice: {url}", url);
-                
+
+                await _workTrackingSemaphore.WaitAsync();
+                try
+                {
+                    _workTracker.MarkWorkAsStarted(stepTriggerRequest.RequestId, eventSourcePosition + 1, "noName");
+                }
+                finally
+                {
+                    _workTrackingSemaphore.Release();
+                }
+
                 channel = GrpcChannel.ForAddress(url);
             }
             else

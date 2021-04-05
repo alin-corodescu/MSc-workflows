@@ -53,6 +53,7 @@ namespace DataMaster
                     .AddJaegerExporter(o =>
                     {
                         o.AgentHost = Configuration["NODE_IP"];
+                        o.MaxPayloadSizeInBytes = 65000;
                     });
             });
             

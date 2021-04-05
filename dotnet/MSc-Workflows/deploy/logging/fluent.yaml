@@ -66,12 +66,6 @@ spec:
             value: "http"
           - name: FLUENTD_SYSTEMD_CONF
             value: disable
-        resources:
-          limits:
-            memory: 512Mi
-          requests:
-            cpu: 25m
-            memory: 200Mi
         volumeMounts:
         - name: varlog
           mountPath: /var/log

@@ -40,9 +40,10 @@ TODO 01.04.2021:
     DONE - Archive traces in Jaeger.
     DONE - Write bash scripts to run the experiments and gather the data    
     DONE - Delete data after use to save storage space.
+    DONE - Write pandas python code to draw the visualizations of the data.
 
+    Test the analysis pipeline E2E with Kind.
     Set up Kubernetes in Azure. Edge1 and Edge2 are availability zones, Cloud1 is a different zone.
-    Write pandas python code to draw the visualizations of the data.
 
     Write the thesis/experiment contents.
     Learn a bit of Airflow.

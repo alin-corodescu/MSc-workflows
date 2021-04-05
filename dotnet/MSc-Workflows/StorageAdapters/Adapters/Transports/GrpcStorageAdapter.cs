@@ -32,7 +32,10 @@ namespace Definitions.Transports
             
             if (_configuration["DeleteDataAfterUse"] == "true")
             {
-                // Delete the file from the input storage.
+                // Delete the file that has just been copied from the output to the permanent storage.
+                File.Delete(request.SourceFilePath);
+                
+                // Delete the file that triggered the step from the input storage.
                 File.Delete(request.DeletePath);
             }
             

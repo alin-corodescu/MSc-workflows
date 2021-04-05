@@ -55,10 +55,9 @@ namespace LoadGenerator
                     .ToList();
 
                 await Task.WhenAll(tasks);
-                
-                Console.WriteLine($"Sleeping {_configuration["SleepTime"]} ms");
 
-                await Task.Delay(int.Parse(_configuration["SleepTime"]));
+                Console.WriteLine($"Press any key to issue the next iteration. Data size = {dataSize}, DataCount = {dataCount}");
+                Console.ReadKey();
             }
         }
     }
