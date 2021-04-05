@@ -25,8 +25,7 @@ for d in ${dataCounts[@]}; do
         DataCount="$d" \
         Iterations="1"
 
-    echo "Sleeping for 20 seconds to allow the execution to finish"
-    sleep 20
+    read -p "Press enter once JaegerUI has all the traces it needs"
 
     cd $telReaderDir
     dotnet TelemetryReader.dll \

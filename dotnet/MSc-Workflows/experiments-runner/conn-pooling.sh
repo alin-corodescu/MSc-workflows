@@ -24,11 +24,10 @@ for d in ${dataSizes[@]}; do
     dotnet LoadGenerator.dll \
         DataInjectorUrl="localhost:5432" \
         DataSize="$d" \
-        DataCount="$1" \
+        DataCount="1" \
         Iterations="10"
 
-    echo "Sleeping for 20 seconds to allow the execution to finish"
-    sleep 20
+    read -p "Press enter once JaegerUI has all the traces it needs"
 
     cd $telReaderDir
     dotnet TelemetryReader.dll \
