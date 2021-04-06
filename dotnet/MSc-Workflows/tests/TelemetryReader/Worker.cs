@@ -169,7 +169,7 @@ namespace TelemetryReader
                     currentTraceDetails.DataPushDuration = (int) span.Duration.ToTimeSpan().TotalMilliseconds;
                 }
 
-                if (span.OperationName == "ComputeStepService/TriggerCompute")
+                if (span.OperationName == "ComputeStepService/TriggerCompute-Single")
                 {
                     // 9
                     currentTraceDetails.ComputeDuration = (int) span.Duration.ToTimeSpan().TotalMilliseconds;

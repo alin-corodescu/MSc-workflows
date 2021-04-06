@@ -21,3 +21,4 @@ How to run the store provisioning script on every restart?
     2. sudo su
     3. crontab -e
     4. @reboot /opt/scripts/provision-store.sh
+3

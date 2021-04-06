@@ -55,3 +55,14 @@ spec:
         - name: outputs
           hostPath:
             path: /store/outputs
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: stepName
+                    operator: In
+                    values:
+                    - step1
+              topologyKey: "kubernetes.io/hostname"

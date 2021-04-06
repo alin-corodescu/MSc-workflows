@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,17 +18,20 @@ namespace TestGrpcService
         private readonly IDataSinkAdapter _dataSink;
         private readonly IOrchestratorServiceClient _orchestrator;
         private readonly ILogger<Sidecar> _logger;
+        private readonly ActivitySource _source;
         private string _inputPath;
         private static readonly SemaphoreSlim _parallelCallSemaphore = new SemaphoreSlim(3, 3);
 
         public Sidecar(IDataSourceAdapter dataSource, IComputeStep computeStep, IDataSinkAdapter dataSink,
-            IOrchestratorServiceClient orchestrator, ILogger<Sidecar> logger, IConfiguration configuration)
+            IOrchestratorServiceClient orchestrator, ILogger<Sidecar> logger, IConfiguration configuration,
+            ActivitySource source)
         {
             _dataSource = dataSource;
             _computeStep = computeStep;
             _dataSink = dataSink;
             _orchestrator = orchestrator;
             _logger = logger;
+            _source = source;
             this._inputPath = configuration["Sidecar:InputPath"];
         }
         
@@ -63,10 +67,17 @@ namespace TestGrpcService
                 };
 
                 _logger.LogInformation("Triggered the compute step, awaiting responses");
+                var activity = _source.StartActivity("ComputeStepService/TriggerCompute-Single");
                 await foreach (var response in _computeStep.TriggerCompute(computeStepRequest))
                 {
                     var fName = Path.GetFileName(response.OutputFilePath);
+                    
                     _logger.LogInformation($"Publishing data to the data sink /store/outputs/{fName}");
+                    
+                    // stop the activity cause we got the response and set it to null.
+                    activity?.Stop();
+                    activity = null;
+                    
                     var reply = await _dataSink.PushData(new PushDataRequest
                     {
                         SourceFilePath = $"/store/outputs/{fName}",
