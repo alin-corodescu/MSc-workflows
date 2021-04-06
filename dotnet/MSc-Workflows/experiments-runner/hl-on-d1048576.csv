@@ -1,7 +1,7 @@
 tId,dataPullType,FromZone,ToZone,DataSize,TotalDuration,TriggerStepClientDuration,TriggerStepServerDuration,DataPullDuration,DataPushDuration,ComputeDuration,DataMasterPullCall,DataPeerPullCall,DataMasterPushCall
-Hva3I57SakCbG1w+6LC+gw==,none,null,null,0,0,0,0,0,0,0,0,0,0
-zQQfLzWM0EWOONPk5I8m2g==,local,null,null,0,35,34,21,9,5,10,0,0,0
-3pyxpKrOJ0C2cnDUTdjsLQ==,none,null,null,0,0,0,0,0,0,0,0,0,0
-rweFutLfvkOGd79zS0QywQ==,local,null,null,0,16,16,15,4,5,9,0,4,1
-ddsxDHrDuU2333uu2lfH5g==,none,null,null,0,0,0,0,0,0,0,0,0,0
-TEqmNYCzIEqMaFGZbZ55bA==,local,null,null,0,13,13,12,6,3,6,0,2,0
+2MSr/8GQGUK6yn2lG9oeMg==,none,null,null,0,0,0,0,0,0,0,0,0,0
+q4XyZU0vpEm9X4Vo9jAGEg==,local,null,null,0,28,27,26,8,11,17,0,3,2
+p1SU651e1k+p9d0GhxiMTA==,none,null,null,0,0,0,0,0,0,0,0,0,0
+EHAVDGWIuk+8TcIZFoSCEA==,local,null,null,0,22,21,20,4,8,14,0,3,2
+MK0QNs/huECvCWR/4mYOIQ==,none,null,null,0,0,0,0,0,0,0,0,0,0
+S3cXIT502k6cQrD/Xs1p3w==,local,null,null,0,28,28,24,7,8,15,0,4,2

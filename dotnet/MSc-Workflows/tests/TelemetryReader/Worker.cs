@@ -47,7 +47,8 @@ namespace TelemetryReader
                     OperationName = "ProcessDataEvent",
                     ServiceName = "Orchestrator",
                     StartTimeMin = Timestamp.FromDateTimeOffset(new DateTimeOffset(runInfo.LastRunTime, TimeSpan.Zero)),
-                    StartTimeMax = Timestamp.FromDateTimeOffset(DateTimeOffset.UtcNow)
+                    StartTimeMax = Timestamp.FromDateTimeOffset(DateTimeOffset.UtcNow),
+                    SearchDepth = 300
                 }
             };
             // I could store the time of the last run and look for traces since then...

@@ -1,0 +1,23 @@
+
+Expose port 6443 on the master node
+
+Change ~/.kube/config to contain the public ip of the node.
+
+Provision the /store/{inputs,outputs,perm_storage} and chmod 777 them.
+    on the temp storage
+    using a symbolic link
+
+Label nodes
+    kubectl label nodes edge1-host1 zone=edge1
+
+Set up peering in Azure VNet.
+
+Do they survive restarts?
+    - Worker nodes - yes, they survive and reconnect automatically.
+    - Also the master node, they re-connect automatically.
+
+How to run the store provisioning script on every restart?
+    1. Create /opt/scripts/provision-store.sh 
+    2. sudo su
+    3. crontab -e
+    4. @reboot /opt/scripts/provision-store.sh

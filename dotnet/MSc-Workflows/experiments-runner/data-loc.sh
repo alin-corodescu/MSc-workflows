@@ -33,6 +33,8 @@ for d in ${dataCounts[@]}; do
     dotnet TelemetryReader.dll \
         outputPath="$fileName" \
         ArchiveTraces="true" 
+
+    read -p "Press enter to go to the next dataSize/count"
 done
 
 cd $outDir
