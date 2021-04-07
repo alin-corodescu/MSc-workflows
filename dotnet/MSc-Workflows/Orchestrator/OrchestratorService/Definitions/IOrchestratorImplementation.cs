@@ -11,5 +11,7 @@ namespace OrchestratorService.Definitions
         /// <param name="req"></param>
         /// <returns></returns>
         Task<DataEventReply> ProcessDataEvent(DataEventRequest req);
+
+        Task<OngoingWorkReply> IsThereOngoingWork(OngoingWorkRequest request);
     }
 }

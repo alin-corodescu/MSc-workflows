@@ -15,6 +15,7 @@ namespace OrchestratorService.RequestQueueing
         void QueueOrchestrationWork(DataEventRequest request, Activity existingActivity = null);
 
         Task<Tuple<DataEventRequest, Activity>> DequeueOrchestrationWork();
+        int Count { get; }
     }
 
     class OrchestrationQueue : IOrchestrationQueue
@@ -55,6 +56,19 @@ namespace OrchestratorService.RequestQueueing
             _events.TryDequeue(out var ev);
             
             return ev;
+        }
+
+        public int Count
+        {
+            get
+            {
+                return this._events.Count;
+            }
+        }
+
+        public bool IsEmpty()
+        {
+            return _events.IsEmpty;
         }
     }
 }

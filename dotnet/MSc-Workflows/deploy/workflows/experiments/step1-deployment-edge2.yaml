@@ -58,11 +58,10 @@ spec:
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
-            - podAffinityTerm:
-                labelSelector:
-                  matchExpressions:
-                  - key: stepName
-                    operator: In
-                    values:
-                    - step1
-              topologyKey: "kubernetes.io/hostname"
+          - labelSelector:
+              matchExpressions:
+              - key: stepName
+                operator: In
+                values:
+                - step1
+            topologyKey: "kubernetes.io/hostname"

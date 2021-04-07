@@ -26,5 +26,10 @@ namespace OrchestratorService.Transports
                 IsSuccess = true
             });
         }
+
+        public override async Task<OngoingWorkReply> IsThereWorkOnGoing(OngoingWorkRequest request, ServerCallContext context)
+        {
+            return await this._impl.IsThereOngoingWork(request);
+        }
     }
 }

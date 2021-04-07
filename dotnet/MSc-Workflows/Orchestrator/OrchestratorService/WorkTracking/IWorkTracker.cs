@@ -18,6 +18,8 @@ namespace OrchestratorService.WorkTracking
 
         void MarkWorkAsFinished(string reqRequestId);
         int GetCurrentLoadForPod(string name);
+        
+        int AreThereOngoingRequests();
     }
 
     class WorkTracker : IWorkTracker
@@ -72,6 +74,11 @@ namespace OrchestratorService.WorkTracking
             }
             
             return podNameToCurrentLoad[name];
+        }
+
+        public int AreThereOngoingRequests()
+        {
+            return requestIdToPositionMapping.Count;
         }
     }
 }

@@ -81,10 +81,20 @@ namespace OrchestratorService.Definitions
             
             if (_configuration["UseDataLocality"] == "false")
             {
+                await _workTrackingSemaphore.WaitAsync();
+                try
+                {
+                    _workTracker.MarkWorkAsFinished(req.RequestId);
+                }
+                finally
+                {
+                    _workTrackingSemaphore.Release();
+                }
+
                 var url =
                     $"http://{_configuration[$"{nextStep.ComputeImage}_SERVICE_HOST"]}:{_configuration[$"{nextStep.ComputeImage}_SERVICE_PORT"]}";
 
-                _logger.LogInformation("Not using data locality, falling back to the serice: {url}", url);
+                _logger.LogInformation("Not using data locality, falling back to the service: {url}", url);
 
                 await _workTrackingSemaphore.WaitAsync();
                 try
@@ -146,6 +156,21 @@ namespace OrchestratorService.Definitions
             {
                 IsSuccess = result.IsSuccess
             };
+        }
+
+        public async Task<OngoingWorkReply> IsThereOngoingWork(OngoingWorkRequest request)
+        {
+            // work tracker.
+            var activeWork = _workTracker.AreThereOngoingRequests();
+            
+            // work queue
+            int pendingWork = _orchestrationQueue.Count;
+            
+            return await Task.FromResult(new OngoingWorkReply
+            {
+                WorkInFlight = activeWork,
+                WorkInQueue = pendingWork
+            });
         }
     }
 }

@@ -66,8 +66,20 @@ message DataEventReply {
   bool isSuccess = 1;
 }
 
+message OngoingWorkRequest {
+  
+}
+
+message OngoingWorkReply {
+  int32 workInQueue = 1;
+  int32 workInFlight = 2;
+}
+
 service OrchestratorService {
   // Used to notify data is available. Sidecar <-> Orchestrator communications. 
   // That's why they are both streams, because the connections should be long lived.
   rpc NotifyDataAvailable (DataEventRequest) returns (DataEventReply);
+  
+//  Method to check if there is work ongoing
+  rpc IsThereWorkOnGoing (OngoingWorkRequest) returns (OngoingWorkReply);
 }

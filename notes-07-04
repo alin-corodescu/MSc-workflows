@@ -1,0 +1,45 @@
+Airflow comparison
+Comparison with other experiments in the State of the Art.
+
+Feedback from UiO guys - talk to Titi by Monday.
+    Prepare a slide deck with the story.
+        Component wise - similar components.
+
+Experiments.
+
+Identify architecture/ implementation ideas that should be included by all framework developers.
+    -> Data locality
+    -> Shared containers
+    -> Local optimizations.
+
+
+What am I trying to prove? Measure the benefit of a data locality scheduling algorithm in an edge setup
+The benefit the proposed data storage solution can provide - 
+    expose detailed data locality information, 
+    leverage hard linking to even further reduce
+
+
+Comparison of Airflow scheduling.
+    Airflow with 2 shared stores (1 edge and 1 cloud)
+    To show that moving data is freaking expensive. Our data storage/ sharing solution can be very efficient in tandem with data locality scheduling
+
+Where are the benefits coming from? When are my optimizations good, when are they bad?
+
+    Local average
+    Edge1 -> Cloud1 averages
+    Cloud1 -> Cloud1 averages
+
+    Proportion of local vs edge vs cloud with data locality off, data 
+
+    Data size, distance. E2E workflow structure (number of steps etc.)
+
+Artifacts:
+
+    The framework
+        Instrumented for detailed performance analysis.
+    The data storage solution
+
+
+How can the time spent in big data workflow execution be measured.
+Where is time spent in big data workflows execution?
+how can data wrangling be optimized for big data workflows

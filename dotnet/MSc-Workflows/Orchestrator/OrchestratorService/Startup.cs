@@ -48,7 +48,6 @@ namespace OrchestratorService
             services.AddSingleton<IOrchestrationQueue, OrchestrationQueue>();
             services.AddHostedService<ExecutorService>();
             
-            
             services.AddSingleton(new ActivitySource("Workflows"));
             
             // This one creates a singleton of the type TracerProvider.

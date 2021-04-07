@@ -27,9 +27,11 @@ for d in ${dataSizes[@]}; do
         DataInjectorUrl="localhost:5432" \
         DataSize="$d" \
         DataCount="3" \
-        Iterations="3"
+        Iterations="10"
 
-    read -p "Press enter once JaegerUI has all the traces it needs"
+    echo "Sleeping for 5s to allow Jaeger to collect the traces"
+    sleep 5
+    # read -p "Press enter once JaegerUI has all the traces it needs"
 
     cd $telReaderDir
     dotnet TelemetryReader.dll \

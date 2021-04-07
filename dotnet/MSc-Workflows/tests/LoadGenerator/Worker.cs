@@ -56,8 +56,23 @@ namespace LoadGenerator
 
                 await Task.WhenAll(tasks);
 
-                Console.WriteLine($"Press any key to issue the next iteration. Data size = {dataSize}, DataCount = {dataCount}");
-                Console.ReadKey();
+                while (true)
+                {
+                    Console.WriteLine("Waiting for work to be finished! -- sleeping 3 sec");
+                    await Task.Delay(3000);
+                    var isThereWork = await orchestrationClient.IsThereWorkOnGoingAsync(new OngoingWorkRequest());
+                    Console.WriteLine(
+                        $"Work in queue: {isThereWork.WorkInQueue}, Work in flight: {isThereWork.WorkInFlight}");
+                    if (isThereWork.WorkInFlight == 0 && isThereWork.WorkInQueue == 0)
+                    {
+                        break;
+                    }
+
+                    // Console.WriteLine("Press a key to try again");
+                    // Console.ReadKey();
+                }
+
+                // Console.ReadKey();
             }
         }
     }
