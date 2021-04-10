@@ -7,6 +7,7 @@ using Google.Protobuf.Collections;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Workflows.Models.DataEvents;
 using Workflows.StorageAdapters.Definitions;
 
@@ -17,14 +18,16 @@ namespace Definitions.Transports
         private readonly IDataMasterClient _dataMasterClient;
         private readonly IDictionary<string, int> _localFiles;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<GrpcDataInjectionService> _logger;
         private string permStoragePath;
         private DataLocalization _localization;
 
-        public GrpcDataInjectionService(IDataMasterClient dataMasterClient,IDictionary<string, int> localFiles, IConfiguration configuration)
+        public GrpcDataInjectionService(IDataMasterClient dataMasterClient,IDictionary<string, int> localFiles, IConfiguration configuration, ILogger<GrpcDataInjectionService> logger)
         {
             _dataMasterClient = dataMasterClient;
             _localFiles = localFiles;
             _configuration = configuration;
+            _logger = logger;
 
             permStoragePath = configuration["StorageAdapter:PermStoragePath"];
             this._localization = LocalFileSystemStorageAdapter.ExtractLocalization(configuration);
@@ -34,6 +37,7 @@ namespace Definitions.Transports
         {
             var results = new List<MetadataEvent>(request.Count);
             
+            _logger.LogInformation("Received request to inject data");
             for (int i = 0; i < request.Count; i++)
             {
                 var fileName = Guid.NewGuid().ToString();

@@ -9,8 +9,8 @@
 # The data size will be varying.
 
 # 1MB, 10MB, 50MB.
-dataSizes=(1048576 10485760 104857600)
-# dataSizes=(1024)
+# dataSizes=(1048576 10485760 104857600)
+dataSizes=(104857600)
 baseFileName="all-up-$1"
 outDir=`pwd`
 
@@ -26,8 +26,8 @@ for d in ${dataSizes[@]}; do
     dotnet LoadGenerator.dll \
         DataInjectorUrl="localhost:5432" \
         DataSize="$d" \
-        DataCount="3" \
-        Iterations="10"
+        DataCount="1" \
+        Iterations="1"
 
     echo "Sleeping for 5s to allow Jaeger to collect the traces"
     sleep 5

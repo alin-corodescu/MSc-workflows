@@ -20,6 +20,7 @@ spec:
       containers:
       - name: storage-adapter
         image: alincorodescu/msc-workflows-storage-adapter:latest
+        imagePullPolicy: Always
         volumeMounts:
         - name: store
           mountPath: /store

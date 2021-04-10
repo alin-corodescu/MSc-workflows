@@ -46,7 +46,11 @@ namespace Workflows.StorageAdapters.Definitions
             {
                 // 5001 is the standard port for the data service
                 var grpcAddr = $"http://{addr}:5001";
-                var grpcChannel = GrpcChannel.ForAddress(grpcAddr);
+                var grpcChannel = GrpcChannel.ForAddress(grpcAddr, new GrpcChannelOptions
+                {
+                    MaxReceiveMessageSize = 204857600,
+                    MaxSendMessageSize = 204857600
+                });
 
                 var localization = LocalFileSystemStorageAdapter.ExtractLocalization(_configuration);
                 

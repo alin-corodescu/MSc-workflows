@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net5.0</TargetFramework>
+        <RootNamespace>ManualTestingProject</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Azure.Storage.Blobs" Version="12.9.0-beta.2" />
+        <PackageReference Include="Grpc.AspNetCore" Version="2.34.0" />
+        <PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.34.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Grpc.HttpApi" Version="0.1.0-alpha.20580.2" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <Protobuf Include="Protos\greet.proto"/>
+    </ItemGroup>
+
+</Project>

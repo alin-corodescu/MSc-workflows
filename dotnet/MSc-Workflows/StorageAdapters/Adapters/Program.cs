@@ -12,6 +12,7 @@ namespace StorageAdapters
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                // .MinimumLevel.Override("Grpc", LogEventLevel.Verbose)
                 .Enrich.FromLogContext()
                 .WriteTo.Console(new CompactJsonFormatter())
                 .CreateLogger();

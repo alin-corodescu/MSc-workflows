@@ -19,7 +19,8 @@ spec:
       #   effect: NoSchedule
       containers:
       - name: storage-adapter
-        image: alincorodescu/msc-workflows-storage-adapter:latest
+        image: alincorodescu/msc-workflows-storage-adapter:latest        
+        imagePullPolicy: Always
         volumeMounts:
         - name: store
           mountPath: /store

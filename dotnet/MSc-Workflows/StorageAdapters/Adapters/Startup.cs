@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO.Compression;
 using Definitions.Adapters;
 using Definitions.Transports;
 using Microsoft.AspNetCore.Builder;
@@ -31,9 +32,15 @@ namespace StorageAdapters
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddGrpc();
-            services.AddGrpcReflection();
-            services.AddGrpcHttpApi();
+            services.AddGrpc(options =>
+            {
+                // options.ResponseCompressionLevel = CompressionLevel.Optimal;
+                // options.ResponseCompressionAlgorithm = "gzip";
+                options.MaxReceiveMessageSize = 204857600;
+                options.MaxSendMessageSize = 204857600;
+            });
+            // services.AddGrpcReflection();
+            // services.AddGrpcHttpApi();
             services.AddSingleton<IDataMasterClient, DataMasterClient>();
             services.AddSingleton<IPeerPool, PeerPool>();
             services.AddSingleton<IStorageAdapter, LocalFileSystemStorageAdapter>();
@@ -83,7 +90,7 @@ namespace StorageAdapters
             
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGrpcReflectionService();
+                // endpoints.MapGrpcReflectionService();
                 endpoints.MapGrpcService<GrpcStorageAdapter>();
                 endpoints.MapGrpcService<DataPeerService>();
                 endpoints.MapGrpcService<GrpcDataInjectionService>();
