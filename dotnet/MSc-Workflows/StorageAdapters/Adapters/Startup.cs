@@ -32,13 +32,7 @@ namespace StorageAdapters
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddGrpc(options =>
-            {
-                // options.ResponseCompressionLevel = CompressionLevel.Optimal;
-                // options.ResponseCompressionAlgorithm = "gzip";
-                options.MaxReceiveMessageSize = 204857600;
-                options.MaxSendMessageSize = 204857600;
-            });
+            services.AddGrpc();
             // services.AddGrpcReflection();
             // services.AddGrpcHttpApi();
             services.AddSingleton<IDataMasterClient, DataMasterClient>();

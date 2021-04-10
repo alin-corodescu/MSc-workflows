@@ -26,6 +26,8 @@ spec:
         ports:
           - containerPort: 5001
             hostPort: 5001
+          - containerPort: 6000
+            hostPort: 6000
         env:
           - name: UseHardLinking
             value: "false"

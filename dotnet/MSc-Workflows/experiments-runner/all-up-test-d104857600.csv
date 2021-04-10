@@ -1,8 +1,9 @@
 tId,dataPullType,FromZone,ToZone,DataSize,TotalDuration,TriggerStepClientDuration,TriggerStepServerDuration,DataPullDuration,DataPushDuration,ComputeDuration,DataMasterPullCall,DataPeerPullCall,DataMasterPushCall
-ALxBy+sUXkKccJiXizDRCQ==,local,null,null,0,2623,1717,1613,157,508,746,0,43,15
-5e9cU2gNIEatmxETnkE8Bw==,none,null,null,0,0,0,0,0,0,0,0,0,0
-3IGT8aaiMkibnF6ZkVvL/w==,remote,edge1,cloud1,104857600,34518,34495,34404,33576,90,523,156,33426,23
-WV9nr+GZGkeo+tXw15zBWA==,local,null,null,0,2030,1470,1343,221,64,829,0,56,15
+eVlsVOFiKkiOZiUhLyqJKw==,local,null,null,0,1962,1399,1254,337,55,637,0,183,15
+IfpXN3VqC0OIYj/0g0kv5g==,local,null,null,0,2063,1136,1045,190,52,622,0,86,11
+dxqGUPInKkS9+c6RkRny8g==,none,null,null,0,0,0,0,0,0,0,0,0,0
+yBtdayt8xU6/l1+KXA9GCw==,remote,edge1,cloud1,104857600,4207,4180,4088,3246,147,476,125,3117,24
+,15
 0
 5exlHswaeEKJAf5eGkGkbQ==,none,null,null,0,0,0,0,0,0,0,0,0,0
 O6wptJXHmU2i/ytgkxc2nw==,remote,edge1,cloud1,104857600,32481,32453,32368,31180,360,623,130,31031,20

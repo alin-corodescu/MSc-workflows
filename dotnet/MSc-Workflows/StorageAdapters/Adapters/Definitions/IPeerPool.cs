@@ -54,7 +54,7 @@ namespace Workflows.StorageAdapters.Definitions
 
                 var localization = LocalFileSystemStorageAdapter.ExtractLocalization(_configuration);
                 
-                var newClient = new PeerDataNodeServiceClient(grpcChannel, _activitySource, _logger, localization);
+                var newClient = new PeerDataNodeServiceClient(addr, _activitySource, _logger, localization);
 
                 _peerPool[addr] = newClient;
 

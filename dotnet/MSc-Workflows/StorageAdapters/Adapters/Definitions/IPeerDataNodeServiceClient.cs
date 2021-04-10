@@ -2,6 +2,8 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Net.Sockets;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Google.Protobuf;
@@ -28,68 +30,42 @@ namespace Workflows.StorageAdapters.Definitions
 
     public class PeerDataNodeServiceClient : IPeerDataNodeServiceClient
     {
+        private readonly string _addr;
         private readonly ActivitySource _activitySource;
         private readonly ILogger _logger;
         private readonly DataLocalization _currentNodeLocalization;
-        private DataPeerService.DataPeerServiceClient client;
 
-        public PeerDataNodeServiceClient(GrpcChannel channel, ActivitySource activitySource, ILogger logger, DataLocalization currentNodeLocalization)
+        public PeerDataNodeServiceClient(string addr, ActivitySource activitySource, ILogger logger, DataLocalization currentNodeLocalization)
         {
+            _addr = addr;
             _activitySource = activitySource;
             _logger = logger;
             _currentNodeLocalization = currentNodeLocalization;
-            client = new DataPeerService.DataPeerServiceClient(channel);
         }
 
         public async Task DownloadDataFromPeer(string remoteFileIdentifier, string targetLocalPath, DataLocalization peerLocalization)
         {
-            var dataRequest = new PeerDataRequest
-            {
-                Identifier = new LocalFileSystemMetadata
-                {
-                    FileName = remoteFileIdentifier
-                }
-            };
-
+            var client = new TcpClient(_addr, 6000);
+            
+            var stream = client.GetStream();
             using var file = File.OpenWrite(targetLocalPath);
+
+            var fileNameLength = BitConverter.GetBytes(remoteFileIdentifier.Length);
+            await stream.WriteAsync(fileNameLength.AsMemory(0, fileNameLength.Length));
+
+            var fnBytes = Encoding.UTF8.GetBytes(remoteFileIdentifier);
+            await stream.WriteAsync(fnBytes.AsMemory(0, fnBytes.Length));
             
-            var streamedResults = client.GetData(dataRequest);
-
-            var totalSize = 0;
-            var chunkCount = 0;
-            using (var memoryStream = new MemoryStream())
-            {
-                var dld = _activitySource.StartActivity("DownloadingChunks");
-                dld.Start();
-                await foreach (var chunk in streamedResults.ResponseStream.ReadAllAsync())
-                {
-                    await memoryStream.WriteAsync(chunk.Payload.Memory, CancellationToken.None);
-                    chunkCount++;
-                }
-                dld.Stop();
-
-
-                var dcp = _activitySource.StartActivity("Decompressing");
-                dcp.Start();
-                memoryStream.Seek(0, SeekOrigin.Begin);
-                // now I have the entire compressed file in the memory stream.
-                using (var decompressionStream = new GZipStream(memoryStream, CompressionMode.Decompress))
-                {
-                    await decompressionStream.CopyToAsync(file);
-                }
-                dcp.Stop();
-            }
+            await stream.CopyToAsync(file);
             
-            totalSize = (int) file.Length;
+            var totalSize = (int) file.Length;
             string from = $"{peerLocalization.Host}-{peerLocalization.Zone}";
             string to = $"{_currentNodeLocalization.Host}-{_currentNodeLocalization.Zone}";
 
             var currentActivity = Activity.Current;
             currentActivity.SetTag("wf-from", from);
-            currentActivity.SetTag("wf-chunk-count", chunkCount);
             currentActivity.SetTag("wf-to", to);
             currentActivity.SetTag("wf-ds", (long) totalSize);
-            
             
             _logger.LogInformation("Downloaded data {from} {to} {totalSize}", from, to, totalSize);
         }
