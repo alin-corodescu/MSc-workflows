@@ -29,7 +29,6 @@ service WorkflowRegistrationService {
       body: "*"
     };
   }
-  
   rpc GetWorkflow (google.protobuf.Empty) returns (GetWorkflowReply)
   {
     option (google.api.http) = {

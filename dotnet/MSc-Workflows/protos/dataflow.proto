@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "google/protobuf/any.proto";
+import "google/protobuf/empty.proto";
 
 option csharp_namespace = "Workflows.Models.DataEvents";
 
@@ -9,32 +10,25 @@ message MetadataEvent {
   DataLocalization dataLocalization = 3;
 }
 
-// Captures information about where data is localized.
 message DataLocalization {
   string host = 1;
   string zone = 2;
 }
 
-
-
 message PushDataRequest {
   string sourceFilePath = 1;
   string deletePath = 2;
 }
-
 message PushDataReply {
   MetadataEvent generatedMetadata = 1;
 }
-
 message PullDataRequest {
   MetadataEvent metadata = 1;
   string targetPath = 2;
 }
-
 message PullDataReply {
   bool isSuccess = 1;
 }
-
 service StorageAdapter {
   rpc PushData (PushDataRequest) returns (PushDataReply);
   

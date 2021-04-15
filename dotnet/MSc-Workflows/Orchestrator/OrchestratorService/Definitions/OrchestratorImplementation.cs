@@ -150,11 +150,11 @@ namespace OrchestratorService.Definitions
             
             _logger.LogInformation($"Triggering the computation for a step {nextStep.ComputeImage}");
 
-            var result = await client.TriggerStepAsync(stepTriggerRequest);
+            await client.TriggerStepAsync(stepTriggerRequest);
 
             return new DataEventReply
             {
-                IsSuccess = result.IsSuccess
+                IsSuccess = true
             };
         }
 

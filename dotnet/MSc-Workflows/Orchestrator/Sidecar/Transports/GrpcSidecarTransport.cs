@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.Extensions.Logging;
 using TestGrpcService.Definitions;
@@ -17,7 +18,7 @@ namespace TestGrpcService.Transports
             this._implementation = impl;
         }
 
-        public override async Task<StepTriggerReply> TriggerStep(StepTriggerRequest request, ServerCallContext context)
+        public override async Task<Empty> TriggerStep(StepTriggerRequest request, ServerCallContext context)
         {
             _logger.LogInformation("Sidecar received a trigger step notification");
             return await this._implementation.TriggerStep(request);

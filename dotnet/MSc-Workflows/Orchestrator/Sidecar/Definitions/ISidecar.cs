@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Google.Protobuf.WellKnownTypes;
 using Workflows.Models;
 
 namespace TestGrpcService.Definitions
@@ -13,6 +14,6 @@ namespace TestGrpcService.Definitions
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        Task<StepTriggerReply> TriggerStep(StepTriggerRequest request);
+        Task<Empty> TriggerStep(StepTriggerRequest request);
     }
 }

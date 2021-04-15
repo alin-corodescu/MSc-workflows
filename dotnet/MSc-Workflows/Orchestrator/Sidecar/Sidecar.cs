@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using Google.Protobuf.WellKnownTypes;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using TestGrpcService.Definitions;
@@ -35,7 +36,7 @@ namespace TestGrpcService
             this._inputPath = configuration["Sidecar:InputPath"];
         }
         
-        public async Task<StepTriggerReply> TriggerStep(StepTriggerRequest request)
+        public async Task<Empty> TriggerStep(StepTriggerRequest request)
         {
             // Make sure we are not processing more than 3 requests at a time
             await _parallelCallSemaphore.WaitAsync();
@@ -93,10 +94,7 @@ namespace TestGrpcService
                     });
                 }
 
-                return new StepTriggerReply
-                {
-                    IsSuccess = true
-                };
+                return new Empty();
             }
             finally
             {
