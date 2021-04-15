@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Workflows.Models.Spec;
 
@@ -13,19 +14,16 @@ namespace OrchestratorService.WorkflowSpec
             _workflowRegistry = workflowRegistry;
         }
         
-        public override async Task<RegisterWorkflowReply> RegisterWorkflow(RegisterWorkflowRequest request, ServerCallContext context)
+        public override async Task<Empty> RegisterWorkflow(RegisterWorkflowRequest request, ServerCallContext context)
         {
-            var wfId = this._workflowRegistry.StoreWorkflow(request.Workflow);
+            this._workflowRegistry.StoreWorkflow(request.Workflow);
 
-            return await Task.FromResult(new RegisterWorkflowReply
-            {
-                WorkflowId = wfId
-            });
+            return await Task.FromResult(new Empty());
         }
 
-        public override async Task<GetWorkflowReply> GetWorkflow(GetWorkflowRequest request, ServerCallContext context)
+        public override async Task<GetWorkflowReply> GetWorkflow(Empty request, ServerCallContext context)
         {
-            var wf = this._workflowRegistry.RetrieveWorkflow(request.WorkflowId);
+            var wf = this._workflowRegistry.RetrieveWorkflow();
 
             return await Task.FromResult(new GetWorkflowReply
             {

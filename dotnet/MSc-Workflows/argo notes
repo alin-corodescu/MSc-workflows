@@ -9,7 +9,7 @@ Need to adapt the compute step.
 Use a bash script to generate the workflow with the list 
     UseWithItems to send multiple requests in parallel
 
-
+WithItems + PodSpecPatch for Argo workflows.
 PodSpecPatch to include TopologySpreadConstraints and differennt localities maybe.
 
 
@@ -24,10 +24,6 @@ First step doesn't know where the data originates from - unless injected by trig
 
 
 Can the PodSpecPatch be of a complex type or just a normal value
-
-
-
-Upload + download from one region to another took 1.5 and 2 sec respectively.
 
 Azure Blob storage uses compression by default.
     Gzip - on the wire.

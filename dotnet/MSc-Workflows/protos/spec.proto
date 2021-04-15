@@ -1,5 +1,6 @@
 syntax = "proto3";
 import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
 
 option csharp_namespace = "Workflows.Models.Spec";
 
@@ -8,7 +9,6 @@ message Step {
   string dataSource = 2;
   string dataSink = 3;
 }
-
 message Workflow {
   repeated Step steps = 1;
 }
@@ -17,20 +17,12 @@ message RegisterWorkflowRequest {
   Workflow workflow = 1;
 }
 
-message RegisterWorkflowReply {
-  string workflowId = 1;
-}
-
-message GetWorkflowRequest {
-  string workflowId = 1;
-}
-
 message GetWorkflowReply {
   Workflow workflow = 1;
 }
 
 service WorkflowRegistrationService {
-  rpc RegisterWorkflow (RegisterWorkflowRequest) returns (RegisterWorkflowReply)
+  rpc RegisterWorkflow (RegisterWorkflowRequest) returns (google.protobuf.Empty)
   {
     option (google.api.http) = {
       post: "/v1/workflows"
@@ -38,10 +30,10 @@ service WorkflowRegistrationService {
     };
   }
   
-  rpc GetWorkflow (GetWorkflowRequest) returns (GetWorkflowReply)
+  rpc GetWorkflow (google.protobuf.Empty) returns (GetWorkflowReply)
   {
     option (google.api.http) = {
-      get: "/v1/workflows/{workflowId}"
+      get: "/v1/workflows"
     };
   }
 }

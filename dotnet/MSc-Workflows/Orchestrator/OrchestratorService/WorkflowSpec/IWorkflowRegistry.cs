@@ -5,10 +5,8 @@ namespace OrchestratorService.WorkflowSpec
 {
     public interface IWorkflowRegistry
     {
-        public string StoreWorkflow(Workflow workflow);
+        public void StoreWorkflow(Workflow workflow);
 
-        public Workflow RetrieveWorkflow(string workflowId);
-        
-        IEnumerable<Workflow> GetAllWorkflows();
+        public Workflow RetrieveWorkflow();
     }
 }

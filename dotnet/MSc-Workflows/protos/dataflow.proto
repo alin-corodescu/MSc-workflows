@@ -2,54 +2,32 @@ syntax = "proto3";
 
 import "google/protobuf/any.proto";
 
-import "google/api/annotations.proto";
-
 option csharp_namespace = "Workflows.Models.DataEvents";
 
-// The event describing new data being available in the system
 message MetadataEvent {
-  // Implementation specific metadata used to locate the data
   google.protobuf.Any metadata = 1;
-  
-  string metadataButInStringForm = 2;
-  
-  // Data localization information. Used to perform locality-aware scheduling.
   DataLocalization dataLocalization = 3;
-  
-  //TODO need something to identify the data source
 }
 
 // Captures information about where data is localized.
 message DataLocalization {
-  
   string host = 1;
-  
   string zone = 2;
 }
 
-// Metadata used by the local file system adapter
-message LocalFileSystemMetadata {
-  string fileName = 1;
-}
 
-// Request for pushing data
+
 message PushDataRequest {
-  // The file path of the file to be pushed to the storage
   string sourceFilePath = 1;
-  
-  // Path to be deleted  from the input folder(if any)
   string deletePath = 2;
 }
 
 message PushDataReply {
-  // The metadata necessary to locate the stored data in the storage
   MetadataEvent generatedMetadata = 1;
 }
 
 message PullDataRequest {
-  // The metadata used to lookup the item in store
   MetadataEvent metadata = 1;
-  
   string targetPath = 2;
 }
 
@@ -57,23 +35,14 @@ message PullDataReply {
   bool isSuccess = 1;
 }
 
-// Interface for storage adapters
 service StorageAdapter {
-  rpc PushData (PushDataRequest) returns (PushDataReply)
-  {
-    option (google.api.http) = {
-      post: "/v1/data"
-      body: "*"
-    };
-  }
+  rpc PushData (PushDataRequest) returns (PushDataReply);
   
-  rpc PullData (PullDataRequest) returns (PullDataReply)
-  {
-    option (google.api.http) = {
-      post: "/v1/data/get"
-      body: "*"
-    };
-  }
+  rpc PullData (PullDataRequest) returns (PullDataReply);
+}
+
+message LocalFileSystemMetadata {
+  string fileName = 1;
 }
 
 message DataChunkAvailableRequest {
@@ -81,37 +50,19 @@ message DataChunkAvailableRequest {
   string address = 2;
   DataLocalization localization = 3;
 }
-
 message DataChunkAvailableReply {
   bool isSuccess = 1;
 }
-
 message AddressRequest {
   LocalFileSystemMetadata metadata = 1;
 }
-
 message AddressReply {
   string address = 1;
   DataLocalization localization = 2;
 }
-
-// Service hosted by the master node of the data flow solution
 service DataMasterService {
-  // Consider using streaming instead. for better throughput.
-  rpc SignalDataChunkAvailable (DataChunkAvailableRequest) returns (DataChunkAvailableReply)
-  {
-    option (google.api.http) = {
-      post: "/v1/data"
-      body: "*"
-    }; 
-  }
-  
-  rpc GetAddrForDataChunk (AddressRequest) returns (AddressReply)
-  {
-    option (google.api.http) = {
-      get: "/v1/data/{metadata.fileName}"
-    };
-  }
+  rpc SignalDataChunkAvailable (DataChunkAvailableRequest) returns (DataChunkAvailableReply);
+  rpc GetAddrForDataChunk (AddressRequest) returns (AddressReply);
 }
 
 message PeerDataRequest{
@@ -120,31 +71,21 @@ message PeerDataRequest{
 
 message PeerDataReplyChunk {
   bytes payload = 1;
-  
-  // todo need to be be able to support streaming of data in multiple chunks
 }
 
-// Service hosted by every pod hosting some data for the data flow medium
 service DataPeerService {
-  // For a data request, returns a stream of chunks. Small sized-chunks
   rpc GetData (PeerDataRequest) returns (stream PeerDataReplyChunk);
 }
 
 message DataInjectionRequest {
-  // The size of the injected content
   int32 contentSize = 1;
-  
-  // How many are needed.
   int32 count = 2;
 }
 
 message DataInjectionReply {
-  // The generated metadata events.
   repeated MetadataEvent events = 1;
 }
 
-// Service used to inject data into the cluster -- 
-// the injected data will be later used to 
 service DataInjectionService {
   rpc InjectData(DataInjectionRequest) returns (DataInjectionReply);
 }

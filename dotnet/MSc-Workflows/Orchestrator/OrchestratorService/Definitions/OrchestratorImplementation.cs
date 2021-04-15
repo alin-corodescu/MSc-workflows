@@ -43,7 +43,7 @@ namespace OrchestratorService.Definitions
         
         public async Task<DataEventReply> ProcessDataEvent(DataEventRequest req)
         {
-            var workflowDefinition = _registry.GetAllWorkflows().First();
+            var workflowDefinition = _registry.RetrieveWorkflow();
             
             int eventSourcePosition = _workTracker.GetPositionInWorkflowForRequest(req.RequestId);
 

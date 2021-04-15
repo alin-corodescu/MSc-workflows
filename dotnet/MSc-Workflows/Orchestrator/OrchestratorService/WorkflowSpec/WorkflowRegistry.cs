@@ -10,20 +10,14 @@ namespace OrchestratorService.WorkflowSpec
     {
         private Workflow currentWorkflow;
         
-        public string StoreWorkflow(Workflow workflow)
+        public void StoreWorkflow(Workflow workflow)
         {
             currentWorkflow = workflow;
-            return "stored";
         }
 
-        public Workflow RetrieveWorkflow(string workflowId)
+        public Workflow RetrieveWorkflow()
         {
             return currentWorkflow;
-        }
-
-        public IEnumerable<Workflow> GetAllWorkflows()
-        {
-            return new List<Workflow> {currentWorkflow};
         }
     }
 }
