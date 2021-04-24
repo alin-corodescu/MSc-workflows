@@ -1,0 +1,85 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: experimental-workflow-
+spec:
+  # invoke the workflow template
+  entrypoint: workflow
+  arguments:
+    parameters:
+      - name: input-list
+        value: |
+          ["edge1:test-100MB.txt"]
+
+  templates:
+  - name: workflow
+    inputs:
+      parameters:
+        - name: input-list
+    steps: 
+    - - name: wf-step1
+        template : step
+        arguments:
+          parameters:
+            - name : in
+              value: "{{item}}"
+        withParam: "{{inputs.parameters.input-list}}"
+
+    - - name : wf-step2
+        template: step
+        arguments:
+          parameters:
+            - name: in
+              value: "{{steps.wf-step1.outputs.parameters.out-param}}"
+
+  - name: step
+    metadata:
+      labels:
+        app : step
+    inputs:
+      parameters:
+      - name: in 
+    outputs:
+      parameters:
+        - name: out-param
+          valueFrom:
+            path: /mnt/out/out.txt
+    container:
+      nodeSelector:
+        zone: edge1
+      image: alincorodescu/msc-workflows-storage-tester:latest
+      resources:
+        limits:
+          memory: "300Mi"
+          cpu: "250m"
+      volumeMounts:
+        - name: out
+          mountPath: /mnt/out
+      env:
+        - name: ConnStrEdge1
+          valueFrom:
+            secretKeyRef:
+              name: secret-edge1
+              key: conn-str
+        
+        - name: ConnStrEdge2
+          valueFrom:
+            secretKeyRef:
+              name: secret-edge2
+              key: conn-str 
+
+        - name: ConnStrCloud1
+          valueFrom:
+            secretKeyRef:
+              name: secret-cloud1
+              key: conn-str
+
+        - name: RemoteFileName
+          value: "{{inputs.parameters.in}}"
+
+
+        - name: Zone
+          value: edge1
+    volumes:
+      - name: out
+        emptyDir: { }

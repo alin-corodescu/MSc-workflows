@@ -27,13 +27,14 @@ namespace DummyComputeStep.ExampleSteps
             var outputFilePath = $"{this.outputPath}/Step_{Guid.NewGuid().ToString()}";
             await using var outputFile = File.OpenWrite(outputFilePath);
             await using var binaryWriter = new BinaryWriter(outputFile);
-            
+
+            Random random = new Random();
             while (binaryReader.BaseStream.Position != binaryReader.BaseStream.Length)
             {
                 var readBytes = binaryReader.ReadBytes(100 * 1024);
                 
-                // var output = readBytes.OrderBy(x => random.Next()).ToArray();
-                var output = readBytes;
+                var output = readBytes.OrderBy(x => random.Next()).ToArray();
+                // var output = readBytes;
                 
                 binaryWriter.Write(output);
             }

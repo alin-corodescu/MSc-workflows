@@ -19,7 +19,7 @@ spec:
         app : step1
     inputs:
       parameters:
-      - name: message       # parameter declaration
+      - name: message 
     container:
       # run cowsay with that message input parameter as args
       image: docker/whalesay
@@ -30,3 +30,13 @@ spec:
         - name: test-out-param
           valueFrom:
             path: /out.txt
+    
+    affinity:
+      nodeAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - preference:
+              
+            weight: 
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          - topologyKey: 
