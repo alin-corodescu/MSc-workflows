@@ -24,10 +24,12 @@ for d in ${dataSizes[@]}; do
 
     cd $binDir
     dotnet LoadGenerator.dll \
+        Zones="2" \
         DataInjectorUrl="localhost:5432" \
+        DataInjectorUrl2="localhost:5433" \
         DataSize="$d" \
-        DataCount="1" \
-        Iterations="1"
+        DataCount="3" \
+        Iterations="3"
 
     echo "Sleeping for 5s to allow Jaeger to collect the traces"
     sleep 5

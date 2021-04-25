@@ -79,7 +79,6 @@ namespace TelemetryReader
             await textWriter.WriteLineAsync(headers);
             while (await streamResult.MoveNext(CancellationToken.None))
             {
-                Console.WriteLine("Starting new chunk");
                 var currentChunk = streamResult.Current;
 
                 // I need to identify the numbers on my figure.

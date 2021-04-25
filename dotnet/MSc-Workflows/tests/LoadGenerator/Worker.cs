@@ -81,7 +81,9 @@ namespace LoadGenerator
                     .ToList();
 
                 await Task.WhenAll(tasks);
-                
+
+                // wait 1 sec at least
+                await Task.Delay(1000);
                 // This waits for processing to be done.
                 await orchestrationClient.IsThereWorkOnGoingAsync(new OngoingWorkRequest());
                 
