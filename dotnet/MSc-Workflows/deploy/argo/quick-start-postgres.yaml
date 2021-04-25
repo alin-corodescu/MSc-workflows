@@ -627,6 +627,9 @@ data:
       requests:
         cpu: 10m
         memory: 64Mi
+    env:
+    - name: RESOURCE_STATE_CHECK_INTERVAL
+      value: 1s
   links: |
     - name: Workflow Link
       scope: workflow
@@ -813,7 +816,7 @@ spec:
         - mountPath: /tmp
           name: tmp
       nodeSelector:
-        kubernetes.io/os: linux
+        zone: edge1
       securityContext:
         runAsNonRoot: true
       serviceAccountName: argo-server
@@ -836,6 +839,8 @@ spec:
       labels:
         app: minio
     spec:
+      nodeSelector:
+        zone: edge1
       containers:
       - command:
         - minio
@@ -869,6 +874,7 @@ spec:
             port: 9000
           initialDelaySeconds: 5
           periodSeconds: 10
+
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -886,6 +892,8 @@ spec:
         app: postgres
       name: postgres
     spec:
+      nodeSelector:
+        zone: edge1
       containers:
       - env:
         - name: POSTGRES_PASSWORD
@@ -904,8 +912,6 @@ spec:
             - SELECT 1
           initialDelaySeconds: 15
           timeoutSeconds: 2
-      nodeSelector:
-        kubernetes.io/os: linux
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -920,6 +926,8 @@ spec:
       labels:
         app: workflow-controller
     spec:
+      nodeSelector:
+        zone: edge1
       containers:
       - args:
         - --configmap
@@ -935,6 +943,12 @@ spec:
             fieldRef:
               apiVersion: v1
               fieldPath: metadata.name
+        - name: RESOURCE_STATE_CHECK_INTERVAL
+          value: 1s
+        - name: RECENTLY_STARTED_POD_DURATION
+          value: 1s
+        - name: DEFAULT_REQUEUE_TIME
+          value: 1s
         image: argoproj/workflow-controller:v3.0.2
         livenessProbe:
           httpGet:
@@ -950,8 +964,6 @@ spec:
           capabilities:
             drop:
             - ALL
-      nodeSelector:
-        kubernetes.io/os: linux
       securityContext:
         runAsNonRoot: true
       serviceAccountName: argo

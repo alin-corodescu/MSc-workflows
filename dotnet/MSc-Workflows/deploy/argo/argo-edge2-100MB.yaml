@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
-  generateName: experimental-workflow-1mb-
+  generateName: experimental-workflow-edge2-100mb-
 spec:
   # invoke the workflow template
   entrypoint: workflow
@@ -9,7 +9,7 @@ spec:
     parameters:
       - name: input-list
         value: |
-          ["edge1:test-1MB.txt","edge1:test-1MB.txt", "edge1:test-1MB.txt", "edge2:test-1MB.txt", "edge2:test-1MB.txt", "edge2:test-1MB.txt"]
+          ["edge2:test-100MB.txt", "edge2:test-100MB.txt"]
 
   templates:
   - name: workflow
@@ -61,8 +61,8 @@ spec:
         - name: out-param
           valueFrom:
             path: /mnt/out/out.txt
-    # nodeSelector:
-    #   zone: edge1
+    nodeSelector:
+      zone: edge2
     container:
       image: alincorodescu/msc-workflows-storage-tester:latest
       resources:

@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
-  generateName: experimental-workflow-edge1-1MB-
+  generateName: experimental-workflow-edge1-1mb-
 spec:
   # invoke the workflow template
   entrypoint: workflow
@@ -30,21 +30,24 @@ spec:
         arguments:
           parameters:
             - name: in
-              value: "{{steps.wf-step1.outputs.parameters.out-param}}"
+              value: "{{item}}"
+        withParam: "{{steps.wf-step1.outputs.parameters.out-param}}"
 
     - - name : wf-step3
         template: step
         arguments:
           parameters:
             - name: in
-              value: "{{steps.wf-step2.outputs.parameters.out-param}}"
+              value: "{{item}}"
+        withParam: "{{steps.wf-step2.outputs.parameters.out-param}}"
 
     - - name : wf-step4
         template: cloud-step
         arguments:
           parameters:
             - name: in
-              value: "{{steps.wf-step3.outputs.parameters.out-param}}"
+              value: "{{item}}"
+        withParam: "{{steps.wf-step3.outputs.parameters.out-param}}"
 
   - name: step
     metadata:
@@ -63,9 +66,12 @@ spec:
     container:
       image: alincorodescu/msc-workflows-storage-tester:latest
       resources:
-        limits:
+        requests:
           memory: "300Mi"
           cpu: "250m"
+        limits:
+          memory: "1000Mi"
+          cpu: "1000m"
       volumeMounts:
         - name: out
           mountPath: /mnt/out
@@ -113,9 +119,12 @@ spec:
     container:
       image: alincorodescu/msc-workflows-storage-tester:latest
       resources:
-        limits:
+        requests:
           memory: "300Mi"
           cpu: "250m"
+        limits:
+          memory: "1000Mi"
+          cpu: "1000m"
       volumeMounts:
         - name: out
           mountPath: /mnt/out
