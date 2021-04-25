@@ -1,0 +1,1 @@
+{"affinity":{"nodeAffinity":{"preferredDuringSchedulingIgnoredDuringExecution":[{"weight":50,"preference":null,"matchExpressions":[{"key":"zone","operator":"In","values":["edge1"]}]}]}},"topologySpreadConstraints":[{"maxSkew":1,"topologyKey":"zone","whenUnsatisfiable":"DoNotSchedule","labelSelector":{"matchLabels":{"app":"step"}}}]}

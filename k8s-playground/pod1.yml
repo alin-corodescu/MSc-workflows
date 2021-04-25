@@ -23,3 +23,20 @@ spec:
         volumeMounts:
           - mountPath: /test
             name: test-volume
+  affinity:
+    nodeAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 50
+        preference:
+          matchExpressions:
+          - key: zone
+            operator: In
+            values:
+            - edge1 
+  topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: zone
+    whenUnsatisfiable: DoNotSchedule
+    labelSelector:
+      matchLabels:
+        app: step

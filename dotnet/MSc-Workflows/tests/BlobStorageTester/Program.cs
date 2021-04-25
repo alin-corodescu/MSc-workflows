@@ -13,6 +13,7 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Grpc.Net.Client;
 using GrpcService;
+using k8s;
 using Microsoft.Extensions.Configuration;
 
 namespace BlobStorageTester
@@ -28,6 +29,12 @@ namespace BlobStorageTester
                 .Build();
 
             var currentZone = config["Zone"];
+            var nodeName = config["NODE_NAME"];
+            
+            currentZone = FigureOutCurrentZone(nodeName);
+            
+            Console.WriteLine($"Because the node name is {nodeName}, the current zone is {currentZone}");
+            
             // The format is <identifier>:<filename>
             var fileToDownload = config["RemoteFileName"];
 
@@ -69,6 +76,20 @@ namespace BlobStorageTester
             var outputForArgo = "/mnt/out/out.txt";
             var outputValue = $"{currentZone}:{uploadName}";
             await File.WriteAllTextAsync(outputForArgo, outputValue);
+        }
+
+        private static string FigureOutCurrentZone(string name)
+        {
+            if (name.Contains("edge1"))
+                return "edge1";
+
+            if (name.Contains("edge2"))
+                return "edge2";
+
+            if (name.Contains("cloud1"))
+                return "cloud1";
+
+            return "edge1";
         }
 
         private static string GetConnStrForZone(string zone, IConfiguration config)

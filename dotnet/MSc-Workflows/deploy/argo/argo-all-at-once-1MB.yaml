@@ -9,7 +9,7 @@ spec:
     parameters:
       - name: input-list
         value: |
-          ["edge1:test-100MB.txt"]
+          ["edge1:test-1MB.txt", "edge1:test-1MB.txt", "edge1:test-1MB.txt", "edge2:test-1MB.txt", "edge2:test-1MB.txt", "edge2:test-1MB.txt"]
 
   templates:
   - name: workflow
@@ -44,9 +44,9 @@ spec:
         - name: out-param
           valueFrom:
             path: /mnt/out/out.txt
+    # nodeSelector:
+    #   zone: edge1
     container:
-      nodeSelector:
-        zone: edge1
       image: alincorodescu/msc-workflows-storage-tester:latest
       resources:
         limits:
@@ -77,9 +77,14 @@ spec:
         - name: RemoteFileName
           value: "{{inputs.parameters.in}}"
 
-
         - name: Zone
           value: edge1
+
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+    # podSpecPatch: '{"affinity":{"nodeAffinity":{"preferredDuringSchedulingIgnoredDuringExecution":[{"weight":50,"preference":{"matchExpressions":[{"key":"zone","operator":"In","values":["edge1"]}]}}]}},"topologySpreadConstraints":[{"maxSkew":1,"topologyKey":"zone","whenUnsatisfiable":"DoNotSchedule","labelSelector":{"matchLabels":{"app":"step"}}}]}'
     volumes:
       - name: out
         emptyDir: { }

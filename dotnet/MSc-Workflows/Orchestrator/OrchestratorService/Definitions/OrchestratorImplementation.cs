@@ -160,17 +160,26 @@ namespace OrchestratorService.Definitions
 
         public async Task<OngoingWorkReply> IsThereOngoingWork(OngoingWorkRequest request)
         {
-            // work tracker.
-            var activeWork = _workTracker.AreThereOngoingRequests();
-            
-            // work queue
-            int pendingWork = _orchestrationQueue.Count;
-            
-            return await Task.FromResult(new OngoingWorkReply
+
+            while (true)
             {
-                WorkInFlight = activeWork,
-                WorkInQueue = pendingWork
-            });
+                // work tracker.
+                var activeWork = _workTracker.AreThereOngoingRequests();
+
+                // work queue
+                int pendingWork = _orchestrationQueue.Count;
+
+                if (activeWork != 0 || pendingWork != 0)
+                {
+                    await Task.Delay(100);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return await Task.FromResult(new OngoingWorkReply());
         }
     }
 }
