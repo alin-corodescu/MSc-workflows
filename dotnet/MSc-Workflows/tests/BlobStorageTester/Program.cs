@@ -28,10 +28,8 @@ namespace BlobStorageTester
                 .AddCommandLine(args)
                 .Build();
 
-            var currentZone = config["Zone"];
             var nodeName = config["NODE_NAME"];
-            
-            currentZone = FigureOutCurrentZone(nodeName);
+            var currentZone = FigureOutCurrentZone(nodeName);
             
             Console.WriteLine($"Because the node name is {nodeName}, the current zone is {currentZone}");
             

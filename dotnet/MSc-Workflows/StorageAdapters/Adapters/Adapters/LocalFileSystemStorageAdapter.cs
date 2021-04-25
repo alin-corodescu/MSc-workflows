@@ -73,8 +73,6 @@ namespace Definitions.Adapters
             this._logger.LogInformation($"Pushing data to storage from: {filePath}");
             var destinationFileNameGuid = Guid.NewGuid();
             
-            // TODO seems hard linking works because the inodes of the underlying filesystem are shared.
-
             var activity = _activitySource.StartActivity("MoveToPermStorage");
             activity.Start();
             if (!_useHardLinking)
