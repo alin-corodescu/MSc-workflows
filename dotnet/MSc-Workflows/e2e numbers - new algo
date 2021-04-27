@@ -1,0 +1,39 @@
+1 MB 3 files:
+Iteration 0 took 19222 ms.
+Iteration 1 took 7796 ms.
+Iteration 2 took 7868 ms.
+Iteration 0 took 5828 ms.
+Iteration 1 took 4912 ms.
+Iteration 2 took 4710 ms.
+Iteration 0 took 5545 ms.
+Iteration 1 took 5612 ms.
+Iteration 2 took 4300 ms.
+Iteration 0 took 5455 ms.
+Iteration 1 took 4707 ms.
+Iteration 2 took 4403 ms.
+
+
+10 MB 3 files:
+Iteration 0 took 23943 ms.
+Iteration 1 took 22524 ms.
+Iteration 2 took 23450 ms.
+Iteration 0 took 25135 ms.
+Iteration 1 took 24111 ms.
+Iteration 2 took 23377 ms.
+
+
+10 MB 2 files:
+Iteration 0 took 19348 ms.
+Iteration 1 took 19724 ms.
+Iteration 2 took 19901 ms.
+
+
+100 MB 2 files:
+Iteration 0 took 169161 ms.
+Iteration 1 took 167527 ms.
+Iteration 2 took 170294 ms
+
+100 MB 3 files:
+Iteration 0 took 212678 ms.
+Iteration 1 took 209615 ms.
+Iteration 2 took 210949 ms.
