@@ -46,21 +46,72 @@ namespace OrchestratorService.Definitions
         
         public async Task<V1Pod> SelectBestPod(IEnumerable<V1Pod> possibleTargets, DataLocalization dataLocalization)
         {
-            // Here I need to add stuff about the distance between different regions
-            // sort the possibilities based on their proximity
-            // and then based on the current load of each pod.
-            // if (_configuration["UseDataLocality"] == "false")
-            // {
-            //     // choose a random node from the possible choices.
-            //     // should I do round-robin instead?
-            //     // or just based on the current load?
-            //     
-            //     var v1Pods = possibleTargets.ToList();
-            //     var max = v1Pods.Count - 1;
-            //     var idx = new Random().Next(0, max);
-            //
-            //     return v1Pods.ElementAt(idx);
-            // }
+            if (_configuration["UseLoadOrientedAlgo"] == "true")
+            {
+                var pt = possibleTargets.Select(pod =>
+                    {
+                        var podLocalization = this.ExtractDataLocalization(pod);
+                        var currentLoad = _workTracker.GetCurrentLoadForPod(pod.Name());
+                        // pair these two up and take a routing decision based on that.
+
+                        var distance = _proximityTable.GetDistance(dataLocalization, podLocalization);
+
+                        return new PossibleTarget
+                        {
+                            Pod = pod,
+                            Load = currentLoad,
+                            Distance = distance
+                        };
+                    })
+                    .Where(x => x.Load < _maxLoad).ToList();
+                
+                pt.Sort((p1, p2) =>
+                {
+                    if (p1.Distance < p2.Distance)
+                    {
+                        return -1;
+                    }
+
+                    if (p1.Distance > p2.Distance)
+                    {
+                        return 1;
+                    }
+
+                    if (p1.Load < p2.Load)
+                    {
+                        return -1;
+                    }
+
+                    if (p1.Load > p2.Load)
+                    {
+                        return 1;
+                    }
+
+                    return 0;
+                });
+
+                if (pt.Count == 0)
+                {
+                    return null;
+                }
+                
+                if (pt[0].Distance == 0)
+                {
+                    // The load on the next node is the same as the host
+                    if (pt.Count > 1 && pt[1].Load >= pt[0].Load)
+                    {
+                        return pt[0].Pod;
+                    }
+                    if (pt.Count > 1)
+                    {
+                        return pt[1].Pod;
+                    }
+
+                    return null;
+                }
+
+                return pt[0].Pod;
+            }
 
 
             var result = possibleTargets.Select(pod =>
@@ -102,4 +153,12 @@ namespace OrchestratorService.Definitions
             };
         }
     }
+
+    public class PossibleTarget
+    {
+        public V1Pod Pod { get; set; }
+        public int Load { get; set; }
+        public int Distance { get; set; }
+    }
+    
 }
