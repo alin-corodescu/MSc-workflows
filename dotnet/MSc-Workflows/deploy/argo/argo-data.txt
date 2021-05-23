@@ -1,56 +1,56 @@
 1MB, all at once.
-Iteration 0 took 33601 ms. Sleeping 500ms
-Iteration 1 took 32544 ms. Sleeping 500ms
-Iteration 2 took 32783 ms. Sleeping 500ms
+33601
+32544
+32783
 
 
 1MB, edge deployments.
-Iteration 0 took 27428 ms. Sleeping 500ms
-Iteration 1 took 28461 ms. Sleeping 500ms
-Iteration 2 took 27765 ms. Sleeping 500ms
+27428
+28461
+27765
 
 
 10MB (3 files), all at once:
-Iteration 0 took 50399 ms. Sleeping 500ms
-Iteration 1 took 51098 ms. Sleeping 500ms
-Iteration 2 took 50998 ms. Sleeping 500ms
+50399
+51098
+50998
 
 
 10MB (3 files), edge node selector:
-Iteration 0 took 51644 ms. Sleeping 500ms
-Iteration 1 took 52016 ms. Sleeping 500ms
-Iteration 2 took 51407 ms. Sleeping 500ms
+51644
+52016
+51407
 
 10MB (2 files), all at once:
-Iteration 0 took 46414 ms. Sleeping 500ms
-Iteration 1 took 47617 ms. Sleeping 500ms
-Iteration 2 took 47114 ms. Sleeping 500ms
+46414
+47617
+47114
 
 
 10MB (2 files), edge node selector:
-Iteration 0 took 42935 ms. Sleeping 500ms
-Iteration 1 took 41573 ms. Sleeping 500ms
-Iteration 2 took 41932 ms. Sleeping 500ms
+42935
+41573
+41932
 
 
 100MB (All at once, 3 files each) :
-Iteration 0 took 238444 ms. Sleeping 500ms
-Iteration 1 took 222994 ms. Sleeping 500ms
-Iteration 2 took 243009 ms. Sleeping 500ms
+238444
+222994
+243009
 
 
 100MB (edge, 3 files each).
-Iteration 0 took 268307 ms. Sleeping 500ms
-Iteration 1 took 278305 ms. Sleeping 500ms
-Iteration 2 took 281524 ms. Sleeping 500ms
+268307
+278305
+281524
 
 
 100MB (2files, All At once):
-Iteration 0 took 197203 ms. Sleeping 500ms
-Iteration 1 took 224536 ms. Sleeping 500ms
-Iteration 2 took 199284 ms. Sleeping 500ms
+197203
+224536
+199284
 
 100MB (2 files, egdee)
-Iteration 0 took 193190 ms. Sleeping 500ms
-Iteration 1 took 190778 ms. Sleeping 500ms
-Iteration 2 took 194412 ms. Sleeping 500ms
+193190
+190778
+194412

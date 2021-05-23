@@ -30,6 +30,7 @@ namespace LoadGenerator
             var events = new List<MetadataEvent>();
             
             int dataSize = int.Parse(_configuration["DataSize"]);
+            Console.WriteLine($"Using data size: {dataSize}");
             int dataCount = int.Parse(_configuration["DataCount"]);
             
             for (int i = 0; i < iterations; i++)
