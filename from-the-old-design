@@ -1,3 +1,0 @@
-% The benefit of separation is 2 fold. 1 is interoperability between a large number of possible technologies. Second is the re-usability, portability of components. 
-% TODO move this entire paragraph to the design dumping ground or park it for now. 
-By better separating concerns and having total isolation and a large degree of freedom when it comes to how these concepts are actually implemented, we pave the way for easy customizability and local improvements (for example, if data provenance is required, it can be done at the framework level without having to care about touching other parts of the code.
