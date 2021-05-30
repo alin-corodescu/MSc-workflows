@@ -38,6 +38,7 @@ namespace TestGrpcService
             services.AddSingleton<IOrchestratorServiceClient, OrchestratorServiceClient>();
             services.AddSingleton<IGrpcChannelPool, GrpcChannelPool>();
             services.AddSingleton<ISidecar, Sidecar>();
+            services.AddSingleton<IDataAdapterProvider, DataAdapterProvider>();
             
             services.AddSingleton(new ActivitySource("Workflows"));
             

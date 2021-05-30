@@ -20,12 +20,14 @@ namespace TestGrpcService
         private readonly IOrchestratorServiceClient _orchestrator;
         private readonly ILogger<Sidecar> _logger;
         private readonly ActivitySource _source;
+        private readonly IDataAdapterProvider _adapterProvider;
         private string _inputPath;
         private static readonly SemaphoreSlim _parallelCallSemaphore = new SemaphoreSlim(3, 3);
 
         public Sidecar(IDataSourceAdapter dataSource, IComputeStep computeStep, IDataSinkAdapter dataSink,
             IOrchestratorServiceClient orchestrator, ILogger<Sidecar> logger, IConfiguration configuration,
-            ActivitySource source)
+            ActivitySource source,
+            IDataAdapterProvider adapterProvider)
         {
             _dataSource = dataSource;
             _computeStep = computeStep;
@@ -33,6 +35,7 @@ namespace TestGrpcService
             _orchestrator = orchestrator;
             _logger = logger;
             _source = source;
+            _adapterProvider = adapterProvider;
             this._inputPath = configuration["Sidecar:InputPath"];
         }
         
@@ -57,8 +60,8 @@ namespace TestGrpcService
                     TargetPath = targetPathForDataDaeomn
                 };
 
-                // TODO select data source and data sink based on the parameters.
-                await _dataSource.DownloadData(pullDataRequest);
+                var src = await _adapterProvider.GetSourceForName(request.DataSource) ?? _dataSource;
+                await src.DownloadData(pullDataRequest);
 
                 _logger.LogInformation("Passing the data to the compute step");
 
@@ -79,7 +82,8 @@ namespace TestGrpcService
                     activity?.Stop();
                     activity = null;
                     
-                    var reply = await _dataSink.PushData(new PushDataRequest
+                    var sink = await _adapterProvider.GetSinkForName(request.DataSink) ?? _dataSink;
+                    var reply = await sink.PushData(new PushDataRequest
                     {
                         SourceFilePath = $"/store/outputs/{fName}",
                         // Delete the input file.
