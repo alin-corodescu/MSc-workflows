@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Commons;
 using k8s;
@@ -18,7 +19,10 @@ namespace TestGrpcService.Definitions
         public IGrpcChannelPool ChannelPool { get; }
         private readonly IConfiguration _config;
         private Kubernetes k8s;
-        
+
+        private Dictionary<string, IDataSourceAdapter> _sourceAdapters = new Dictionary<string, IDataSourceAdapter>();
+
+        private Dictionary<string, IDataSinkAdapter> _sinkAdapters = new Dictionary<string, IDataSinkAdapter>();
         public DataAdapterProvider(IConfiguration config, IGrpcChannelPool channelPool)
         {
             ChannelPool = channelPool;
@@ -27,6 +31,10 @@ namespace TestGrpcService.Definitions
         }
         public async Task<IDataSourceAdapter> GetSourceForName(string name)
         {
+            if (_sourceAdapters.ContainsKey(name))
+            {
+                return _sourceAdapters[name];
+            }
             try
             {
                 var daemonsets = await k8s.ListDaemonSetForAllNamespacesAsync(labelSelector: $"adapter={name}");
@@ -35,7 +43,10 @@ namespace TestGrpcService.Definitions
 
                 if (port != null)
                 {
-                    return LocalFileSystemClient.CreateClientForOtherPort(_config, ChannelPool, port.Value);
+                    
+                    var client =  LocalFileSystemClient.CreateClientForOtherPort(_config, ChannelPool, port.Value);
+                    _sourceAdapters[name] = client;
+                    return client;
                 }
             }
             catch
@@ -47,6 +58,10 @@ namespace TestGrpcService.Definitions
 
         public async Task<IDataSinkAdapter> GetSinkForName(string name)
         {
+            if (_sinkAdapters.ContainsKey(name))
+            {
+                return _sinkAdapters[name];
+            }
             try
             {
                 var daemonsets = await k8s.ListDaemonSetForAllNamespacesAsync(labelSelector: $"adapter={name}");
@@ -55,7 +70,10 @@ namespace TestGrpcService.Definitions
 
                 if (port != null)
                 {
-                    return LocalFileSystemClient.CreateClientForOtherPort(_config, ChannelPool, port.Value);
+                    
+                    var client =  LocalFileSystemClient.CreateClientForOtherPort(_config, ChannelPool, port.Value);
+                    _sinkAdapters[name] = client;
+                    return client;
                 }
             }
             catch

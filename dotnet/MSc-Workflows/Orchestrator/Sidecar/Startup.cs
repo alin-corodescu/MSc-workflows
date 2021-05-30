@@ -53,8 +53,6 @@ namespace TestGrpcService
                     // For outgoing requests
                     .AddGrpcClientInstrumentation()
                     .AddHttpClientInstrumentation()
-                    // Export everything to the console.
-                    // .AddConsoleExporter();
                     .AddJaegerExporter(o =>
                     {
                         o.AgentHost = Configuration["NODE_IP"];
